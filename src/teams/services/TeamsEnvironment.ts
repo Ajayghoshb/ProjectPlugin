@@ -1,0 +1,59 @@
+import { TeamsConfig, HostClient } from '../types/teams.types';
+
+export class TeamsEnvironment {
+  public static getConfig(): TeamsConfig {
+    const metaEnv = (import.meta as any).env || {};
+    const procEnv = typeof process !== 'undefined' ? process.env || {} : {};
+
+    return {
+      azureTenantId: metaEnv.VITE_AZURE_TENANT_ID || procEnv.AZURE_TENANT_ID || '',
+      azureClientId: metaEnv.VITE_AZURE_CLIENT_ID || procEnv.AZURE_CLIENT_ID || '',
+      teamsAppId: metaEnv.VITE_TEAMS_APP_ID || procEnv.TEAMS_APP_ID || '',
+      teamsBotId: metaEnv.VITE_TEAMS_BOT_ID || procEnv.TEAMS_BOT_ID || '',
+      graphBaseUrl: metaEnv.VITE_GRAPH_BASE_URL || procEnv.GRAPH_BASE_URL || 'https://graph.microsoft.com/v1.0',
+      teamsDomain: metaEnv.VITE_TEAMS_DOMAIN || procEnv.TEAMS_DOMAIN || '',
+      appBaseUrl: metaEnv.VITE_APP_BASE_URL || procEnv.APP_BASE_URL || ''
+    };
+  }
+
+  public static isTeamsEnvironment(): boolean {
+    if (typeof window === 'undefined') return false;
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.has('inTeams') || window.name.includes('teams') || window.location.href.includes('teams');
+  }
+
+  public static isDevelopment(): boolean {
+    return process.env.NODE_ENV === 'development' || !!(import.meta as any).env?.DEV;
+  }
+
+  public static isBrowser(): boolean {
+    return !TeamsEnvironment.isTeamsEnvironment();
+  }
+
+  public static isDesktop(): boolean {
+    if (typeof window === 'undefined') return false;
+    return window.navigator.userAgent.toLowerCase().includes('electron') || window.navigator.userAgent.toLowerCase().includes('teamsdesktop');
+  }
+
+  public static isWeb(): boolean {
+    return TeamsEnvironment.isTeamsEnvironment() && !TeamsEnvironment.isDesktop();
+  }
+
+  public static isMobile(): boolean {
+    if (typeof window === 'undefined') return false;
+    const ua = window.navigator.userAgent.toLowerCase();
+    return ua.includes('iphone') || ua.includes('ipad') || ua.includes('android');
+  }
+
+  public static getHostClient(): HostClient {
+    if (TeamsEnvironment.isDesktop()) return 'desktop';
+    if (TeamsEnvironment.isMobile()) return 'mobile';
+    if (TeamsEnvironment.isTeamsEnvironment()) return 'web';
+    return 'browser_standalone';
+  }
+
+  public static getCurrentLocale(): string {
+    if (typeof window === 'undefined') return 'en-US';
+    return window.navigator.language || 'en-US';
+  }
+}

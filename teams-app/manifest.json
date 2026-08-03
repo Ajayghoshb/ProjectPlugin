@@ -1,0 +1,79 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.15/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.15",
+  "version": "1.0.0",
+  "id": "c0305b4c-875b-4d88-a25b-f1f4381b87a9",
+  "packageName": "com.thinkpalm.thinkit.teamsapp",
+  "developer": {
+    "name": "ThinkPalm Technologies Enterprise",
+    "websiteUrl": "https://thinkpalm.com",
+    "privacyUrl": "https://thinkpalm.com/privacy",
+    "termsOfUseUrl": "https://thinkpalm.com/terms"
+  },
+  "name": {
+    "short": "Think It",
+    "full": "Think It - AI Meeting Intelligence & Enterprise Memory"
+  },
+  "description": {
+    "short": "AI Meeting Assistant for Microsoft Teams",
+    "full": "Think It automatically captures Microsoft Teams meetings, synthesizes executive summaries, formal MOMs, action items, decisions, and regional dialogue translations using Meta Llama 3.3 70B & NVIDIA Riva."
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "accentColor": "#4F46E5",
+  "staticTabs": [
+    {
+      "entityId": "collection",
+      "name": "Collection",
+      "contentUrl": "https://localhost:3000/#/collection?inTeams=true",
+      "scopes": [
+        "personal"
+      ]
+    },
+    {
+      "entityId": "settings",
+      "name": "Settings",
+      "contentUrl": "https://localhost:3000/#/settings?inTeams=true",
+      "scopes": [
+        "personal"
+      ]
+    }
+  ],
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ],
+  "validDomains": [
+    "localhost",
+    "127.0.0.1",
+    "*.thinkpalm.com"
+  ],
+  "webApplicationInfo": {
+    "id": "eec115d2-8418-4d66-8e18-b4283ffca2b1",
+    "resource": "api://localhost:3000/eec115d2-8418-4d66-8e18-b4283ffca2b1"
+  },
+  "bots": [
+    {
+      "botId": "eec115d2-8418-4d66-8e18-b4283ffca2b1",
+      "scopes": [
+        "personal",
+        "team",
+        "groupchat"
+      ],
+      "supportsFiles": false,
+      "isNotificationOnly": true
+    }
+  ],
+  "authorization": {
+    "permissions": {
+      "resourceSpecific": [
+        {
+          "name": "OnlineMeetingTranscript.Read.Group",
+          "type": "Delegated"
+        }
+      ]
+    }
+  }
+}

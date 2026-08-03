@@ -1,0 +1,1874 @@
+{
+  "jiraConnections": [
+    {
+      "id": "demo-jira",
+      "baseUrl": "jira.company.atlassian.net",
+      "email": "engineer@company.com",
+      "apiToken": "••••••••••••••••••••",
+      "selectedProjects": [
+        "PHN",
+        "ODY"
+      ]
+    },
+    {
+      "id": "jira-1785469465254",
+      "baseUrl": "synergymarinegroup.atlassian.net",
+      "email": "ajayaghosh.b@thinkpalm.com",
+      "apiToken": "YOUR_JIRA_API_TOKEN",
+      "selectedProjects": [
+        "BRH"
+      ]
+    }
+  ],
+  "teamsConnections": [
+    {
+      "id": "demo-teams",
+      "tenantId": "company-micro-tenant",
+      "clientId": "teams-client-id",
+      "clientSecret": "••••••••••••••••••••",
+      "active": true
+    },
+    {
+      "id": "teams-1785470223170",
+      "tenantId": "m365-kochi-active-directory",
+      "clientId": "ms-teams-graph-client-id",
+      "clientSecret": "••••••••••••••••••••",
+      "active": true
+    },
+    {
+      "id": "teams-1785748093606",
+      "tenantId": "m365-kochi-active-directory",
+      "clientId": "ms-teams-graph-client-id",
+      "clientSecret": "••••••••••••••••••••",
+      "active": true
+    }
+  ],
+  "googleConnections": [
+    {
+      "id": "demo-google",
+      "email": "ajayaghosh.b@thinkpalm.com",
+      "accessToken": "ya29.demo-access-token",
+      "active": true
+    }
+  ],
+  "projects": [
+    {
+      "id": "phoenix",
+      "name": "Phoenix Portal UI",
+      "key": "PHN",
+      "description": "A complete next-generation React dashboard with real-time status grids, highly accessible design tokens, and smooth, responsive CSS animations.",
+      "lead": "Marcus Wright",
+      "userStoriesCount": 28,
+      "bugsCount": 5,
+      "teamMembers": [
+        "marcus@project.io",
+        "elena@project.io",
+        "david@project.io",
+        "aisha@project.io"
+      ]
+    },
+    {
+      "id": "odyssey",
+      "name": "Odyssey Analytics",
+      "key": "ODY",
+      "description": "Integrating high-performance data visualization charts using d3 and recharts for multi-tenant analytics dashboards.",
+      "lead": "Julian Vester",
+      "userStoriesCount": 19,
+      "bugsCount": 9,
+      "teamMembers": [
+        "julian@project.io",
+        "sarah@project.io",
+        "david@project.io"
+      ]
+    },
+    {
+      "id": "brh",
+      "name": "BlueLink Rest Hours",
+      "key": "BRH",
+      "description": "Synced project from Jira instance",
+      "lead": "Ajy",
+      "userStoriesCount": 40,
+      "bugsCount": 60,
+      "teamMembers": [
+        "steffyannavarghese@synergymarinegroup.atlassian.net",
+        "chandraprabha@synergymarinegroup.atlassian.net",
+        "senthilnathan@synergymarinegroup.atlassian.net",
+        "amalss@synergymarinegroup.atlassian.net",
+        "abhijithsnair@synergymarinegroup.atlassian.net",
+        "karthika@synergymarinegroup.atlassian.net",
+        "rajkumar@synergymarinegroup.atlassian.net",
+        "jishapappachan@synergymarinegroup.atlassian.net",
+        "naveenjoy@synergymarinegroup.atlassian.net",
+        "ajoldmartinjose@synergymarinegroup.atlassian.net",
+        "dineshs@synergymarinegroup.atlassian.net",
+        "sreeja@synergymarinegroup.atlassian.net",
+        "nimalkumar@synergymarinegroup.atlassian.net",
+        "sowmya@synergymarinegroup.atlassian.net",
+        "sarathg@synergymarinegroup.atlassian.net",
+        "dhineshs@synergymarinegroup.atlassian.net",
+        "deenadhayalan@synergymarinegroup.atlassian.net",
+        "muhammadrahnasrm@synergymarinegroup.atlassian.net",
+        "sivakumarm@synergymarinegroup.atlassian.net",
+        "pranaveshsivakumar@synergymarinegroup.atlassian.net",
+        "makrandbhujang@synergymarinegroup.atlassian.net",
+        "priyadharshinim@synergymarinegroup.atlassian.net",
+        "mohansasanka@synergymarinegroup.atlassian.net",
+        "nbbenzen@synergymarinegroup.atlassian.net",
+        "ganeshkumarsugumaran@synergymarinegroup.atlassian.net",
+        "jiratriageagent@synergymarinegroup.atlassian.net",
+        "lekshmismurali@synergymarinegroup.atlassian.net",
+        "ajithkumaraj@synergymarinegroup.atlassian.net",
+        "subashtk@synergymarinegroup.atlassian.net",
+        "apurvatrehan@synergymarinegroup.atlassian.net",
+        "yadukrishnan@synergymarinegroup.atlassian.net",
+        "karuns@synergymarinegroup.atlassian.net",
+        "kameswaranm@synergymarinegroup.atlassian.net",
+        "neerajr@synergymarinegroup.atlassian.net",
+        "muthukrishnana@synergymarinegroup.atlassian.net",
+        "sabarinathang@synergymarinegroup.atlassian.net",
+        "manjubalakrishnan@synergymarinegroup.atlassian.net",
+        "jiracodingagent@synergymarinegroup.atlassian.net",
+        "anish@synergymarinegroup.atlassian.net",
+        "jayasree@synergymarinegroup.atlassian.net",
+        "sijubaby@synergymarinegroup.atlassian.net",
+        "divyabetala@synergymarinegroup.atlassian.net",
+        "sudharsanj@synergymarinegroup.atlassian.net",
+        "vigneshwaranbs@synergymarinegroup.atlassian.net",
+        "bhagyabijoy@synergymarinegroup.atlassian.net",
+        "subhasinid@synergymarinegroup.atlassian.net",
+        "lavanyas@synergymarinegroup.atlassian.net",
+        "anjanas@synergymarinegroup.atlassian.net",
+        "chidanandc@synergymarinegroup.atlassian.net",
+        "ajayaghosh.b@thinkpalm.com",
+        "daisy@synergymarinegroup.atlassian.net",
+        "sintojoy@synergymarinegroup.atlassian.net"
+      ]
+    }
+  ],
+  "members": [
+    {
+      "id": "sarah",
+      "name": "Sarah Connor",
+      "email": "sarah.connor@m365.local",
+      "role": "Project Manager",
+      "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "ODY"
+      ]
+    },
+    {
+      "id": "marcus",
+      "name": "Marcus Wright",
+      "email": "marcus.wright@m365.local",
+      "role": "Product Owner",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "PHN"
+      ]
+    },
+    {
+      "id": "elena",
+      "name": "Elena Rostova",
+      "email": "elena.rostova@m365.local",
+      "role": "Scrum Master",
+      "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "PHN"
+      ]
+    },
+    {
+      "id": "david",
+      "name": "David Chen",
+      "email": "david.chen@m365.local",
+      "role": "Developer",
+      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "PHN",
+        "ODY"
+      ]
+    },
+    {
+      "id": "aisha",
+      "name": "Aisha Rahman",
+      "email": "aisha.rahman@m365.local",
+      "role": "QA Engineer",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "PHN"
+      ]
+    },
+    {
+      "id": "julian",
+      "name": "Julian Vester",
+      "email": "julian.vester@m365.local",
+      "role": "Business Analyst",
+      "avatar": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=150&q=80",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "ODY"
+      ]
+    },
+    {
+      "id": "ajayaghosh",
+      "name": "Ajayaghosh B",
+      "email": "ajayaghosh.b@thinkpalm.com",
+      "role": "Lead Workspace Admin",
+      "avatar": "https://ui-avatars.com/api/?name=Ajayaghosh+B&background=f59e0b&color=fff",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:fe1ca768-4b15-45a8-be21-20b2576a4335",
+      "name": "Steffy Anna Varghese",
+      "email": "steffyannavarghese@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/22106c2c685ae76fc6a68ff374760a2e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FSV-2.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:f7481216-0179-4794-b71b-72886b539b31",
+      "name": "Chandra Prabha",
+      "email": "chandraprabha@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/6a9422a679601bdcf4e08d79ec48df16?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FCP-4.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:f6f8a146-3548-402a-ac07-3111f9dbd5af",
+      "name": "senthilnathan",
+      "email": "senthilnathan@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/82c4b01cdc2a54c1747591534d396630?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FS-3.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:f5f34df4-a4e4-4861-9026-596665e59514",
+      "name": "Amal S S",
+      "email": "amalss@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/a5e7a282c48e9f06ff2b7931990e5f01?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAS-6.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:ee84bd39-bf31-4f35-98c8-f037b09e593c",
+      "name": "Abhijith S Nair",
+      "email": "abhijithsnair@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/1cd24991c8765ae4c94bb1c502ad3958?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAN-3.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:e88ff88b-0b71-4a3a-93ab-fc7bdb369911",
+      "name": "Karthika",
+      "email": "karthika@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/4d2718c726c884d2f07a9eb6126de222?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FK-3.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:d734fe2b-568e-4e6f-8281-149a892c5465",
+      "name": "Rajkumar",
+      "email": "rajkumar@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/fe2400a402aac547438cff82b0b9361a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FR-1.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:d5865b88-a05c-4217-b938-4d34f87e598b",
+      "name": "Jisha Pappachan",
+      "email": "jishapappachan@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/9bfaaab3495eea986a1da55d7374a8b7?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FJP-1.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:d57a97bf-03d3-4935-8cca-1b437f7d301f",
+      "name": "Naveen joy",
+      "email": "naveenjoy@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/d13abc3c6cf9c642e26531dd63bbbab9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNJ-0.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:d4a9dc71-fe9d-4be6-8292-c526ea82c70c",
+      "name": "AJOLD MARTIN JOSE",
+      "email": "ajoldmartinjose@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/e594675b193ba84f55271b0ad8da56d8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAJ-1.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:d140454b-46b0-4f5e-bf4a-1f24f088b98b",
+      "name": "Dinesh S",
+      "email": "dineshs@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/594b2e98a02df8af71b47d2c9ba180eb?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-5.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:d0246d06-865c-4fd7-8533-0d2644c21fbc",
+      "name": "sreeja",
+      "email": "sreeja@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/aeb856bdd96eafd93625cd44bd1dc2f9?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FS-1.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:c9de1bef-c911-49f3-8005-602d92592dfb",
+      "name": "Nimalkumar",
+      "email": "nimalkumar@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/de4d8f9b5da35fff3727b76658b9f236?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FN-4.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:c6a39561-cb0f-4ff2-b59b-81c590beab49",
+      "name": "Sowmya",
+      "email": "sowmya@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/79cf31c97aeb6099546385bb40f3c765?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FS-0.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:bd4818f6-15e7-4773-b8ee-e07cfeca7f5f",
+      "name": "Sarath G",
+      "email": "sarathg@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/e6c0abc7651b9bca3f13c4f2a98c7e21?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FSG-4.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:bb60452f-bc11-4b87-8d25-5ace6e61880e",
+      "name": "dhinesh.s",
+      "email": "dhineshs@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/e0a4cddd2dc1c4df506068a9ed082780?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FD-3.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:b83148a4-d3b3-41f5-be1b-dac800ad46f3",
+      "name": "Deena Dhayalan",
+      "email": "deenadhayalan@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:b83148a4-d3b3-41f5-be1b-dac800ad46f3/0dfd63fd-c939-463d-b96c-e307383f387f/48",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:b4a9fe12-1f2f-49b8-86ae-6a667a81ecc9",
+      "name": "Muhammad Rahnas RM",
+      "email": "muhammadrahnasrm@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/b40ab99242048ad13f8741b9e4a625f2?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMR-1.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:b4a63a3e-c192-4312-bb92-1ca604126118",
+      "name": "Siva Kumar M",
+      "email": "sivakumarm@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/40d894c669f1fdf4fb492e9b9f6cbbc3?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FSM-6.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:ab24a548-2a86-4f77-b40e-f95271fdc40a",
+      "name": "Pranavesh Sivakumar",
+      "email": "pranaveshsivakumar@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/49eff6fdadeaabb29c9c370e24217ea8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FPS-5.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:a9076df7-0ba8-4459-a7d5-6126382b2055",
+      "name": "Makrand Bhujang",
+      "email": "makrandbhujang@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/e043e45dc8e4cf2f0dd72b3207d10e33?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMB-3.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:a7d769de-75f0-417c-ae3a-96f5fd21a863",
+      "name": "Priyadharshini M",
+      "email": "priyadharshinim@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/37bd183d2de0d60b22ff338ce0a5bf65?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FPM-1.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:a133a3cc-058d-4039-a658-55b9a6ca7d12",
+      "name": "Mohan Sasanka",
+      "email": "mohansasanka@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/e77d1d75b08393a6c9e203caa9cb5eaa?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMS-3.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:9eca7965-9d6b-494d-8e10-81a036b1d332",
+      "name": "N. B. Benzen",
+      "email": "nbbenzen@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/542321c83699dd075a4f4100c6b16127?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNB-2.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:9df2435f-7579-4d51-9bba-a80eca0ad614",
+      "name": "Ganeshkumar Sugumaran",
+      "email": "ganeshkumarsugumaran@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:9df2435f-7579-4d51-9bba-a80eca0ad614/059800a8-ad84-4774-bc34-8e6897c0c12a/48",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:9b002a65-c201-4536-9342-fa828d63f1a6",
+      "name": "Jira Triage Agent",
+      "email": "jiratriageagent@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:9b002a65-c201-4536-9342-fa828d63f1a6/b2571a87-207a-49bb-8747-9f6be107bfa2/48",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:97b75286-08ad-4d93-add3-182717680e23",
+      "name": "Lekshmi S Murali",
+      "email": "lekshmismurali@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:97b75286-08ad-4d93-add3-182717680e23/da748527-b419-4b21-91d7-84f8622825bc/48",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:96e05aa8-2196-4d0d-ad60-dae2d255fc2d",
+      "name": "Ajith Kumar A J",
+      "email": "ajithkumaraj@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:96e05aa8-2196-4d0d-ad60-dae2d255fc2d/35842037-e954-42e9-9205-b34273c84a3a/48",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:94a2134c-4936-4199-8e5d-fdfd2a8df5c6",
+      "name": "Subash Tk",
+      "email": "subashtk@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/a6d6de3fb58c3dc2fa03213c706d625a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FST-4.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:94058767-10ea-497b-bd9d-3ab640aeebfb",
+      "name": "Apurva Trehan",
+      "email": "apurvatrehan@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/1ae39fb046e908172c96f8045e6a93df?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAT-3.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:91063cbb-666f-4d0c-8a20-98bf100068d8",
+      "name": "Yadu Krishnan",
+      "email": "yadukrishnan@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:91063cbb-666f-4d0c-8a20-98bf100068d8/2e496b9a-3c15-4e8e-a0d2-cd1a0a18812c/48",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:90f684a2-20a3-4b86-b31d-1c5f1abcd43a",
+      "name": "Karun S",
+      "email": "karuns@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/3c839a803373febcb604eafa9d78641c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FKS-6.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:8704529d-2beb-4255-89e1-741ce8eb8bd3",
+      "name": "Kameswaran M",
+      "email": "kameswaranm@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/7bb02ad69952896ac3a7339a1828cc65?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FKM-2.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:84582905-d1fa-4389-83d0-3f4986593a57",
+      "name": "Neeraj R",
+      "email": "neerajr@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/bc7a1bf443f298bc70fe331e3aa32e67?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FNR-3.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:83892f8f-2e21-484c-a6d3-03a10a980e0e",
+      "name": "Muthu Krishnan A",
+      "email": "muthukrishnana@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/8b6898d1de0c5427cf5e2a62c6e1cdc0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMA-1.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:81d80e5c-ab4f-4ed5-959c-24ab09d2f17b",
+      "name": "Sabarinathan G",
+      "email": "sabarinathang@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/bc09a6bb693f7bd3eaae4f14ec6df5d7?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FSG-5.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:7c4cdd5d-673e-4751-b9ca-d3332eb78f48",
+      "name": "Manju Balakrishnan",
+      "email": "manjubalakrishnan@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/e62a76bef8281e7612dc874d4fdc696b?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FMB-5.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:7c25a1e6-7acd-49bd-ae9b-70eac8abadec",
+      "name": "Jira Coding Agent",
+      "email": "jiracodingagent@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/712020:7c25a1e6-7acd-49bd-ae9b-70eac8abadec/60eade10-639d-476f-a539-0e95ea07dc46/48",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:7427417e-b62a-4c48-9f2c-87b356567dac",
+      "name": "Anish",
+      "email": "anish@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/afc4fe2653da2bd9c870295d9aed894a?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-5.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:7388fa3f-0e93-48e9-8f15-cebba8337dee",
+      "name": "Jayasree",
+      "email": "jayasree@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/bf88a0a14ecc3c0d150c930ae411b6cd?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FJ-1.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:717f5b23-9d4e-453b-aee6-1b39bef9c4f2",
+      "name": "SIJU BABY",
+      "email": "sijubaby@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/54d0f072c4310d68eb69f5ec75795151?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FSB-6.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:6f0e042e-7988-4ef5-a470-495cdd426443",
+      "name": "Divya betala",
+      "email": "divyabetala@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/5373bba784d23a4831cfa8297c5b0044?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDB-5.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:6daf2dc7-0c78-4842-86f3-417cceff80fd",
+      "name": "sudharsan.j",
+      "email": "sudharsanj@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/51f27795b8ab2d9f75f9ac1ecdcdba04?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FS-0.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:68fcbc91-b8c8-4540-9e2f-ea0a1da964cf",
+      "name": "Vigneshwaran BS",
+      "email": "vigneshwaranbs@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/5a3c59125166f4adce5dc13c6ebb1513?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FVB-4.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:68ee4224-86e0-4e5d-bfcd-26dd8b59fd32",
+      "name": "Bhagya Bijoy",
+      "email": "bhagyabijoy@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/19e5c258c3558fabde6439f949c6f92e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FBB-3.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:5a016f60-0fae-40ee-b9e9-c8a494fe5952",
+      "name": "subhasini d",
+      "email": "subhasinid@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/c45d2f26db59fdf85ed833b36b5b27cc?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FSD-1.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:5924b08a-4443-467a-9415-f1a508b4fba0",
+      "name": "Lavanya S",
+      "email": "lavanyas@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/bc3947a0794be4d06dfd89389633279e?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FLS-2.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:521795d7-8592-43d9-ba6f-460e5ee27720",
+      "name": "Anjana S",
+      "email": "anjanas@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/3bfb25f4079d1ec955c24f5edb073d88?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAS-1.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:5149cdcd-8fb0-4c06-a968-1efafebd19f3",
+      "name": "chidanand.c",
+      "email": "chidanandc@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/9715f3b4e209956802174897e2c731d2?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FC-5.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "61d5201090cfd200710cd94d",
+      "name": "Daisy",
+      "email": "daisy@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/f007b792b2a80812dc600746fb5f1968?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FD-2.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    },
+    {
+      "id": "712020:8669f615-e7c6-422f-afc4-dc0ba907ee96",
+      "name": "Sinto Joy",
+      "email": "sintojoy@synergymarinegroup.atlassian.net",
+      "role": "Developer",
+      "avatar": "https://secure.gravatar.com/avatar/6988cf4dc1e61a1e90b44d60f9937c7c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FSJ-3.png",
+      "active": true,
+      "presence": "Available",
+      "projects": [
+        "BRH"
+      ]
+    }
+  ],
+  "meetings": [
+    {
+      "id": "meet-1",
+      "title": "Titan Core Sprint Planning",
+      "organizer": "Sarah Connor",
+      "projectName": "Titan Core Framework",
+      "participants": [
+        "sarah@project.io",
+        "elena@project.io",
+        "david@project.io",
+        "aisha@project.io"
+      ],
+      "date": "2026-07-29",
+      "startTime": "11:00",
+      "endTime": "11:30",
+      "type": "Online",
+      "originalLanguage": "English",
+      "transcript": "Sarah Connor: Welcome everyone to the Titan Core sprint sync. Today we are aligning on API key refactoring.\nDavid Chen: Yes, we found that moving keys to the server-side avoids accidental exposure. Elena is helping with deployment.\nElena Rostova: Right, I have prepared the secrets configuration in Azure KeyVault.",
+      "transcriptEnglish": "Sarah Connor: Welcome everyone to the Titan Core sprint sync. Today we are aligning on API key refactoring.\nDavid Chen: Yes, we found that moving keys to the server-side avoids accidental exposure. Elena is helping with deployment.\nElena Rostova: Right, I have prepared the secrets configuration in Azure KeyVault.",
+      "summary": "The team aligned on implementing server-side API proxy routing for secure KeyVault management, removing client-side environment exposures.",
+      "mainPoints": [
+        "Identified client-side environment vulnerabilities and drafted strict server-side remediation guidelines.",
+        "Verified Azure KeyVault permissions are bounded to the Docker deployment scope.",
+        "Initiated structural cleanup across main configuration paths."
+      ],
+      "actionItems": [
+        "David Chen: Deploy the proxy endpoints in the Docker server layer.",
+        "Elena Rostova: Verify KeyVault secret rotation policies."
+      ]
+    },
+    {
+      "id": "meet-2",
+      "title": "Malayalam Regional Localization Review",
+      "organizer": "Ajayaghosh B",
+      "projectName": "Phoenix Portal UI",
+      "participants": [
+        "marcus@project.io",
+        "david@project.io",
+        "aisha@project.io"
+      ],
+      "date": "2026-07-29",
+      "startTime": "14:30",
+      "endTime": "15:00",
+      "type": "Face-to-Face",
+      "roomDetails": "Conference Room 102 - Kochi Hub",
+      "originalLanguage": "Malayalam (മലയാളം)",
+      "transcript": "Ajayaghosh B: നമ്മൾ ഇന്ന് ഫീനിക്സ് പോർട്ടലിന്റെ മലയാളം പ്രാദേശികവൽക്കരണത്തെക്കുറിച്ചാണ് സംസാരിക്കുന്നത്. എല്ലാ ബട്ടൺസും കൃത്യമായി വിവർത്തനം ചെയ്തിട്ടുണ്ടോ എന്ന് ഉറപ്പാക്കണം.\nMarcus Wright: അതെ, മെയിൻ പേജിലെ ലേബലുകൾ എല്ലാം നോക്കി. തർജ്ജമ മികച്ചതായി തോന്നുന്നു.\nAisha Rahman: ചില വാക്കുകൾ വളരെ വലുതായതുകൊണ്ട് ലേഔട്ടിൽ ചെറിയ ഫിറ്റിംഗ് ഇഷ്യൂസ് ഉണ്ട്, അത് നമുക്ക് ക്ലിയർ ചെയ്യാം.",
+      "transcriptEnglish": "Ajayaghosh B: Today we are talking about the Malayalam localization of Phoenix portal. We must ensure every button is accurately translated.\nMarcus Wright: Yes, I checked the labels on the main page. The translation looks excellent.\nAisha Rahman: Because some Malayalam words are long, there are minor fitting issues in the layout, which we can resolve.",
+      "summary": "Review of Malayalam language translations for the Phoenix Portal UI. The translation of technical labels is verified, with minor dynamic sizing updates scheduled.",
+      "mainPoints": [
+        "Evaluated front-page dashboard labels against local linguistic accuracy benchmarks.",
+        "Highlighted text clipping issues due to long character sequences of Malayalam verbs.",
+        "Agreed to flexbox padding adaptations to support dynamic text widths."
+      ],
+      "actionItems": [
+        "Marcus Wright: Commit the updated translation dictionary values.",
+        "Aisha Rahman: Apply flexible layout boundaries dynamically wrapping long UI text."
+      ]
+    },
+    {
+      "id": "meet-3",
+      "title": "Paris UI Design Sync",
+      "organizer": "Elena Rostova",
+      "projectName": "Phoenix Portal UI",
+      "participants": [
+        "elena@project.io",
+        "sarah@project.io",
+        "aisha@project.io"
+      ],
+      "date": "2026-07-28",
+      "startTime": "11:30",
+      "endTime": "12:00",
+      "type": "Face-to-Face",
+      "roomDetails": "Montmartre Creative Room - Paris Hub",
+      "originalLanguage": "French (Français)",
+      "transcript": "Elena Rostova: Salut tout le monde, examinons la nouvelle disposition du tableau de bord.\nSarah Connor: J'aime beaucoup la palette de couleurs. C'est très épuré, très moderne.\nAisha Rahman: Est-ce que la lisibilité du contraste est conforme aux normes WCAG AA?\nElena Rostova: Absolument, nous avons testé le ratio de contraste, il est de 4.8:1.",
+      "transcriptEnglish": "Elena Rostova: Hi everyone, let's examine the new dashboard layout.\nSarah Connor: I really like the color palette. It is very clean, very modern.\nAisha Rahman: Is the contrast readability compliant with WCAG AA standards?\nElena Rostova: Absolutely, we tested the contrast ratio; it is 4.8:1.",
+      "summary": "The design sub-team reviewed the Paris creative dashboard layouts in the Montmartre room, confirming complete compliance with WCAG high-contrast guidelines.",
+      "mainPoints": [
+        "Presented the minimalist color pairing mockups containing slate charcoal gradients.",
+        "Asserted WCAG standard double-A readability compliance with 4.8:1 ratio.",
+        "Agreed to deploy the design tokens on the upcoming dashboard merge."
+      ],
+      "actionItems": [
+        "Elena Rostova: Compile design style system tokens.",
+        "Aisha Rahman: Run automatic accessibility auditing tools on main layouts."
+      ]
+    },
+    {
+      "id": "evt-graph-mock-3",
+      "title": "Security Core Review",
+      "organizer": "Aisha Rahman",
+      "projectName": "Unified Synergy Platform",
+      "projectKey": "MS365",
+      "participants": [
+        "sarah@project.io",
+        "aisha.rahman@m365.local"
+      ],
+      "date": "2026-07-30",
+      "startTime": "10:00",
+      "endTime": "11:00",
+      "type": "Online",
+      "roomDetails": "Microsoft Teams Space",
+      "summary": "Reviewing firewall policies, security credentials, and identity mappings.",
+      "actionItems": [
+        "Encrypt authorization tokens"
+      ]
+    },
+    {
+      "id": "evt-graph-mock-1",
+      "title": "Database Performance Audit",
+      "organizer": "Sarah Connor",
+      "projectName": "Unified Synergy Platform",
+      "projectKey": "MS365",
+      "participants": [
+        "steffyannavarghese@synergymarinegroup.atlassian.net",
+        "sarah.connor@m365.local"
+      ],
+      "date": "2026-07-31",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "type": "Online",
+      "roomDetails": "Microsoft Teams Space",
+      "summary": "Analyzing slow execution patterns and query locks on index clusters.",
+      "actionItems": [
+        "Verify read replicas synchronization"
+      ]
+    },
+    {
+      "id": "evt-graph-mock-2",
+      "title": "Status Alignment Sync",
+      "organizer": "steffyannavarghese",
+      "projectName": "Unified Synergy Platform",
+      "projectKey": "MS365",
+      "participants": [
+        "steffyannavarghese@synergymarinegroup.atlassian.net"
+      ],
+      "date": "2026-07-31",
+      "startTime": "14:00",
+      "endTime": "14:30",
+      "type": "In-Person",
+      "roomDetails": "Executive Room Kochi",
+      "summary": "Alignment with engineering stakeholders on immediate delivery items.",
+      "actionItems": []
+    },
+    {
+      "id": "evt-graph-mock-0-2",
+      "title": "Retrospective Review Meeting",
+      "organizer": "ajayaghosh.b",
+      "projectName": "BlueLink Rest Hours",
+      "projectKey": "BRH",
+      "participants": [
+        "ajayaghosh.b@thinkpalm.com",
+        "ajayaghosh.b@thinkpalm.com",
+        "sarah@project.io"
+      ],
+      "date": "2026-07-24",
+      "startTime": "14:00",
+      "endTime": "15:00",
+      "type": "In-Person",
+      "roomDetails": "Kochi Executive Boardroom",
+      "summary": "Addressing recent feedback, timeline grids, and Microsoft Teams integration performance.",
+      "actionItems": []
+    },
+    {
+      "id": "evt-graph-mock-2-1",
+      "title": "Postmortem Core Security Release",
+      "organizer": "Sarah Connor",
+      "projectName": "Titan Core Framework",
+      "projectKey": "TITAN",
+      "participants": [
+        "ajayaghosh.b@thinkpalm.com",
+        "sarah@project.io"
+      ],
+      "date": "2026-07-26",
+      "startTime": "10:30",
+      "endTime": "11:30",
+      "type": "Online",
+      "roomDetails": "Microsoft Teams Space",
+      "summary": "Completed verification of decrypted secure variables and configured active KeyVaults.",
+      "actionItems": [
+        "Verify secure proxy tokens"
+      ]
+    },
+    {
+      "id": "evt-graph-mock-4-2",
+      "title": "Retrospective Review Meeting",
+      "organizer": "ajayaghosh.b",
+      "projectName": "BlueLink Rest Hours",
+      "projectKey": "BRH",
+      "participants": [
+        "ajayaghosh.b@thinkpalm.com",
+        "ajayaghosh.b@thinkpalm.com",
+        "sarah@project.io"
+      ],
+      "date": "2026-07-28",
+      "startTime": "14:00",
+      "endTime": "15:00",
+      "type": "In-Person",
+      "roomDetails": "Kochi Executive Boardroom",
+      "summary": "Addressing recent feedback, timeline grids, and Microsoft Teams integration performance.",
+      "actionItems": []
+    },
+    {
+      "id": "evt-graph-mock-8-1",
+      "title": "Upcoming Sprint Planning Alignment",
+      "organizer": "Sarah Connor",
+      "projectName": "Titan Core Framework",
+      "projectKey": "TITAN",
+      "participants": [
+        "ajayaghosh.b@thinkpalm.com",
+        "sarah@project.io"
+      ],
+      "date": "2026-08-01",
+      "startTime": "10:30",
+      "endTime": "11:30",
+      "type": "Online",
+      "roomDetails": "Microsoft Teams Space",
+      "summary": "Laying down active backlog items for the next delivery sprint.",
+      "actionItems": [
+        "Verify secure proxy tokens"
+      ]
+    },
+    {
+      "id": "evt-graph-mock-8-2",
+      "title": "Technical Audit Core Architecture",
+      "organizer": "ajayaghosh.b",
+      "projectName": "BlueLink Rest Hours",
+      "projectKey": "BRH",
+      "participants": [
+        "ajayaghosh.b@thinkpalm.com",
+        "ajayaghosh.b@thinkpalm.com",
+        "sarah@project.io"
+      ],
+      "date": "2026-08-01",
+      "startTime": "14:00",
+      "endTime": "15:00",
+      "type": "In-Person",
+      "roomDetails": "Kochi Executive Boardroom",
+      "summary": "Addressing recent feedback, timeline grids, and Microsoft Teams integration performance.",
+      "actionItems": []
+    },
+    {
+      "id": "evt-graph-mock-11-1",
+      "title": "Upcoming Sprint Planning Alignment",
+      "organizer": "Sarah Connor",
+      "projectName": "Titan Core Framework",
+      "projectKey": "TITAN",
+      "participants": [
+        "ajayaghosh.b@thinkpalm.com",
+        "sarah@project.io"
+      ],
+      "date": "2026-08-04",
+      "startTime": "10:30",
+      "endTime": "11:30",
+      "type": "Online",
+      "roomDetails": "Microsoft Teams Space",
+      "summary": "Laying down active backlog items for the next delivery sprint.",
+      "actionItems": [
+        "Verify secure proxy tokens"
+      ]
+    },
+    {
+      "id": "evt-graph-mock-12-2",
+      "title": "Technical Audit Core Architecture",
+      "organizer": "ajayaghosh.b",
+      "projectName": "BlueLink Rest Hours",
+      "projectKey": "BRH",
+      "participants": [
+        "ajayaghosh.b@thinkpalm.com",
+        "ajayaghosh.b@thinkpalm.com",
+        "sarah@project.io"
+      ],
+      "date": "2026-08-05",
+      "startTime": "14:00",
+      "endTime": "15:00",
+      "type": "In-Person",
+      "roomDetails": "Kochi Executive Boardroom",
+      "summary": "Addressing recent feedback, timeline grids, and Microsoft Teams integration performance.",
+      "actionItems": []
+    },
+    {
+      "id": "evt-graph-mock-14-1",
+      "title": "Upcoming Sprint Planning Alignment",
+      "organizer": "Sarah Connor",
+      "projectName": "Titan Core Framework",
+      "projectKey": "TITAN",
+      "participants": [
+        "ajayaghosh.b@thinkpalm.com",
+        "sarah@project.io"
+      ],
+      "date": "2026-08-07",
+      "startTime": "10:30",
+      "endTime": "11:30",
+      "type": "Online",
+      "roomDetails": "Microsoft Teams Space",
+      "summary": "Laying down active backlog items for the next delivery sprint.",
+      "actionItems": [
+        "Verify secure proxy tokens"
+      ]
+    }
+  ],
+  "chats": [
+    {
+      "id": "chat-1",
+      "senderId": "sarah",
+      "receiverId": "david",
+      "message": "Hey David, is the container deployment secure variables set up?",
+      "timestamp": "2026-06-03T05:30:00.000Z"
+    },
+    {
+      "id": "chat-2",
+      "senderId": "david",
+      "receiverId": "sarah",
+      "message": "Yes Sarah, verified the security values and added them to .env. Looking solid!",
+      "timestamp": "2026-06-03T05:32:00.000Z"
+    }
+  ],
+  "jiraEmailMappings": [
+    {
+      "id": "map-ajayaghosh",
+      "displayName": "Ajayaghosh B",
+      "emailAddress": "ajayaghosh.b@thinkpalm.com"
+    }
+  ],
+  "connectionAttempts": [
+    {
+      "id": "log-1785748105392-163907",
+      "timestamp": "2026-08-03T09:08:25.392Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-08-03'. Status: 200."
+    },
+    {
+      "id": "log-1785748105385-155981",
+      "timestamp": "2026-08-03T09:08:25.385Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785748105248-488086",
+      "timestamp": "2026-08-03T09:08:25.248Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785748105172-799237",
+      "timestamp": "2026-08-03T09:08:25.172Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-08-03'. Status: 200."
+    },
+    {
+      "id": "log-1785748105165-230960",
+      "timestamp": "2026-08-03T09:08:25.165Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785748104962-551717",
+      "timestamp": "2026-08-03T09:08:24.962Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785748090994-378415",
+      "timestamp": "2026-08-03T09:08:10.994Z",
+      "service": "Jira Projects Directory (Assignable Users List)",
+      "status": "Simulated",
+      "details": "Simulated Jira service connection active for host 'jira.company.atlassian.net'."
+    },
+    {
+      "id": "log-1785748090981-483189",
+      "timestamp": "2026-08-03T09:08:10.981Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Skipped live schedule check for unmapped or simulated user 'sarah.connor@m365.local' (No Active Translation Map). Deterministic availability model applied."
+    },
+    {
+      "id": "log-1785748090968-794036",
+      "timestamp": "2026-08-03T09:08:10.968Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Skipped live MS Graph API call for unmapped or simulated user 'sarah.connor@m365.local' (No Active Translation Map). Generating high-fidelity simulated meeting."
+    },
+    {
+      "id": "log-1785748079610-838615",
+      "timestamp": "2026-08-03T09:07:59.610Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-08-03'. Status: 200."
+    },
+    {
+      "id": "log-1785748079604-991000",
+      "timestamp": "2026-08-03T09:07:59.604Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785748079465-516186",
+      "timestamp": "2026-08-03T09:07:59.465Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785748079310-416322",
+      "timestamp": "2026-08-03T09:07:59.310Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-08-03'. Status: 200."
+    },
+    {
+      "id": "log-1785748079304-229865",
+      "timestamp": "2026-08-03T09:07:59.304Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785748078964-923395",
+      "timestamp": "2026-08-03T09:07:58.964Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785472734083-552543",
+      "timestamp": "2026-07-31T04:38:54.083Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Skipped live schedule check for unmapped or simulated user 'sarah.connor@m365.local' (No Active Translation Map). Deterministic availability model applied."
+    },
+    {
+      "id": "log-1785472734071-606117",
+      "timestamp": "2026-07-31T04:38:54.071Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Skipped live MS Graph API call for unmapped or simulated user 'sarah.connor@m365.local' (No Active Translation Map). Generating high-fidelity simulated meeting."
+    },
+    {
+      "id": "log-1785472734051-47175",
+      "timestamp": "2026-07-31T04:38:54.051Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Skipped live schedule check for unmapped or simulated user 'sarah.connor@m365.local' (No Active Translation Map). Deterministic availability model applied."
+    },
+    {
+      "id": "log-1785472734039-689412",
+      "timestamp": "2026-07-31T04:38:54.039Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Skipped live MS Graph API call for unmapped or simulated user 'sarah.connor@m365.local' (No Active Translation Map). Generating high-fidelity simulated meeting."
+    },
+    {
+      "id": "log-1785472704037-214484",
+      "timestamp": "2026-07-31T04:38:24.037Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785472704029-153387",
+      "timestamp": "2026-07-31T04:38:24.029Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785472703847-60187",
+      "timestamp": "2026-07-31T04:38:23.847Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785472703733-22786",
+      "timestamp": "2026-07-31T04:38:23.733Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785472703728-419499",
+      "timestamp": "2026-07-31T04:38:23.728Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785472703427-954882",
+      "timestamp": "2026-07-31T04:38:23.427Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785472638317-352604",
+      "timestamp": "2026-07-31T04:37:18.317Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785472638308-818425",
+      "timestamp": "2026-07-31T04:37:18.308Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785472638118-948545",
+      "timestamp": "2026-07-31T04:37:18.118Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785472637935-306535",
+      "timestamp": "2026-07-31T04:37:17.935Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785472637930-941723",
+      "timestamp": "2026-07-31T04:37:17.930Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785472637697-354471",
+      "timestamp": "2026-07-31T04:37:17.698Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785472549941-411573",
+      "timestamp": "2026-07-31T04:35:49.941Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785472549933-903882",
+      "timestamp": "2026-07-31T04:35:49.933Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785472549755-791763",
+      "timestamp": "2026-07-31T04:35:49.755Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785472549453-718496",
+      "timestamp": "2026-07-31T04:35:49.453Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785472549445-43434",
+      "timestamp": "2026-07-31T04:35:49.445Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785472548887-499282",
+      "timestamp": "2026-07-31T04:35:48.887Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785472354232-379218",
+      "timestamp": "2026-07-31T04:32:34.232Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785472354224-965448",
+      "timestamp": "2026-07-31T04:32:34.224Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785472354046-816806",
+      "timestamp": "2026-07-31T04:32:34.046Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785472353873-65379",
+      "timestamp": "2026-07-31T04:32:33.873Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785472353865-522265",
+      "timestamp": "2026-07-31T04:32:33.865Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785472353555-347206",
+      "timestamp": "2026-07-31T04:32:33.555Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785472309434-110503",
+      "timestamp": "2026-07-31T04:31:49.434Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785472309427-845483",
+      "timestamp": "2026-07-31T04:31:49.427Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785472309244-849785",
+      "timestamp": "2026-07-31T04:31:49.244Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785472309054-375191",
+      "timestamp": "2026-07-31T04:31:49.054Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785472309047-716372",
+      "timestamp": "2026-07-31T04:31:49.047Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785472308818-546840",
+      "timestamp": "2026-07-31T04:31:48.818Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785472298733-306717",
+      "timestamp": "2026-07-31T04:31:38.733Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785472298726-501792",
+      "timestamp": "2026-07-31T04:31:38.726Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785472298540-119367",
+      "timestamp": "2026-07-31T04:31:38.540Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785472298424-770106",
+      "timestamp": "2026-07-31T04:31:38.424Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785472298417-296007",
+      "timestamp": "2026-07-31T04:31:38.417Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785472298181-771105",
+      "timestamp": "2026-07-31T04:31:38.181Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470686726-314550",
+      "timestamp": "2026-07-31T04:04:46.726Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785470686720-508555",
+      "timestamp": "2026-07-31T04:04:46.720Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470686582-981049",
+      "timestamp": "2026-07-31T04:04:46.582Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470686495-609968",
+      "timestamp": "2026-07-31T04:04:46.495Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785470686490-407080",
+      "timestamp": "2026-07-31T04:04:46.490Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470686289-168283",
+      "timestamp": "2026-07-31T04:04:46.289Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470657124-610247",
+      "timestamp": "2026-07-31T04:04:17.124Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785470657118-232973",
+      "timestamp": "2026-07-31T04:04:17.118Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470656964-358321",
+      "timestamp": "2026-07-31T04:04:16.964Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470656807-121004",
+      "timestamp": "2026-07-31T04:04:16.807Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785470656801-382221",
+      "timestamp": "2026-07-31T04:04:16.801Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470656579-594203",
+      "timestamp": "2026-07-31T04:04:16.579Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470646729-574166",
+      "timestamp": "2026-07-31T04:04:06.729Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785470646723-731227",
+      "timestamp": "2026-07-31T04:04:06.723Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470646569-207040",
+      "timestamp": "2026-07-31T04:04:06.569Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470646424-614800",
+      "timestamp": "2026-07-31T04:04:06.424Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785470646417-964011",
+      "timestamp": "2026-07-31T04:04:06.417Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470646191-941286",
+      "timestamp": "2026-07-31T04:04:06.191Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470623522-145895",
+      "timestamp": "2026-07-31T04:03:43.522Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785470623516-382504",
+      "timestamp": "2026-07-31T04:03:43.516Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470623306-867826",
+      "timestamp": "2026-07-31T04:03:43.306Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470618023-575467",
+      "timestamp": "2026-07-31T04:03:38.023Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-29'. Status: 200."
+    },
+    {
+      "id": "log-1785470618018-130790",
+      "timestamp": "2026-07-31T04:03:38.018Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470617871-907276",
+      "timestamp": "2026-07-31T04:03:37.871Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470610561-590303",
+      "timestamp": "2026-07-31T04:03:30.561Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-29'. Status: 200."
+    },
+    {
+      "id": "log-1785470610556-973865",
+      "timestamp": "2026-07-31T04:03:30.556Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470610325-148915",
+      "timestamp": "2026-07-31T04:03:30.325Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470601539-635685",
+      "timestamp": "2026-07-31T04:03:21.539Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-30'. Status: 200."
+    },
+    {
+      "id": "log-1785470601533-151832",
+      "timestamp": "2026-07-31T04:03:21.533Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470601309-70186",
+      "timestamp": "2026-07-31T04:03:21.309Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470596758-189847",
+      "timestamp": "2026-07-31T04:03:16.758Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-23'. Status: 200."
+    },
+    {
+      "id": "log-1785470596749-925751",
+      "timestamp": "2026-07-31T04:03:16.749Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470596523-266781",
+      "timestamp": "2026-07-31T04:03:16.524Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470537890-453655",
+      "timestamp": "2026-07-31T04:02:17.890Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785470537883-153530",
+      "timestamp": "2026-07-31T04:02:17.883Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470537726-364108",
+      "timestamp": "2026-07-31T04:02:17.726Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470537585-293601",
+      "timestamp": "2026-07-31T04:02:17.585Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785470537575-90943",
+      "timestamp": "2026-07-31T04:02:17.575Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470537419-37936",
+      "timestamp": "2026-07-31T04:02:17.419Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470488244-593323",
+      "timestamp": "2026-07-31T04:01:28.244Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785470488237-278314",
+      "timestamp": "2026-07-31T04:01:28.237Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470488101-330796",
+      "timestamp": "2026-07-31T04:01:28.101Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    },
+    {
+      "id": "log-1785470487958-23746",
+      "timestamp": "2026-07-31T04:01:27.958Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Passed",
+      "details": "Availability check succeeded for verified user 'ajayaghosh.b@thinkpalm.com' on date '2026-07-31'. Status: 200."
+    },
+    {
+      "id": "log-1785470487951-456276",
+      "timestamp": "2026-07-31T04:01:27.951Z",
+      "service": "Microsoft Graph Scheduling (getSchedule)",
+      "status": "Simulated",
+      "details": "Simulated Microsoft Graph token received. Bypassing live O365 call for 'ajayaghosh.b@thinkpalm.com'."
+    },
+    {
+      "id": "log-1785470487796-748040",
+      "timestamp": "2026-07-31T04:01:27.796Z",
+      "service": "Microsoft Graph Calendar Events",
+      "status": "Simulated",
+      "details": "Simulated mode active. Calendar events check for user 'ajayaghosh.b@thinkpalm.com' bypasses live Azure."
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Project Scheduling & Collaboration Platform",
+  "description": "An integrated workspace bridging Jira, Microsoft Teams, and Google Calendar for seamless project visibility, unified resource scheduling, secure teams chat, and AI-assisted meeting optimization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

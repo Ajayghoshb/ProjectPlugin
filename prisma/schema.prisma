@@ -1,0 +1,97 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  role      String   @default("Developer")
+  avatar    String?
+  active    Boolean  @default(true)
+  presence  String   @default("Available")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id               String   @id @default(uuid())
+  name             String
+  key              String   @unique
+  description      String?
+  lead             String?
+  userStoriesCount Int      @default(0)
+  bugsCount        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model JiraConnection {
+  id               String   @id @default(uuid())
+  baseUrl          String
+  email            String
+  apiToken         String
+  selectedProjects String[]
+  createdAt        DateTime @default(now())
+}
+
+model TeamsConnection {
+  id           String   @id @default(uuid())
+  tenantId     String
+  clientId     String
+  clientSecret String
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}
+
+model Meeting {
+  id                String   @id @default(uuid())
+  title             String
+  subject           String
+  projectName       String?
+  organizer         String
+  date              DateTime
+  status            String   @default("COMPLETED")
+  durationMinutes   Int      @default(30)
+  summary           String?
+  executiveSummary  String?
+  detailedSummary   String?
+  mom               String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model AIJob {
+  id          String   @id @default(uuid())
+  meetingId   String
+  status      String   @default("QUEUED")
+  priority    String   @default("NORMAL")
+  retryCount  Int      @default(0)
+  maxRetries  Int      @default(3)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model KnowledgeDocument {
+  id               String   @id @default(uuid())
+  meetingId        String
+  title            String
+  executiveSummary String?
+  detailedSummary  String?
+  indexedAt        DateTime @default(now())
+}
+
+model NotificationPreference {
+  userId                 String   @id
+  enableMeetingSummaries Boolean  @default(true)
+  enableActionReminders  Boolean  @default(true)
+  enableDecisionAlerts   Boolean  @default(true)
+  enableRiskAlerts       Boolean  @default(true)
+  deliveryChannel        String   @default("TEAMS_BOT")
+  updatedAt              DateTime @updatedAt
+}

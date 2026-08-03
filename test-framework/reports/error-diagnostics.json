@@ -1,0 +1,262 @@
+[
+  {
+    "phase": "1",
+    "testName": "Backend Server Starts & Responds",
+    "errorMessage": "Backend server returned HTTP 500"
+  },
+  {
+    "phase": "1",
+    "testName": "AI Gateway Initialization & Health Check",
+    "errorMessage": "AI Gateway unhealthy: {\"error\":\"fetch failed\"}"
+  },
+  {
+    "phase": "1",
+    "testName": "Knowledge Service Initialization & Health Check",
+    "errorMessage": "Knowledge Service unhealthy: {\"error\":\"fetch failed\"}"
+  },
+  {
+    "phase": "1",
+    "testName": "Teams Meeting Runtime Health Check",
+    "errorMessage": "Teams Meeting Runtime unhealthy: {\"error\":\"fetch failed\"}"
+  },
+  {
+    "phase": "1",
+    "testName": "Teams Notification Service Health Check",
+    "errorMessage": "Teams Notification Service unhealthy: {\"error\":\"fetch failed\"}"
+  },
+  {
+    "phase": "1",
+    "testName": "AI Copilot Engine Initialization & Health Check",
+    "errorMessage": "AI Copilot unhealthy: {\"error\":\"fetch failed\"}"
+  },
+  {
+    "phase": "2",
+    "testName": "Full Data Schema Fetch & Validation",
+    "errorMessage": "Failed to fetch database schema: HTTP 500"
+  },
+  {
+    "phase": "2",
+    "testName": "Entity Relationship & Member Reference Validation",
+    "errorMessage": "Insufficient member entities in database store: 0"
+  },
+  {
+    "phase": "2",
+    "testName": "Database Transaction Read/Write Integrity",
+    "errorMessage": "Database read transaction failed: HTTP 500"
+  },
+  {
+    "phase": "3",
+    "testName": "Fetch All Processed Meetings Collection",
+    "errorMessage": "Failed to retrieve meetings list: HTTP 500"
+  },
+  {
+    "phase": "3",
+    "testName": "Fetch Meeting by ID",
+    "errorMessage": "Failed to fetch meeting by ID: HTTP 500"
+  },
+  {
+    "phase": "3",
+    "testName": "Fetch Meeting Participants Roster",
+    "errorMessage": "Failed to fetch participants: HTTP 500"
+  },
+  {
+    "phase": "3",
+    "testName": "Fetch Meeting Timeline Events",
+    "errorMessage": "Failed to fetch meeting timeline: HTTP 500"
+  },
+  {
+    "phase": "3",
+    "testName": "Trigger Manual Meeting Synchronization",
+    "errorMessage": "Meeting synchronization failed: {\"error\":\"fetch failed\"}"
+  },
+  {
+    "phase": "4",
+    "testName": "Noisy Multilingual Dialogue & Riva Speech Translation",
+    "errorMessage": "Speech translation failed: {\"error\":\"fetch failed\"}"
+  },
+  {
+    "phase": "5",
+    "testName": "Submit AI Processing Job",
+    "errorMessage": "Failed to submit AI processing job: HTTP 500"
+  },
+  {
+    "phase": "5",
+    "testName": "Verify Executive & Detailed Summary Synthesis",
+    "errorMessage": "Summary synthesis failed: {\"error\":\"fetch failed\"}"
+  },
+  {
+    "phase": "5",
+    "testName": "Verify Action Items Extraction & Schema",
+    "errorMessage": "Action items extraction failed"
+  },
+  {
+    "phase": "5",
+    "testName": "Verify Decision Extraction & Impact Analysis",
+    "errorMessage": "Decisions extraction failed"
+  },
+  {
+    "phase": "5",
+    "testName": "Verify Nemotron Reasoning & Risk Analysis",
+    "errorMessage": "Reasoning engine failed: {\"error\":\"fetch failed\"}"
+  },
+  {
+    "phase": "6",
+    "testName": "Index Meeting into Knowledge Vector Store",
+    "errorMessage": "Failed to index meeting into Knowledge Store: HTTP 500"
+  },
+  {
+    "phase": "6",
+    "testName": "Execute Semantic Vector Search Query",
+    "errorMessage": "Semantic vector search returned no results: {\"error\":\"fetch failed\"}"
+  },
+  {
+    "phase": "6",
+    "testName": "Fetch Knowledge Document & Chunks Metadata",
+    "errorMessage": "Failed to fetch document chunks: HTTP 500"
+  },
+  {
+    "phase": "7",
+    "testName": "Copilot Query: \"What decisions were made regarding Teams manifest schema?\"",
+    "errorMessage": "Copilot chat failed: HTTP 500"
+  },
+  {
+    "phase": "7",
+    "testName": "Copilot Query: \"Show action items assigned to Alex Rivera\"",
+    "errorMessage": "Copilot chat failed: HTTP 500"
+  },
+  {
+    "phase": "7",
+    "testName": "Copilot Query: \"What risks exist for high concurrency vector search?\"",
+    "errorMessage": "Copilot chat failed: HTTP 500"
+  },
+  {
+    "phase": "7",
+    "testName": "Copilot Query: \"Summarize discussions about Titan Core Framework\"",
+    "errorMessage": "Copilot chat failed: HTTP 500"
+  },
+  {
+    "phase": "7",
+    "testName": "Multi-Turn Session Context Retrieval",
+    "errorMessage": "Failed to retrieve conversation session history: HTTP 500"
+  },
+  {
+    "phase": "8",
+    "testName": "Concurrent REST Endpoint Ingestion (25 Concurrent Requests)",
+    "errorMessage": "25 out of 25 concurrent requests failed."
+  },
+  {
+    "phase": "9",
+    "testName": "Missing Required Field Ingestion (400 Bad Request)",
+    "errorMessage": "Expected HTTP 400 for missing mandatory payload, got HTTP 500"
+  },
+  {
+    "phase": "9",
+    "testName": "Non-existent Resource Query (404 Not Found)",
+    "errorMessage": "Expected HTTP 404 for non-existent resource, got HTTP 500"
+  },
+  {
+    "phase": "9",
+    "testName": "Copilot Empty Question Handling (400 Bad Request)",
+    "errorMessage": "Expected HTTP 400 for empty question, got HTTP 500"
+  },
+  {
+    "phase": "10",
+    "testName": "Endpoint GET /api/meetings/sync/status",
+    "errorMessage": "Expected HTTP 200, received HTTP 500"
+  },
+  {
+    "phase": "10",
+    "testName": "Endpoint GET /api/meetings",
+    "errorMessage": "Expected HTTP 200, received HTTP 500"
+  },
+  {
+    "phase": "10",
+    "testName": "Endpoint GET /api/ai/health",
+    "errorMessage": "Expected HTTP 200, received HTTP 500"
+  },
+  {
+    "phase": "10",
+    "testName": "Endpoint GET /api/ai/jobs/status",
+    "errorMessage": "Expected HTTP 200, received HTTP 500"
+  },
+  {
+    "phase": "10",
+    "testName": "Endpoint GET /api/ai/providers",
+    "errorMessage": "Expected HTTP 200, received HTTP 500"
+  },
+  {
+    "phase": "10",
+    "testName": "Endpoint GET /api/knowledge/health",
+    "errorMessage": "Expected HTTP 200, received HTTP 500"
+  },
+  {
+    "phase": "10",
+    "testName": "Endpoint GET /api/knowledge/stats",
+    "errorMessage": "Expected HTTP 200, received HTTP 500"
+  },
+  {
+    "phase": "10",
+    "testName": "Endpoint GET /api/teams/meeting/health",
+    "errorMessage": "Expected HTTP 200, received HTTP 500"
+  },
+  {
+    "phase": "10",
+    "testName": "Endpoint GET /api/teams/notifications/health",
+    "errorMessage": "Expected HTTP 200, received HTTP 500"
+  },
+  {
+    "phase": "10",
+    "testName": "Endpoint GET /api/copilot/health",
+    "errorMessage": "Expected HTTP 200, received HTTP 500"
+  },
+  {
+    "phase": "11",
+    "testName": "SQL Injection Immunity Check",
+    "errorMessage": "Server crashed or rejected valid sanitized query: HTTP 500"
+  },
+  {
+    "phase": "11",
+    "testName": "XSS Script Injection Sanitization Check",
+    "errorMessage": "XSS check returned HTTP 500"
+  },
+  {
+    "phase": "11",
+    "testName": "Prompt Injection Boundary Security Check",
+    "errorMessage": "Prompt injection check failed: HTTP 500"
+  },
+  {
+    "phase": "12",
+    "testName": "Step 1: Meeting Ingestion & Context Registration",
+    "errorMessage": "Step 1 failed: HTTP 500"
+  },
+  {
+    "phase": "12",
+    "testName": "Step 2: AI Job Processing Submission",
+    "errorMessage": "Step 2 failed: HTTP 500"
+  },
+  {
+    "phase": "12",
+    "testName": "Step 3: Multi-provider AI Intelligence Synthesis",
+    "errorMessage": "Step 3 failed: {\"error\":\"fetch failed\"}"
+  },
+  {
+    "phase": "12",
+    "testName": "Step 4: Vector Indexing into Knowledge Memory Store",
+    "errorMessage": "Step 4 failed: HTTP 500"
+  },
+  {
+    "phase": "12",
+    "testName": "Step 5: Semantic RAG Vector Retrieval",
+    "errorMessage": "Step 5 failed: Vector retrieval returned zero results"
+  },
+  {
+    "phase": "12",
+    "testName": "Step 6: Copilot Grounded Conversational Query",
+    "errorMessage": "Step 6 failed: {\"error\":\"fetch failed\"}"
+  },
+  {
+    "phase": "12",
+    "testName": "Step 7: Teams Adaptive Card Proactive Notification",
+    "errorMessage": "Step 7 failed: {\"error\":\"fetch failed\"}"
+  }
+]
