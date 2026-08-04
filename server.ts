@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import path from "path";
 import fs from "fs";
 import nodemailer from "nodemailer";
@@ -21,6 +22,18 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: [
+      "https://project-plugin.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:3000",
+    ],
+    credentials: true,
+  })
+);
+app.options("*", cors());
 
 // Serve Swagger / OpenAPI UI API Documentation
 app.get('/api-docs', (req, res) => {
