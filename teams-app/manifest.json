@@ -27,7 +27,7 @@
     {
       "entityId": "collection",
       "name": "Collection",
-      "contentUrl": "https://localhost:3000/#/collection?inTeams=true",
+      "contentUrl": "https://project-plugin.vercel.app/#/collection?inTeams=true",
       "scopes": [
         "personal"
       ]
@@ -35,7 +35,7 @@
     {
       "entityId": "settings",
       "name": "Settings",
-      "contentUrl": "https://localhost:3000/#/settings?inTeams=true",
+      "contentUrl": "https://project-plugin.vercel.app/#/settings?inTeams=true",
       "scopes": [
         "personal"
       ]
@@ -48,11 +48,13 @@
   "validDomains": [
     "localhost",
     "127.0.0.1",
+    "project-plugin.vercel.app",
+    "projectplugin-api.onrender.com",
     "*.thinkpalm.com"
   ],
   "webApplicationInfo": {
     "id": "eec115d2-8418-4d66-8e18-b4283ffca2b1",
-    "resource": "api://localhost:3000/eec115d2-8418-4d66-8e18-b4283ffca2b1"
+    "resource": "api://project-plugin.vercel.app/eec115d2-8418-4d66-8e18-b4283ffca2b1"
   },
   "bots": [
     {
