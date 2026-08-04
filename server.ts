@@ -5,8 +5,6 @@ import nodemailer from "nodemailer";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 
 import { AIGateway } from './src/server/ai/gateway/AIGateway';
 import { meetingAgentOrchestrator } from './src/server/meeting-agent/orchestrator/agent.orchestrator';
@@ -17,8 +15,7 @@ import { meetingSessionManager } from './src/server/meeting-agent/services/sessi
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = process.cwd();
 
 const app = express();
 const PORT = 3000;
