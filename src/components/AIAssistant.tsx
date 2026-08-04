@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sparkles, Calendar, Users, AlertCircle, RefreshCw, Layers, CheckCircle2, X } from 'lucide-react';
 import { TeamMember } from '../types';
+import { API_URL } from '../config/api';
 
 interface AIAssistantProps {
   members: TeamMember[];
@@ -26,7 +27,7 @@ export default function AIAssistant({
     setLoading(true);
     setAdviceText("");
     try {
-      const response = await fetch("/api/ai/suggest", {
+      const response = await fetch(`${API_URL}/api/ai/suggest`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

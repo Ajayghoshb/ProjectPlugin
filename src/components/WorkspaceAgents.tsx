@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
+import { API_URL } from '../config/api';
 import { 
   Shield, 
   RotateCw, 
@@ -217,7 +218,7 @@ Evaluating cross-project backlog states... All sub-agents successfully merged.
     setSmtpTesting(true);
     setSmtpTestResult(null);
     try {
-      const resp = await fetch("/api/diagnostics/test-smtp", {
+      const resp = await fetch(`${API_URL}/api/diagnostics/test-smtp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ testRecipient })
@@ -241,7 +242,7 @@ Evaluating cross-project backlog states... All sub-agents successfully merged.
     if (showSpinner) setLoading(true);
     setError(null);
     try {
-      const resp = await fetch("/api/agents/status");
+      const resp = await fetch(`${API_URL}/api/agents/status`);
       if (resp.ok) {
         const data = await resp.json();
         setAgents(data.agents);
@@ -251,7 +252,7 @@ Evaluating cross-project backlog states... All sub-agents successfully merged.
       }
 
       // Automatically sync latest added projects too
-      const dataResp = await fetch("/api/data");
+      const dataResp = await fetch(`${API_URL}/api/data`);
       if (dataResp.ok) {
         const dbData = await dataResp.json();
         if (dbData.projects && dbData.projects.length > 0) {
@@ -269,7 +270,7 @@ Evaluating cross-project backlog states... All sub-agents successfully merged.
   const fetchDiagnosticsLogs = async () => {
     setLoadingDiagnostics(true);
     try {
-      const resp = await fetch("/api/diagnostics/logs");
+      const resp = await fetch(`${API_URL}/api/diagnostics/logs`);
       if (resp.ok) {
         const data = await resp.json();
         setDiagnosticsLogs(data.logs || []);

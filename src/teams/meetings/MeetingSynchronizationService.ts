@@ -1,5 +1,6 @@
 import { MeetingLogger } from './MeetingLogger';
 import { MeetingCache } from './MeetingCache';
+import { API_URL } from '../../config/api';
 
 export class MeetingSynchronizationService {
   public static async triggerSync(syncType: 'Initial' | 'Manual' | 'Scheduled' | 'Incremental' = 'Manual'): Promise<boolean> {
@@ -7,7 +8,7 @@ export class MeetingSynchronizationService {
     MeetingLogger.syncStart(syncType);
 
     try {
-      const res = await fetch('/api/meetings/sync', {
+      const res = await fetch(`${API_URL}/api/meetings/sync`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ syncType })

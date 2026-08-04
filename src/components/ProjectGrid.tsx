@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BookOpen, Bug, ClipboardList, RefreshCw, FolderPlus, Trash2, ArrowRight, ArrowLeft, KeyRound, Check, Users, Clock, CheckCircle, AlertCircle, Mail } from 'lucide-react';
 import { Project, RoleType, TeamMember } from '../types';
+import { API_URL } from '../config/api';
 
 interface ProjectGridProps {
   projects: Project[];
@@ -161,7 +162,7 @@ export default function ProjectGrid({
     setErrorMsg(null);
 
     try {
-      const response = await fetch('/api/jira/list-projects', {
+      const response = await fetch(`${API_URL}/api/jira/list-projects`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

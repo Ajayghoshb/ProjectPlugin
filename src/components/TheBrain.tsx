@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Meeting, Project, TeamMember } from '../types';
+import { API_URL } from '../config/api';
 
 interface TheBrainProps {
   meetings: Meeting[];
@@ -1036,7 +1037,7 @@ ${nodeInfo.flowDesc}
     }
 
     try {
-      const resp = await fetch("/api/brain/query", {
+      const resp = await fetch(`${API_URL}/api/brain/query`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: textToSubmit })

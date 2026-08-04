@@ -14,6 +14,7 @@ import WorkspaceAgents from './components/WorkspaceAgents';
 import PlugIt from './components/PlugIt';
 import { KeyRound, Sparkles, AlertCircle, RefreshCw, Lock, Unlock, ShieldAlert, Layers, BarChart3, Shield, Terminal, Cpu } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { API_URL } from './config/api';
 
 const vertexContainerVariants = {
   hidden: { opacity: 0 },
@@ -80,7 +81,7 @@ export default function App() {
   const fetchData = async (showSpinner = false) => {
     // Background data fetch - never set loading to true so active UI view is never replaced by spinner
     try {
-      const response = await fetch('/api/data');
+      const response = await fetch(`${API_URL}/api/data`);
       if (response.ok) {
         const data = await response.json();
         setDb(data);
@@ -113,7 +114,7 @@ export default function App() {
 
   // 1. Reset Database
   const handleResetDb = async () => {
-    const response = await fetch('/api/db/reset', { method: 'POST' });
+    const response = await fetch(`${API_URL}/api/db/reset`, { method: 'POST' });
     if (response.ok) {
       const data = await response.json();
       setDb(data.data);
@@ -125,7 +126,7 @@ export default function App() {
 
   // 2. Add Jira Connection details
   const handleConnectJira = async (baseUrl: string, email: string, apiToken: string) => {
-    const response = await fetch('/api/jira/connect', {
+    const response = await fetch(`${API_URL}/api/jira/connect`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ baseUrl, email, apiToken })
@@ -137,7 +138,7 @@ export default function App() {
 
   // 3. Save selected Jira cloud projects
   const handleSaveJiraProjects = async (connectionId: string, projectKeys: string[]) => {
-    const response = await fetch('/api/jira/save-projects', {
+    const response = await fetch(`${API_URL}/api/jira/save-projects`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ connectionId, projectKeys })
@@ -149,7 +150,7 @@ export default function App() {
 
   // 4. Sync a project manually
   const handleSyncProject = async (projectKey: string) => {
-    const response = await fetch('/api/jira/sync', {
+    const response = await fetch(`${API_URL}/api/jira/sync`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ projectKey })
@@ -162,7 +163,7 @@ export default function App() {
   // 4b. Sync availability of project members with Microsoft Graph
   const handleSyncAvailability = async (projectKey: string, date: string) => {
     try {
-      const response = await fetch(`/api/projects/${projectKey}/sync-availability`, {
+      const response = await fetch(`${API_URL}/api/projects/${projectKey}/sync-availability`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ date })
@@ -181,7 +182,7 @@ export default function App() {
 
   // 5. Delete project
   const handleDeleteProject = async (projectKey: string) => {
-    const response = await fetch(`/api/projects/${projectKey}`, { method: 'DELETE' });
+    const response = await fetch(`${API_URL}/api/projects/${projectKey}`, { method: 'DELETE' });
     if (response.ok) {
       await fetchData();
       if (selectedProject?.key === projectKey) {
@@ -192,7 +193,7 @@ export default function App() {
 
   // Add Jira Project and auto sync
   const handleAddJiraProject = async (payload: any) => {
-    const response = await fetch('/api/jira/create-project-and-fetch', {
+    const response = await fetch(`${API_URL}/api/jira/create-project-and-fetch`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -212,7 +213,7 @@ export default function App() {
 
   // 6. Connect teams Graph client
   const handleConnectTeams = async (tenantId: string, clientId: string, clientSecret: string) => {
-    const response = await fetch('/api/teams/connect', {
+    const response = await fetch(`${API_URL}/api/teams/connect`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ tenantId, clientId, clientSecret })
@@ -224,7 +225,7 @@ export default function App() {
 
   // 7. Connect Google Calendars
   const handleConnectGoogle = async (email: string) => {
-    const response = await fetch('/api/google/connect', {
+    const response = await fetch(`${API_URL}/api/google/connect`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
@@ -236,7 +237,7 @@ export default function App() {
 
   // 8. Create scheduled meeting
   const handleAddMeeting = async (meetingPayload: Partial<Meeting>) => {
-    const response = await fetch('/api/meetings/schedule', {
+    const response = await fetch(`${API_URL}/api/meetings/schedule`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(meetingPayload)
@@ -251,7 +252,7 @@ export default function App() {
 
   // Generate meeting takeaways using dynamic Gemini API trigger
   const handleGenerateTakeaways = async (meetingId: string, customInstruction?: string) => {
-    const response = await fetch('/api/meetings/generate-takeaways', {
+    const response = await fetch(`${API_URL}/api/meetings/generate-takeaways`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ meetingId, customInstruction })
@@ -266,7 +267,7 @@ export default function App() {
 
   // 9. Send live teams chat message
   const handleSendMessage = async (receiverId: string, message: string) => {
-    const response = await fetch('/api/chats/send', {
+    const response = await fetch(`${API_URL}/api/chats/send`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ senderId: 'current-user', receiverId, message })

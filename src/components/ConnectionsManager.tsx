@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { KeyRound, ShieldAlert, CheckCircle2, Server, Globe, Calendar, CheckSquare, RefreshCw, FolderPlus, HelpCircle, Database, Plus, Trash2, UserCheck, Sparkles, Clock, AlertCircle, FileText, UploadCloud, Clipboard, Download, Check } from 'lucide-react';
 import { JiraConnection, TeamsConnection, GoogleConnection, JiraEmailMapping, Project, TeamMember, Meeting } from '../types';
+import { API_URL } from '../config/api';
 
 interface ConnectionsManagerProps {
   jiraConnections: JiraConnection[];
@@ -78,7 +79,7 @@ export default function ConnectionsManager({
     if (!email) return;
     setLoadingAvailability(true);
     try {
-      const resp = await fetch(`/api/availability?email=${encodeURIComponent(email)}&date=${date}`);
+      const resp = await fetch(`${API_URL}/api/availability?email=${encodeURIComponent(email)}&date=${date}`);
       if (resp.ok) {
         const data = await resp.json();
         setLiveAvailability(data);
@@ -147,7 +148,7 @@ export default function ConnectionsManager({
           const email = cols[1].trim().replace(/^["']|["']$/g, '');
 
           if (name && email && email.includes("@")) {
-            const resp = await fetch('/api/jira/mappings/upsert', {
+            const resp = await fetch(`${API_URL}/api/jira/mappings/upsert`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ displayName: name, emailAddress: email })
@@ -259,7 +260,7 @@ export default function ConnectionsManager({
     setMappingSubmitting(true);
     setMappingError(null);
     try {
-      const resp = await fetch('/api/jira/mappings/upsert', {
+      const resp = await fetch(`${API_URL}/api/jira/mappings/upsert`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ displayName: newDisplayName, emailAddress: newEmailAddress })
@@ -281,7 +282,7 @@ export default function ConnectionsManager({
 
   const handleDeleteMapping = async (id: string) => {
     try {
-      const resp = await fetch('/api/jira/mappings/delete', {
+      const resp = await fetch(`${API_URL}/api/jira/mappings/delete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
@@ -296,7 +297,7 @@ export default function ConnectionsManager({
 
   const handleDeleteTeamsConnection = async (id: string) => {
     try {
-      const resp = await fetch('/api/teams/delete', {
+      const resp = await fetch(`${API_URL}/api/teams/delete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
@@ -320,7 +321,7 @@ export default function ConnectionsManager({
     if (!activeJiraConn) return;
     setLoadingProjects(true);
     try {
-      const response = await fetch(`/api/jira/projects-external?connectionId=${activeJiraConn}`);
+      const response = await fetch(`${API_URL}/api/jira/projects-external?connectionId=${activeJiraConn}`);
       if (response.ok) {
         const data = await response.json();
         setExternalProjects(data);

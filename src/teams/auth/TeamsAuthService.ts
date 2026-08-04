@@ -3,6 +3,7 @@ import { TeamsAuthState, AuthUser, AuthTokenResponse } from './TeamsAuthTypes';
 import { TeamsLogger } from '../services/TeamsLogger';
 import { TeamsConfiguration } from '../services/TeamsConfiguration';
 import { TeamsEnvironment } from '../services/TeamsEnvironment';
+import { API_URL } from '../../config/api';
 
 export class TeamsAuthService {
   private static cachedToken: AuthTokenResponse | null = null;
@@ -16,7 +17,7 @@ export class TeamsAuthService {
     }
 
     try {
-      TeamsLogger.info('Executing native Teams SDK authentication.getAuthToken()...');
+      TeamsLogger.info('Executing native Teams SSO app.getAuthToken()...');
       const authToken = await teamsjs.authentication.getAuthToken({
         resources: [TeamsConfiguration.get().azureClientId || 'eec115d2-8418-4d66-8e18-b4283ffca2b1'],
         silent: true
@@ -33,7 +34,7 @@ export class TeamsAuthService {
   public static async exchangeTokenOBO(teamsIdToken: string): Promise<AuthTokenResponse | null> {
     try {
       TeamsLogger.info('Exchanging Teams id_token via backend On-Behalf-Of (OBO) endpoint (/api/teams/auth/token)...');
-      const res = await fetch('/api/teams/auth/token', {
+      const res = await fetch(`${API_URL}/api/teams/auth/token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken: teamsIdToken })

@@ -1,6 +1,7 @@
 import { GraphCache } from './GraphCache';
 import { GraphLogger } from './GraphLogger';
 import { GraphErrorHandler } from './GraphErrorHandler';
+import { API_URL } from '../../config/api';
 
 export class GraphClient {
   public static async queryProxy<T>(endpoint: string, options: { method?: string; body?: any; cacheTtlMs?: number } = {}): Promise<T | null> {
@@ -19,7 +20,7 @@ export class GraphClient {
     GraphLogger.request(method, endpoint);
 
     try {
-      const res = await fetch(`/api/graph/${endpoint.replace(/^\//, '')}`, {
+      const res = await fetch(`${API_URL}/api/graph/${endpoint.replace(/^\//, '')}`, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: options.body ? JSON.stringify(options.body) : undefined

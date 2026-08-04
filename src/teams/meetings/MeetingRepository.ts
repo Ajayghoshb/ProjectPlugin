@@ -1,6 +1,7 @@
 import { MeetingEntity } from './models/meeting.models';
 import { MeetingCache } from './MeetingCache';
 import { MeetingLogger } from './MeetingLogger';
+import { API_URL } from '../../config/api';
 
 export class MeetingRepository {
   public static async getAllMeetings(): Promise<MeetingEntity[]> {
@@ -8,7 +9,7 @@ export class MeetingRepository {
     if (cached) return cached;
 
     try {
-      const res = await fetch('/api/meetings');
+      const res = await fetch(`${API_URL}/api/meetings`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       MeetingCache.set('all_meetings', data);
@@ -24,7 +25,7 @@ export class MeetingRepository {
     if (cached) return cached;
 
     try {
-      const res = await fetch(`/api/meetings/${id}`);
+      const res = await fetch(`${API_URL}/api/meetings/${id}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       MeetingCache.set(`meeting_${id}`, data);

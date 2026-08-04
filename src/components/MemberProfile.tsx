@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Calendar, MessageSquare, Send, CheckCircle2, RefreshCw, Lock, Sparkles, User, Mail, Briefcase, Activity, Clock, Edit3, Trash2, Plus, AlertCircle } from 'lucide-react';
 import { TeamMember, ChatMessage, Meeting, JiraEmailMapping } from '../types';
+import { API_URL } from '../config/api';
 
 interface MemberProfileProps {
   member: TeamMember;
@@ -113,14 +114,14 @@ export default function MemberProfile({
     setNotificationBanner({ type: "info", message: "Fetching broad historical and current calendar events from MS Graph API..." });
     try {
       // 1. Fetch meetings using range sync
-      const syncResp = await fetch("/api/meetings/sync-all", {
+      const syncResp = await fetch(`${API_URL}/api/meetings/sync-all`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: member.email })
       });
 
       // 2. Refresh timeslot presence
-      const availResp = await fetch(`/api/availability?email=${encodeURIComponent(member.email)}&date=${selectedDate}`);
+      const availResp = await fetch(`${API_URL}/api/availability?email=${encodeURIComponent(member.email)}&date=${selectedDate}`);
 
       if (syncResp.ok) {
         const syncData = await syncResp.json();
@@ -186,7 +187,7 @@ export default function MemberProfile({
         actionItems: []
       };
 
-      const response = await fetch("/api/meetings/schedule", {
+      const response = await fetch(`${API_URL}/api/meetings/schedule`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -261,7 +262,7 @@ export default function MemberProfile({
         actionItems: editingMeeting.actionItems || []
       };
 
-      const response = await fetch("/api/meetings/update", {
+      const response = await fetch(`${API_URL}/api/meetings/update`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -297,7 +298,7 @@ export default function MemberProfile({
 
     setNotificationBanner({ type: "info", message: "Deleting event..." });
     try {
-      const response = await fetch("/api/meetings/delete", {
+      const response = await fetch(`${API_URL}/api/meetings/delete`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: meetingId })
@@ -355,7 +356,7 @@ export default function MemberProfile({
         participants: [member.email, "ajayaghosh.b@thinkpalm.com"]
       };
 
-      const response = await fetch("/api/meetings/schedule", {
+      const response = await fetch(`${API_URL}/api/meetings/schedule`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -409,7 +410,7 @@ export default function MemberProfile({
   const fetchAvailability = async () => {
     setLoadingAvailability(true);
     try {
-      const response = await fetch(`/api/availability?email=${encodeURIComponent(member.email)}&date=${selectedDate}`);
+      const response = await fetch(`${API_URL}/api/availability?email=${encodeURIComponent(member.email)}&date=${selectedDate}`);
       if (response.ok) {
         const data = await response.json();
         setAvailability(data);
