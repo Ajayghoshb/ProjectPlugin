@@ -54,10 +54,17 @@ interface LogEntry {
 
 import CollectionTab, { CollectionItem } from './PlugIt/CollectionTab';
 import SettingsTab from './PlugIt/SettingsTab';
+import CustomReportModule from './CustomReportModule';
 
 export default function PlugIt() {
-  // Navigation / Tab state restricted strictly to Collection & Settings
-  const [activeTab, setActiveTab] = useState<'collection' | 'settings'>('collection');
+  // Navigation / Tab state: Collection, Settings, Custom Report
+  const [activeTab, setActiveTab] = useState<'collection' | 'settings' | 'custom-report'>('collection');
+
+  useEffect(() => {
+    if (window.location.hash.includes('custom-report')) {
+      setActiveTab('custom-report');
+    }
+  }, []);
   const [selectedCollectionId, setSelectedCollectionId] = useState<string>('q3-strategy-2026');
 
   // Initial collection list with realistic Teams meeting recordings & data
@@ -775,6 +782,22 @@ export default function PlugIt() {
               />
             )}
           </button>
+
+          <button
+            onClick={() => setActiveTab('custom-report')}
+            className={`font-sans text-sm font-bold tracking-wide transition-all relative py-3.5 px-2 cursor-pointer flex items-center gap-2 ${
+              activeTab === 'custom-report' ? 'text-blue-600 font-extrabold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <FileText className="w-4 h-4 text-blue-600" />
+            <span>📄 Custom Report</span>
+            {activeTab === 'custom-report' && (
+              <motion.div 
+                layoutId="activePlugItTab" 
+                className="absolute bottom-0 left-0 right-0 h-[3px] bg-blue-600 rounded-full" 
+              />
+            )}
+          </button>
         </div>
       </div>
 
@@ -807,6 +830,18 @@ export default function PlugIt() {
             transition={{ duration: 0.18 }}
           >
             <SettingsTab addLog={addLog} />
+          </motion.div>
+        )}
+
+        {activeTab === 'custom-report' && (
+          <motion.div
+            key="custom-report-pane"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.18 }}
+          >
+            <CustomReportModule />
           </motion.div>
         )}
       </AnimatePresence>

@@ -5,7 +5,6 @@ import {
   Trash2, Search, Filter, Calendar, Clock, Cpu, User, Users, 
   ArrowRight, ShieldCheck, Zap, Layers, Play, Check, Copy, Share2
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 import { CustomMeetingReport } from '../types';
 import { API_URL } from '../config/api';
 
@@ -232,7 +231,6 @@ export default function CustomReportModule() {
         a.click();
         URL.revokeObjectURL(url);
       } else {
-        // Fallback text bundle download if zip server endpoint returns plain
         downloadTextFile(`${activeReport.meetingName}_MOM_Summary.txt`, getReportContentText(activeReport));
       }
     } catch (e) {
@@ -274,36 +272,36 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
   };
 
   return (
-    <div className="flex-1 bg-slate-950 text-slate-100 flex flex-col h-screen overflow-hidden">
-      {/* Top Header Banner */}
-      <div className="bg-slate-900/90 border-b border-slate-800 p-5 shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="flex-1 bg-slate-950 text-slate-100 flex flex-col h-screen overflow-hidden font-sans">
+      {/* Top Header Banner - Clean White & Blue Theme */}
+      <div className="bg-slate-900 border-b border-slate-800 p-5 shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30">
-              <FileText className="w-5 h-5" />
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 shadow-inner">
+              <FileText className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-white tracking-wide flex items-center gap-2">
+              <h1 className="text-xl font-bold text-white tracking-wide flex items-center gap-2">
                 Custom Report Studio
-                <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider font-semibold rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                  Enterprise AI Engine
+                <span className="px-2.5 py-0.5 text-[10px] uppercase tracking-wider font-bold rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                  AI Document Platform
                 </span>
               </h1>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-400 mt-0.5">
                 Upload audio, video, transcripts, or meeting documents to synthesize executive MOMs, summaries, action items, & downloadable report packages.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex items-center bg-slate-800/80 p-1 rounded-lg border border-slate-700/60 self-start md:self-auto">
+        {/* Tab Switcher - Blue Accents */}
+        <div className="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 self-start md:self-auto">
           <button
             onClick={() => setActiveSubTab('create')}
-            className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all duration-150 flex items-center gap-1.5 cursor-pointer ${
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-150 flex items-center gap-2 cursor-pointer ${
               activeSubTab === 'create'
-                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                : 'text-slate-400 hover:text-white hover:bg-slate-900'
             }`}
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -311,10 +309,10 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
           </button>
           <button
             onClick={() => setActiveSubTab('history')}
-            className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all duration-150 flex items-center gap-1.5 cursor-pointer ${
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-150 flex items-center gap-2 cursor-pointer ${
               activeSubTab === 'history'
-                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                : 'text-slate-400 hover:text-white hover:bg-slate-900'
             }`}
           >
             <Folder className="w-3.5 h-3.5" />
@@ -327,12 +325,12 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
         {activeSubTab === 'create' ? (
           <div className="max-w-6xl mx-auto space-y-6">
-            {/* Upload Box */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl space-y-5">
-              <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
+            {/* Upload Box - Blue Highlights */}
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                 <div>
                   <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                    <UploadCloud className="w-4 h-4 text-indigo-400" />
+                    <UploadCloud className="w-4.5 h-4.5 text-blue-400" />
                     Upload Meeting Assets & Documents
                   </h2>
                   <p className="text-xs text-slate-400 mt-0.5">
@@ -340,7 +338,7 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                   </p>
                 </div>
                 {uploadedFiles.length > 0 && (
-                  <span className="text-xs font-mono bg-indigo-500/10 text-indigo-400 px-2.5 py-1 rounded-md border border-indigo-500/20">
+                  <span className="text-xs font-mono bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full border border-blue-500/20 font-bold">
                     {uploadedFiles.length} file(s) selected
                   </span>
                 )}
@@ -348,13 +346,13 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
 
               {/* Meeting Name Input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-300">Meeting / Session Title</label>
+                <label className="text-xs font-bold text-slate-300">Meeting / Session Title</label>
                 <input
                   type="text"
                   placeholder="e.g. Q3 Architecture Align & Microservices Review"
                   value={meetingName}
                   onChange={(e) => setMeetingName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700/80 rounded-lg px-3.5 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
                 />
               </div>
 
@@ -364,10 +362,10 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                 onDragLeave={() => setDragActive(false)}
                 onDrop={handleFileDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${
+                className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-200 ${
                   dragActive
-                    ? 'border-indigo-500 bg-indigo-500/10 scale-[1.005]'
-                    : 'border-slate-700/80 bg-slate-950/60 hover:border-slate-600 hover:bg-slate-950'
+                    ? 'border-blue-500 bg-blue-500/10 scale-[1.005]'
+                    : 'border-slate-800 bg-slate-950/80 hover:border-blue-500/60 hover:bg-slate-950'
                 }`}
               >
                 <input
@@ -378,45 +376,40 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                   accept=".mp3,.wav,.m4a,.aac,.ogg,.flac,.mp4,.mov,.avi,.mkv,.webm,.txt,.docx,.pdf,.srt,.vtt,.json"
                   className="hidden"
                 />
-                <div className="w-12 h-12 rounded-full bg-indigo-600/10 text-indigo-400 flex items-center justify-center mx-auto mb-3 border border-indigo-500/20">
+                <div className="w-12 h-12 rounded-2xl bg-blue-600/10 text-blue-400 flex items-center justify-center mx-auto mb-3 border border-blue-500/20 shadow-inner">
                   <UploadCloud className="w-6 h-6" />
                 </div>
-                <h3 className="text-sm font-semibold text-white">Drag & drop your files here, or <span className="text-indigo-400 underline">browse files</span></h3>
+                <h3 className="text-sm font-bold text-white">Drag & drop your files here, or <span className="text-blue-400 underline">browse files</span></h3>
                 <p className="text-xs text-slate-400 mt-1">Single or multiple files will be automatically merged into one unified meeting analysis.</p>
 
                 {/* Format Badges */}
                 <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
-                  <span className="px-2 py-0.5 text-[10px] font-mono rounded bg-slate-800 text-slate-300 border border-slate-700">Audio (.mp3, .wav, .m4a)</span>
-                  <span className="px-2 py-0.5 text-[10px] font-mono rounded bg-slate-800 text-slate-300 border border-slate-700">Video (.mp4, .webm, .mkv)</span>
-                  <span className="px-2 py-0.5 text-[10px] font-mono rounded bg-slate-800 text-slate-300 border border-slate-700">Transcripts (.txt, .vtt, .srt)</span>
-                  <span className="px-2 py-0.5 text-[10px] font-mono rounded bg-slate-800 text-slate-300 border border-slate-700">Docs (.pdf, .docx)</span>
+                  <span className="px-2.5 py-1 text-[10px] font-mono font-semibold rounded-lg bg-slate-900 text-blue-300 border border-slate-800">Audio (.mp3, .wav, .m4a)</span>
+                  <span className="px-2.5 py-1 text-[10px] font-mono font-semibold rounded-lg bg-slate-900 text-blue-300 border border-slate-800">Video (.mp4, .webm, .mkv)</span>
+                  <span className="px-2.5 py-1 text-[10px] font-mono font-semibold rounded-lg bg-slate-900 text-blue-300 border border-slate-800">Transcripts (.txt, .vtt, .srt)</span>
+                  <span className="px-2.5 py-1 text-[10px] font-mono font-semibold rounded-lg bg-slate-900 text-blue-300 border border-slate-800">Docs (.pdf, .docx)</span>
                 </div>
               </div>
 
               {/* Selected Files List */}
               {uploadedFiles.length > 0 && (
                 <div className="space-y-2 pt-2">
-                  <h4 className="text-xs font-semibold text-slate-300">Uploaded Assets for Synthesis:</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <h4 className="text-xs font-bold text-slate-300">Uploaded Assets for Synthesis:</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                     {uploadedFiles.map(f => (
-                      <div key={f.id} className="flex items-center justify-between p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-xs">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className={`p-1.5 rounded text-xs font-bold ${
-                            f.category === 'Audio' ? 'bg-purple-500/20 text-purple-300' :
-                            f.category === 'Video' ? 'bg-blue-500/20 text-blue-300' :
-                            f.category === 'Transcript' ? 'bg-emerald-500/20 text-emerald-300' :
-                            'bg-amber-500/20 text-amber-300'
-                          }`}>
+                      <div key={f.id} className="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-blue-600/20 text-blue-300 border border-blue-500/30">
                             {f.extension.toUpperCase()}
                           </div>
                           <div className="min-w-0">
-                            <p className="font-medium text-slate-200 truncate">{f.name}</p>
+                            <p className="font-semibold text-slate-200 truncate">{f.name}</p>
                             <p className="text-[10px] text-slate-500 font-mono">{(f.size / 1024).toFixed(1)} KB • {f.category}</p>
                           </div>
                         </div>
                         <button
                           onClick={() => removeFile(f.id)}
-                          className="p-1 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded transition-colors"
+                          className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
                           title="Remove File"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -429,8 +422,8 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
 
               {/* Error Notification */}
               {errorMsg && (
-                <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
+                <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
                   <span>{errorMsg}</span>
                 </div>
               )}
@@ -440,20 +433,20 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                 <button
                   onClick={handleGenerateReport}
                   disabled={isProcessing || uploadedFiles.length === 0}
-                  className={`px-6 py-2.5 rounded-lg text-xs font-bold transition-all duration-150 flex items-center gap-2 shadow-lg cursor-pointer ${
+                  className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-150 flex items-center gap-2 shadow-lg cursor-pointer ${
                     isProcessing || uploadedFiles.length === 0
                       ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                      : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/30 active:scale-[0.98]'
+                      : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/30 active:scale-[0.98]'
                   }`}
                 >
                   {isProcessing ? (
                     <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <RefreshCw className="w-4 h-4 animate-spin text-white" />
                       Synthesizing Intelligence Package...
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4" />
+                      <Sparkles className="w-4 h-4 text-white" />
                       Generate Custom Report
                     </>
                   )}
@@ -463,24 +456,24 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
 
             {/* Processing Progress Indicator Overlay */}
             {isProcessing && (
-              <div className="bg-slate-900 border border-indigo-500/30 rounded-xl p-6 shadow-2xl space-y-4">
+              <div className="bg-slate-900 border border-blue-500/40 rounded-2xl p-6 shadow-2xl space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-3 h-3 rounded-full bg-indigo-500 animate-ping" />
+                    <div className="w-3 h-3 rounded-full bg-blue-500 animate-ping" />
                     <h3 className="text-sm font-bold text-white">AI Pipeline Active</h3>
                   </div>
-                  <span className="text-xs font-mono text-indigo-400">Stage {processingStage + 1} of {pipelineStages.length}</span>
+                  <span className="text-xs font-mono text-blue-400 font-bold">Stage {processingStage + 1} of {pipelineStages.length}</span>
                 </div>
 
-                <div className="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
+                <div className="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden border border-slate-800">
                   <div
-                    className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full transition-all duration-500"
+                    className="bg-blue-600 h-full transition-all duration-500"
                     style={{ width: `${((processingStage + 1) / pipelineStages.length) * 100}%` }}
                   />
                 </div>
 
                 <p className="text-xs text-slate-300 font-mono animate-pulse flex items-center gap-2">
-                  <Cpu className="w-3.5 h-3.5 text-indigo-400" />
+                  <Cpu className="w-3.5 h-3.5 text-blue-400" />
                   {processingMessage}...
                 </p>
               </div>
@@ -488,17 +481,17 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
 
             {/* Generated Report Folder Display */}
             {activeReport && !isProcessing && (
-              <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-2xl overflow-hidden space-y-0">
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden space-y-0">
                 {/* Folder Header Toolbar */}
-                <div className="bg-slate-800/80 p-4 border-b border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                <div className="bg-slate-900/90 p-5 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3.5">
+                    <div className="p-3 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 shadow-inner">
                       <Folder className="w-6 h-6" />
                     </div>
                     <div>
-                      <h2 className="text-sm font-bold text-white flex items-center gap-2">
+                      <h2 className="text-base font-bold text-white flex items-center gap-2">
                         {activeReport.meetingName}
-                        <span className="px-2 py-0.5 text-[10px] rounded bg-emerald-500/20 text-emerald-300 font-mono border border-emerald-500/30">
+                        <span className="px-2.5 py-0.5 text-[10px] rounded-full bg-blue-500/20 text-blue-300 font-mono border border-blue-500/30 font-bold">
                           {activeReport.status}
                         </span>
                       </h2>
@@ -514,21 +507,21 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                   <div className="flex flex-wrap items-center gap-2">
                     <button
                       onClick={copyReportText}
-                      className="px-3 py-1.5 rounded-md bg-slate-700/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
                     >
-                      {copySuccess ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copySuccess ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-blue-400" />}
                       {copySuccess ? 'Copied!' : 'Copy All'}
                     </button>
                     <button
                       onClick={() => downloadTextFile(`${activeReport.meetingName}_MOM.txt`, activeReport.mom || activeReport.summary || '')}
-                      className="px-3 py-1.5 rounded-md bg-slate-700/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
                     >
                       <Download className="w-3.5 h-3.5 text-blue-400" />
                       Download TXT
                     </button>
                     <button
                       onClick={handleDownloadZipPackage}
-                      className="px-3.5 py-1.5 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/30 flex items-center gap-1.5 cursor-pointer"
+                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-lg shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer active:scale-95"
                     >
                       <FolderArchive className="w-3.5 h-3.5" />
                       Download Entire Folder (ZIP)
@@ -537,7 +530,7 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                 </div>
 
                 {/* Sub-document Tabs */}
-                <div className="flex overflow-x-auto border-b border-slate-800 bg-slate-950 px-4 pt-2 gap-1 scrollbar-none">
+                <div className="flex overflow-x-auto border-b border-slate-800 bg-slate-950 px-4 pt-2.5 gap-1.5 scrollbar-none">
                   {[
                     { id: 'summary', label: 'Executive Summary', icon: FileText },
                     { id: 'mom', label: 'Minutes of Meeting (MOM)', icon: FileSpreadsheet },
@@ -554,13 +547,13 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                       <button
                         key={tab.id}
                         onClick={() => setActiveDocTab(tab.id as any)}
-                        className={`px-3.5 py-2 text-xs font-semibold rounded-t-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                        className={`px-4 py-2.5 text-xs font-bold rounded-t-xl transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                           isActive
-                            ? 'bg-slate-900 text-indigo-400 border-t-2 border-x border-slate-800 border-t-indigo-500 font-bold'
+                            ? 'bg-slate-900 text-blue-400 border-t-2 border-x border-slate-800 border-t-blue-500 font-extrabold'
                             : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'
                         }`}
                       >
-                        <Icon className="w-3.5 h-3.5" />
+                        <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-blue-400' : 'text-slate-400'}`} />
                         {tab.label}
                       </button>
                     );
@@ -572,7 +565,7 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                   {activeDocTab === 'summary' && (
                     <div className="space-y-4">
                       <h3 className="text-sm font-bold text-white">Executive Summary</h3>
-                      <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 leading-relaxed whitespace-pre-line font-sans">
+                      <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 leading-relaxed whitespace-pre-line font-sans">
                         {activeReport.executiveSummary || activeReport.summary}
                       </div>
                     </div>
@@ -581,7 +574,7 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                   {activeDocTab === 'mom' && (
                     <div className="space-y-4">
                       <h3 className="text-sm font-bold text-white">Formal Minutes of Meeting (MOM)</h3>
-                      <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 leading-relaxed whitespace-pre-line font-mono">
+                      <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 leading-relaxed whitespace-pre-line font-mono">
                         {activeReport.mom}
                       </div>
                     </div>
@@ -592,15 +585,13 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                       <h3 className="text-sm font-bold text-white">Assigned Action Items</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {(activeReport.actionItems || []).map((item, idx) => (
-                          <div key={idx} className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 space-y-2 text-xs">
+                          <div key={idx} className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
                             <div className="flex items-center justify-between">
-                              <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${
-                                item.priority === 'High' ? 'bg-rose-500/20 text-rose-300' : 'bg-blue-500/20 text-blue-300'
-                              }`}>{item.priority} Priority</span>
+                              <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-md bg-blue-600/20 text-blue-300 border border-blue-500/30">{item.priority} Priority</span>
                               <span className="text-[10px] font-mono text-slate-500">Due: {item.deadline}</span>
                             </div>
                             <p className="font-semibold text-slate-100">{item.title}</p>
-                            <p className="text-slate-400 text-[11px]">Assigned Owner: <span className="text-indigo-400 font-medium">{item.owner}</span></p>
+                            <p className="text-slate-400 text-[11px]">Assigned Owner: <span className="text-blue-400 font-medium">{item.owner}</span></p>
                           </div>
                         ))}
                       </div>
@@ -613,12 +604,12 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                         <h3 className="text-sm font-bold text-white mb-2">Decisions Taken</h3>
                         <div className="space-y-2">
                           {(activeReport.decisions || []).map((d, idx) => (
-                            <div key={idx} className="p-3 bg-slate-950 rounded-lg border border-slate-800 text-xs space-y-1">
+                            <div key={idx} className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 text-xs space-y-1">
                               <p className="font-semibold text-slate-100 flex items-center gap-2">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
                                 {d.decision}
                               </p>
-                              <p className="text-slate-400 text-[11px] pl-5">Impact Scope: {d.impact}</p>
+                              <p className="text-slate-400 text-[11px] pl-6">Impact Scope: {d.impact}</p>
                             </div>
                           ))}
                         </div>
@@ -628,15 +619,15 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                         <h3 className="text-sm font-bold text-white mb-2">Risks & Assessment</h3>
                         <div className="space-y-2">
                           {(activeReport.risks || []).map((r, idx) => (
-                            <div key={idx} className="p-3 bg-slate-950 rounded-lg border border-slate-800 text-xs space-y-1">
+                            <div key={idx} className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 text-xs space-y-1">
                               <div className="flex items-center justify-between">
-                                <p className="font-semibold text-rose-300 flex items-center gap-2">
-                                  <AlertCircle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                                <p className="font-semibold text-slate-200 flex items-center gap-2">
+                                  <AlertCircle className="w-4 h-4 text-blue-400 shrink-0" />
                                   {r.risk}
                                 </p>
-                                <span className="text-[10px] font-bold text-amber-400">{r.severity} Severity</span>
+                                <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">{r.severity} Severity</span>
                               </div>
-                              <p className="text-slate-400 text-[11px] pl-5">Mitigation Strategy: {r.mitigation}</p>
+                              <p className="text-slate-400 text-[11px] pl-6">Mitigation Strategy: {r.mitigation}</p>
                             </div>
                           ))}
                         </div>
@@ -649,10 +640,10 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                       <h3 className="text-sm font-bold text-white">Detailed Conversation Breakdown</h3>
                       <div className="space-y-3">
                         {(activeReport.detailedConversation || []).map((c, idx) => (
-                          <div key={idx} className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-2 text-xs">
-                            <h4 className="font-bold text-indigo-300 text-xs border-b border-slate-800 pb-1.5">{c.topic}</h4>
+                          <div key={idx} className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
+                            <h4 className="font-bold text-blue-300 text-xs border-b border-slate-800 pb-2">{c.topic}</h4>
                             <p className="text-slate-300 leading-relaxed"><strong className="text-slate-400">Discussion:</strong> {c.discussion}</p>
-                            <p className="text-slate-300"><strong className="text-emerald-400">Decision:</strong> {c.decision}</p>
+                            <p className="text-slate-300"><strong className="text-blue-400">Decision:</strong> {c.decision}</p>
                             <p className="text-slate-400"><strong className="text-slate-500">Conclusion:</strong> {c.conclusion}</p>
                           </div>
                         ))}
@@ -663,14 +654,14 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                   {activeDocTab === 'timeline' && (
                     <div className="space-y-4">
                       <h3 className="text-sm font-bold text-white">Conversation & Speaker Timeline</h3>
-                      <div className="relative border-l border-slate-800 ml-4 space-y-4 pl-4">
+                      <div className="relative border-l-2 border-slate-800 ml-4 space-y-4 pl-4">
                         {(activeReport.timeline || []).map((t, idx) => (
                           <div key={idx} className="relative text-xs space-y-1">
-                            <div className="absolute -left-[21px] top-0.5 w-2.5 h-2.5 rounded-full bg-indigo-500 border border-slate-900" />
+                            <div className="absolute -left-[21px] top-0.5 w-3 h-3 rounded-full bg-blue-500 border-2 border-slate-900" />
                             <div className="flex items-center gap-2">
                               <span className="font-mono text-[10px] text-slate-500">{t.timestamp}</span>
-                              <span className="font-bold text-indigo-300">{t.speaker}</span>
-                              <span className="px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-400 font-mono">{t.topic}</span>
+                              <span className="font-bold text-blue-300">{t.speaker}</span>
+                              <span className="px-2 py-0.5 rounded text-[9px] bg-slate-950 text-slate-400 font-mono border border-slate-800">{t.topic}</span>
                             </div>
                             <p className="text-slate-300">{t.summary}</p>
                           </div>
@@ -683,9 +674,9 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                     <div className="space-y-5">
                       <div>
                         <h3 className="text-sm font-bold text-white mb-2">Extracted Keywords</h3>
-                        <div className="flex flex-wrap gap-1.5">
+                        <div className="flex flex-wrap gap-2">
                           {(activeReport.keywords || []).map((k, idx) => (
-                            <span key={idx} className="px-2.5 py-1 bg-slate-950 border border-slate-800 rounded-md text-xs font-mono text-indigo-300">
+                            <span key={idx} className="px-3 py-1 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-blue-300">
                               #{k}
                             </span>
                           ))}
@@ -693,9 +684,9 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                       </div>
                       <div>
                         <h3 className="text-sm font-bold text-white mb-2">Searchable Tags</h3>
-                        <div className="flex flex-wrap gap-1.5">
+                        <div className="flex flex-wrap gap-2">
                           {(activeReport.tags || []).map((tag, idx) => (
-                            <span key={idx} className="px-2.5 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-md text-xs font-mono text-indigo-400">
+                            <span key={idx} className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-lg text-xs font-mono text-blue-400 font-bold">
                               {tag}
                             </span>
                           ))}
@@ -709,8 +700,8 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                       <h3 className="text-sm font-bold text-white">AI Next-Steps & Productivity Recommendations</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {(activeReport.recommendations || []).map((rec, idx) => (
-                          <div key={idx} className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 text-xs space-y-1.5">
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-300 font-mono">{rec.category}</span>
+                          <div key={idx} className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-2">
+                            <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-blue-600/20 text-blue-300 border border-blue-500/30 font-mono">{rec.category}</span>
                             <p className="font-semibold text-slate-100">{rec.suggestion}</p>
                             <p className="text-slate-400 text-[11px]">Recommended Action: {rec.action}</p>
                           </div>
@@ -726,20 +717,20 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
           /* Report History View */
           <div className="max-w-6xl mx-auto space-y-5">
             {/* Search Filter Header */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-3 bg-slate-900 p-4 rounded-xl border border-slate-800">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-3 bg-slate-900 p-4 rounded-2xl border border-slate-800">
               <div className="relative flex-1 w-full">
-                <Search className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
+                <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-500" />
                 <input
                   type="text"
                   placeholder="Search history by meeting name, keyword, or tag..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
                 />
               </div>
               <button
                 onClick={fetchHistoryReports}
-                className="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loadingHistory ? 'animate-spin' : ''}`} />
                 Refresh History
@@ -748,7 +739,7 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
 
             {/* History Cards Grid */}
             {filteredHistory.length === 0 ? (
-              <div className="text-center py-16 bg-slate-900/50 border border-slate-800/80 rounded-xl p-8 space-y-3">
+              <div className="text-center py-16 bg-slate-900/50 border border-slate-800 rounded-2xl p-8 space-y-3">
                 <Folder className="w-10 h-10 text-slate-600 mx-auto" />
                 <h3 className="text-sm font-semibold text-slate-300">No custom reports found</h3>
                 <p className="text-xs text-slate-500 max-w-sm mx-auto">Create a new report by uploading audio, video, or transcript assets in the Report Studio tab.</p>
@@ -759,16 +750,16 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                   <div
                     key={report.id}
                     onClick={() => { setActiveReport(report); setActiveSubTab('create'); }}
-                    className="p-5 rounded-xl bg-slate-900 border border-slate-800 hover:border-indigo-500/50 transition-all duration-150 cursor-pointer space-y-3 shadow-lg group"
+                    className="p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-blue-500/60 transition-all duration-150 cursor-pointer space-y-3 shadow-lg group"
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="p-2 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 group-hover:scale-105 transition-transform">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="p-2.5 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 group-hover:scale-105 transition-transform">
                           <Folder className="w-4 h-4" />
                         </div>
-                        <h3 className="text-sm font-bold text-white truncate group-hover:text-indigo-400 transition-colors">{report.meetingName}</h3>
+                        <h3 className="text-sm font-bold text-white truncate group-hover:text-blue-400 transition-colors">{report.meetingName}</h3>
                       </div>
-                      <span className="px-2 py-0.5 text-[10px] font-mono rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
                         {report.status}
                       </span>
                     </div>
@@ -783,9 +774,9 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                       ))}
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono pt-2 border-t border-slate-800/80">
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono pt-2 border-t border-slate-800">
                       <span>{new Date(report.processingDate).toLocaleDateString()}</span>
-                      <span className="text-indigo-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">Open Folder <ArrowRight className="w-3 h-3" /></span>
+                      <span className="text-blue-400 group-hover:translate-x-1 transition-transform flex items-center gap-1 font-bold">Open Folder <ArrowRight className="w-3 h-3" /></span>
                     </div>
                   </div>
                 ))}
