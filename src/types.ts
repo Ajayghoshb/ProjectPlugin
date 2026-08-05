@@ -115,3 +115,39 @@ export interface DbSchema {
 }
 
 export type RoleType = 'Admin' | 'Manager' | 'Member';
+
+export interface MeetingTranscriptSegment {
+  id: string;
+  meetingId: string;
+  speakerId: string;
+  speakerName: string;
+  startTime: string;
+  endTime: string;
+  audioOffsetMs?: number;
+  processingDuration?: number;
+  originalLanguage: string;
+  languageCode: string;
+  originalTranscript: string;
+  englishTranscript: string;
+  asrModelUsed: string;
+  translationModel: string;
+  translationScore: number;
+  status: 'PROCESSED' | 'PENDING' | 'ERROR';
+  createdAt?: string;
+}
+
+export interface SpeechProcessingResult {
+  sessionId: string;
+  speakerId: string;
+  speakerName: string;
+  detectedLanguage: string;
+  languageCode: string;
+  confidenceScore: number;
+  rawSpokenText: string;
+  normalizedEnglishText: string;
+  asrModel: string;
+  translationModel: string;
+  processingTimeMs: number;
+  segment: MeetingTranscriptSegment;
+}
+

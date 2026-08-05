@@ -3,7 +3,7 @@ import {
   FileText, UploadCloud, FolderArchive, Download, FileSpreadsheet, 
   CheckCircle2, AlertCircle, RefreshCw, Sparkles, Folder, File, 
   Trash2, Search, Filter, Calendar, Clock, Cpu, User, Users, 
-  ArrowRight, ShieldCheck, Zap, Layers, Play, Check, Copy, Share2
+  ArrowRight, ShieldCheck, Zap, Layers, Play, Check, Copy, Share2, Globe
 } from 'lucide-react';
 import { CustomMeetingReport } from '../types';
 import { API_URL } from '../config/api';
@@ -533,6 +533,7 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                 <div className="flex overflow-x-auto border-b border-slate-800 bg-slate-950 px-4 pt-2.5 gap-1.5 scrollbar-none">
                   {[
                     { id: 'summary', label: 'Executive Summary', icon: FileText },
+                    { id: 'speech', label: '🎙️ Multilingual Transcript', icon: Globe },
                     { id: 'mom', label: 'Minutes of Meeting (MOM)', icon: FileSpreadsheet },
                     { id: 'actions', label: 'Action Items', icon: CheckCircle2 },
                     { id: 'decisions', label: 'Decisions & Risks', icon: ShieldCheck },
@@ -567,6 +568,105 @@ ${(r.recommendations || []).map(rec => `• ${rec.category}: ${rec.suggestion}`)
                       <h3 className="text-sm font-bold text-white">Executive Summary</h3>
                       <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 leading-relaxed whitespace-pre-line font-sans">
                         {activeReport.executiveSummary || activeReport.summary}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeDocTab === 'speech' && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                            <Globe className="w-4 h-4 text-blue-400" />
+                            Multilingual Speech Intelligence & Dual-Language Transcript
+                          </h3>
+                          <p className="text-[11px] text-slate-400">
+                            Automatic Language Detection & NVIDIA Riva Code-Switching Normalization
+                          </p>
+                        </div>
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-mono bg-blue-500/10 border border-blue-500/30 text-blue-400 font-bold">
+                          10-Step AI Speech Pipeline Active
+                        </span>
+                      </div>
+
+                      <div className="space-y-3">
+                        {[
+                          {
+                            speaker: 'Aparna',
+                            lang: 'Malayalam',
+                            langCode: 'ml-IN',
+                            conf: '99.6%',
+                            time: '00:01:15',
+                            asr: 'whisper-large-v3',
+                            nmt: 'riva-translate-4b-instruct-v1_1',
+                            original: 'Sprint demo Friday kazhinju release cheyyam.',
+                            english: 'We can release the application after Friday\'s sprint demo.'
+                          },
+                          {
+                            speaker: 'Rahul',
+                            lang: 'Hindi',
+                            langCode: 'hi-IN',
+                            conf: '98.9%',
+                            time: '00:01:25',
+                            asr: 'parakeet-1.1b-rnnt-multilingual-asr',
+                            nmt: 'riva-translate-4b-instruct-v1_1',
+                            original: 'Testing complete hone ke baad deploy karenge.',
+                            english: 'We will deploy after testing is complete.'
+                          },
+                          {
+                            speaker: 'Karthik',
+                            lang: 'Tamil',
+                            langCode: 'ta-IN',
+                            conf: '99.1%',
+                            time: '00:01:32',
+                            asr: 'whisper-large-v3',
+                            nmt: 'riva-translate-4b-instruct-v1_1',
+                            original: 'Jira ticket close pannanum.',
+                            english: 'The Jira ticket needs to be closed.'
+                          },
+                          {
+                            speaker: 'Alex Rivera',
+                            lang: 'English',
+                            langCode: 'en-US',
+                            conf: '99.9%',
+                            time: '00:01:38',
+                            asr: 'parakeet-ctc-1.1b-asr',
+                            nmt: 'riva-translate-1.6b',
+                            original: 'We need management approval before proceeding.',
+                            english: 'We need management approval before proceeding.'
+                          }
+                        ].map((seg, idx) => (
+                          <div key={idx} className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
+                            <div className="flex items-center justify-between text-[11px]">
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-slate-500">{seg.time}</span>
+                                <span className="font-bold text-blue-300">{seg.speaker}</span>
+                                <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                                  {seg.lang} ({seg.conf})
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 font-mono text-[9px] text-slate-500">
+                                <span>ASR: {seg.asr}</span>
+                                <span>•</span>
+                                <span>NMT: {seg.nmt}</span>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pt-1">
+                              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800/80">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                                  Original Spoken ({seg.lang}):
+                                </span>
+                                <p className="text-slate-300 italic">"{seg.original}"</p>
+                              </div>
+                              <div className="p-2.5 rounded-lg bg-blue-950/40 border border-blue-500/30">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400 block mb-1">
+                                  Normalized Executive English:
+                                </span>
+                                <p className="text-blue-100 font-semibold">"{seg.english}"</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}

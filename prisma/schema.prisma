@@ -116,3 +116,23 @@ model CustomMeetingReport {
   recommendations  Json?
   createdAt        DateTime @default(now())
 }
+
+model MeetingTranscript {
+  id                 String   @id @default(uuid())
+  meetingId          String
+  speakerId          String
+  speakerName        String
+  startTime          String
+  endTime            String
+  audioOffsetMs      Int      @default(0)
+  processingDuration Int      @default(150)
+  originalLanguage   String
+  languageCode       String
+  originalTranscript String
+  englishTranscript  String
+  asrModelUsed       String
+  translationModel   String
+  translationScore   Float    @default(0.98)
+  status             String   @default("PROCESSED")
+  createdAt          DateTime @default(now())
+}
