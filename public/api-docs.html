@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Think It Platform - OpenAPI / Swagger REST API Explorer</title>
+  <title>Think It Platform - Business REST API Explorer</title>
   <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css" />
   <style>
     body { margin: 0; padding: 0; background: #0F172A; }
@@ -17,257 +17,95 @@
     const spec = {
       openapi: '3.1.0',
       info: {
-        title: 'Think It - Meeting Memory AI & Organizational Intelligence Platform API',
-        version: '1.2.0',
-        description: 'Complete, interactive OpenAPI 3.1 Specification for Microsoft Teams, AI Gateway, RAG Knowledge Platform, and AI Copilot REST Services.'
+        title: 'Think It - AI Meeting Intelligence Platform Business API',
+        version: '2.0.0',
+        description: 'Production OpenAPI Specification for Think It Multilingual Speech Intelligence, Custom Reports, RAG Copilot, and Cloud Health Suite.'
       },
       servers: [
+        { url: 'https://projectplugin-api.onrender.com', description: 'Production API Server' },
         { url: 'http://localhost:3000', description: 'Local Development Server' }
       ],
       tags: [
-        { name: 'AI Gateway', description: 'Groq Cloud, NVIDIA NIM, Riva Speech Translation, Nemotron Reasoning & Kimi Summary APIs' },
-        { name: 'Knowledge Base (RAG)', description: 'Knowledge indexing, chunking, 1536-dim vector embedding, and semantic search' },
-        { name: 'AI Copilot', description: 'Grounded conversational AI search with citations, session context, and memory' },
-        { name: 'Meeting Platform', description: 'Meeting creation, updates, rosters, timeline events, and synchronization' },
-        { name: 'Teams Integration', description: 'Microsoft Teams app manifest download, runtime context, and bot notifications' }
+        { name: 'Cloud Health Suite', description: 'Enterprise readiness, liveness, and deep diagnostic health probes' },
+        { name: 'Speech Intelligence', description: '10-step speech processing, VAD, speaker diarization, auto-language detection, & code-switching normalization' },
+        { name: 'Custom Reports', description: 'Audio/Video asset uploader, AI folder report generator, and ZIP/DOCX/PDF exports' },
+        { name: 'AI Copilot (RAG)', description: 'Grounded conversational enterprise search with citations and vector memory' }
       ],
       paths: {
-        '/api/ai/groq/infer': {
+        '/health': {
+          get: {
+            tags: ['Cloud Health Suite'],
+            summary: 'Comprehensive System Health Status',
+            description: 'Returns database status, provider health, queue health, uptime, and system version.',
+            responses: {
+              '200': { description: 'System Healthy' },
+              '503': { description: 'Service Degraded' }
+            }
+          }
+        },
+        '/health/live': {
+          get: {
+            tags: ['Cloud Health Suite'],
+            summary: 'Kubernetes Liveness Probe',
+            responses: { '200': { description: 'Process Alive' } }
+          }
+        },
+        '/health/ready': {
+          get: {
+            tags: ['Cloud Health Suite'],
+            summary: 'Kubernetes Readiness Probe',
+            responses: { '200': { description: 'System Ready' }, '503': { description: 'Database Disconnected' } }
+          }
+        },
+        '/health/deep': {
+          get: {
+            tags: ['Cloud Health Suite'],
+            summary: 'Deep Subsystem Diagnostic Check',
+            responses: { '200': { description: 'All Subsystems Online' } }
+          }
+        },
+        '/api/speech/process': {
           post: {
-            tags: ['AI Gateway'],
-            summary: 'Groq Cloud High-Speed Llama 3.3 70B Inference',
-            description: 'Executes high-speed natural language inference via Groq Cloud Llama 3.3 70B versatile model.',
-            operationId: 'groqInfer',
+            tags: ['Speech Intelligence'],
+            summary: 'Process Multilingual Speech & Code-Switching Dialogue',
+            description: 'Executes 10-step Speech Intelligence pipeline, VAD, speaker diarization, auto-language detection, and normalized English translation.',
             requestBody: {
               required: true,
               content: {
                 'application/json': {
                   schema: {
                     type: 'object',
-                    required: ['prompt'],
+                    required: ['textChunk'],
                     properties: {
-                      prompt: { type: 'string', example: 'Summarize key deliverables from Architecture Review Meeting' }
+                      meetingId: { type: 'string', example: 'mtg-101' },
+                      speakerName: { type: 'string', example: 'Aparna' },
+                      textChunk: { type: 'string', example: 'Sprint demo Friday kazhinju release cheyyam.' }
                     }
                   }
                 }
               }
             },
             responses: {
-              '200': { description: 'Inference successful', content: { 'application/json': { schema: { $ref: '#/components/schemas/AIInferenceResponse' } } } },
-              '400': { description: 'Bad Request', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } },
-              '500': { description: 'Server Error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+              '200': { description: 'Speech processing successful' },
+              '500': { description: 'Processing Error' }
             }
           }
         },
-        '/api/ai/nim/infer': {
+        '/api/custom-reports/process': {
           post: {
-            tags: ['AI Gateway'],
-            summary: 'NVIDIA NIM Microservice Execution',
-            description: 'Executes NVIDIA NIM microservices for advanced enterprise AI reasoning.',
-            operationId: 'nimInfer',
-            requestBody: {
-              required: true,
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    required: ['payload'],
-                    properties: {
-                      payload: { type: 'object', example: { model: 'meta/llama-3.3-70b-instruct', messages: [{ role: 'user', content: 'Analyze architectural risks' }] } }
-                    }
-                  }
-                }
-              }
-            },
+            tags: ['Custom Reports'],
+            summary: 'Process Media Asset & Synthesize Folder Report',
+            description: 'Analyzes uploaded meeting assets and generates Executive Summary, MoM, Action Items, Decisions, Risks, and Recommendations.',
             responses: {
-              '200': { description: 'NIM microservice response', content: { 'application/json': { schema: { type: 'object' } } } },
-              '400': { description: 'Bad Request', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
-            }
-          }
-        },
-        '/api/ai/translate': {
-          post: {
-            tags: ['AI Gateway'],
-            summary: 'NVIDIA Riva Multilingual Speech Translation',
-            description: 'Translates spoken dialogue (Malayalam, Tamil, Hindi, French) into English.',
-            operationId: 'rivaTranslate',
-            requestBody: {
-              required: true,
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    required: ['text'],
-                    properties: {
-                      text: { type: 'string', example: 'നമ്മൾ ടീംസ് കോളിംഗ് ഗേറ്റ്‌വേ സുരക്ഷിതമാണെന്ന് ഉറപ്പാക്കണം.' },
-                      sourceLanguage: { type: 'string', example: 'Malayalam' }
-                    }
-                  }
-                }
-              }
-            },
-            responses: {
-              '200': { description: 'Translation successful', content: { 'application/json': { schema: { $ref: '#/components/schemas/TranslationResponse' } } } }
-            }
-          }
-        },
-        '/api/ai/summary': {
-          post: {
-            tags: ['AI Gateway'],
-            summary: 'Synthesize Executive & Detailed Summary',
-            description: 'Generates executive summary and detailed meeting notes using Kimi LLM engine.',
-            operationId: 'generateSummary',
-            requestBody: {
-              required: true,
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    required: ['meetingId'],
-                    properties: { meetingId: { type: 'string', example: 'meet-1' } }
-                  }
-                }
-              }
-            },
-            responses: {
-              '200': { description: 'Summary generated', content: { 'application/json': { schema: { $ref: '#/components/schemas/Summary' } } } }
-            }
-          }
-        },
-        '/api/ai/action-items': {
-          post: {
-            tags: ['AI Gateway'],
-            summary: 'Extract Action Items DTO List',
-            description: 'Extracts action item objects with assignees, priorities, and deadlines.',
-            operationId: 'extractActionItems',
-            requestBody: {
-              required: true,
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    required: ['meetingId'],
-                    properties: { meetingId: { type: 'string', example: 'meet-1' } }
-                  }
-                }
-              }
-            },
-            responses: {
-              '200': { description: 'Action items extracted', content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/ActionItem' } } } } }
-            }
-          }
-        },
-        '/api/ai/decisions': {
-          post: {
-            tags: ['AI Gateway'],
-            summary: 'Extract Key Meeting Decisions',
-            description: 'Extracts finalized decisions and impact ratings.',
-            operationId: 'extractDecisions',
-            requestBody: {
-              required: true,
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    required: ['meetingId'],
-                    properties: { meetingId: { type: 'string', example: 'meet-1' } }
-                  }
-                }
-              }
-            },
-            responses: {
-              '200': { description: 'Decisions extracted', content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Decision' } } } } }
-            }
-          }
-        },
-        '/api/ai/reason': {
-          post: {
-            tags: ['AI Gateway'],
-            summary: 'NVIDIA Nemotron Risk Reasoning Engine',
-            description: 'Performs deep reasoning and technical risk extraction.',
-            operationId: 'nemotronReason',
-            requestBody: {
-              required: true,
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    required: ['meetingId'],
-                    properties: { meetingId: { type: 'string', example: 'meet-1' } }
-                  }
-                }
-              }
-            },
-            responses: {
-              '200': { description: 'Reasoning completed', content: { 'application/json': { schema: { $ref: '#/components/schemas/RiskReasoningResponse' } } } }
-            }
-          }
-        },
-        '/api/ai/health': {
-          get: {
-            tags: ['AI Gateway'],
-            summary: 'AI Gateway Health Check',
-            description: 'Checks status of registered AI provider adapters.',
-            operationId: 'aiHealth',
-            responses: {
-              '200': { description: 'AI Gateway Healthy', content: { 'application/json': { schema: { $ref: '#/components/schemas/HealthResponse' } } } }
-            }
-          }
-        },
-        '/api/knowledge/index': {
-          post: {
-            tags: ['Knowledge Base (RAG)'],
-            summary: 'Index Meeting into Vector Base',
-            description: 'Chunks meeting transcript and embeds vectors into memory store.',
-            operationId: 'indexKnowledge',
-            requestBody: {
-              required: true,
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    required: ['meetingId'],
-                    properties: { meetingId: { type: 'string', example: 'meet-1' } }
-                  }
-                }
-              }
-            },
-            responses: {
-              '201': { description: 'Document indexed successfully' }
-            }
-          }
-        },
-        '/api/knowledge/search': {
-          get: {
-            tags: ['Knowledge Base (RAG)'],
-            summary: 'Semantic RAG Vector Search',
-            description: 'Executes cosine similarity search over vector store.',
-            operationId: 'searchKnowledge',
-            parameters: [
-              { name: 'q', in: 'query', required: true, description: 'Natural language search query', schema: { type: 'string', example: 'Teams Manifest v1.15' } }
-            ],
-            responses: {
-              '200': { description: 'Vector search results', content: { 'application/json': { schema: { type: 'object' } } } }
-            }
-          }
-        },
-        '/api/knowledge/stats': {
-          get: {
-            tags: ['Knowledge Base (RAG)'],
-            summary: 'Knowledge Base Statistics',
-            description: 'Returns total indexed documents, chunks, and latency metrics.',
-            operationId: 'knowledgeStats',
-            responses: {
-              '200': { description: 'Vector stats retrieved' }
+              '200': { description: 'Custom Report Created' }
             }
           }
         },
         '/api/copilot/chat': {
           post: {
-            tags: ['AI Copilot'],
-            summary: 'Submit Conversational RAG Copilot Query',
-            description: 'Answers organizational questions with grounded meeting citations.',
-            operationId: 'copilotChat',
+            tags: ['AI Copilot (RAG)'],
+            summary: 'Grounded Conversational Copilot Query',
+            description: 'Answers organizational questions grounded in meeting vector memory citations.',
             requestBody: {
               required: true,
               content: {
@@ -276,238 +114,14 @@
                     type: 'object',
                     required: ['question'],
                     properties: {
-                      question: { type: 'string', example: 'What decisions were made regarding Teams manifest schema?' },
-                      conversationId: { type: 'string', example: 'conv-001' }
+                      question: { type: 'string', example: 'What decisions were made regarding release dates?' }
                     }
                   }
                 }
               }
             },
             responses: {
-              '200': { description: 'Copilot grounded answer', content: { 'application/json': { schema: { $ref: '#/components/schemas/CopilotAnswer' } } } },
-              '400': { description: 'Bad Request', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
-            }
-          }
-        },
-        '/api/copilot/conversations/{id}': {
-          get: {
-            tags: ['AI Copilot'],
-            summary: 'Fetch Conversation Session History',
-            operationId: 'getCopilotConversation',
-            parameters: [
-              { name: 'id', in: 'path', required: true, schema: { type: 'string', example: 'conv-001' } }
-            ],
-            responses: {
-              '200': { description: 'Conversation session history', content: { 'application/json': { schema: { $ref: '#/components/schemas/CopilotConversation' } } } }
-            }
-          },
-          delete: {
-            tags: ['AI Copilot'],
-            summary: 'Clear Conversation Context Window',
-            operationId: 'deleteCopilotConversation',
-            parameters: [
-              { name: 'id', in: 'path', required: true, schema: { type: 'string', example: 'conv-001' } }
-            ],
-            responses: {
-              '200': { description: 'Conversation session deleted' }
-            }
-          }
-        },
-        '/api/copilot/health': {
-          get: {
-            tags: ['AI Copilot'],
-            summary: 'AI Copilot Health Check',
-            operationId: 'copilotHealth',
-            responses: {
-              '200': { description: 'Copilot Healthy', content: { 'application/json': { schema: { $ref: '#/components/schemas/HealthResponse' } } } }
-            }
-          }
-        },
-        '/api/meetings': {
-          get: {
-            tags: ['Meeting Platform'],
-            summary: 'Get All Processed Meetings Collection',
-            operationId: 'getMeetings',
-            responses: {
-              '200': { description: 'Meetings list', content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Meeting' } } } } }
-            }
-          }
-        },
-        '/api/meetings/{id}': {
-          get: {
-            tags: ['Meeting Platform'],
-            summary: 'Get Meeting by ID',
-            operationId: 'getMeetingById',
-            parameters: [
-              { name: 'id', in: 'path', required: true, schema: { type: 'string', example: 'meet-1' } }
-            ],
-            responses: {
-              '200': { description: 'Meeting details', content: { 'application/json': { schema: { $ref: '#/components/schemas/Meeting' } } } },
-              '404': { description: 'Not Found', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
-            }
-          }
-        },
-        '/api/meetings/sync': {
-          post: {
-            tags: ['Meeting Platform'],
-            summary: 'Trigger Manual Meeting Sync',
-            operationId: 'syncMeetings',
-            requestBody: {
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: { syncType: { type: 'string', example: 'Manual QA Sync' } }
-                  }
-                }
-              }
-            },
-            responses: {
-              '200': { description: 'Sync completed' }
-            }
-          }
-        },
-        '/api/teams/package/download': {
-          get: {
-            tags: ['Teams Integration'],
-            summary: 'Download Teams Manifest Zip (ThinkIt.zip)',
-            operationId: 'downloadTeamsPackage',
-            responses: {
-              '200': { description: 'Binary Zip archive' }
-            }
-          }
-        },
-        '/api/teams/notifications/send': {
-          post: {
-            tags: ['Teams Integration'],
-            summary: 'Send Proactive Adaptive Card Notification',
-            operationId: 'sendTeamsNotification',
-            requestBody: {
-              required: true,
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    required: ['recipientId', 'meetingTitle'],
-                    properties: {
-                      recipientId: { type: 'string', example: 'u-admin' },
-                      meetingTitle: { type: 'string', example: 'Architecture Sync' },
-                      executiveSummary: { type: 'string', example: 'Key decisions locked.' }
-                    }
-                  }
-                }
-              }
-            },
-            responses: {
-              '201': { description: 'Notification sent', content: { 'application/json': { schema: { $ref: '#/components/schemas/Notification' } } } }
-            }
-          }
-        }
-      },
-      components: {
-        securitySchemes: {
-          BearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-          EntraIDOAuth2: { type: 'oauth2', flows: { implicit: { authorizationUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize', scopes: { 'User.Read': 'Read profile' } } } }
-        },
-        schemas: {
-          AIInferenceResponse: {
-            type: 'object',
-            properties: {
-              text: { type: 'string', example: 'Groq Cloud High-Speed Response' },
-              model: { type: 'string', example: 'llama-3.3-70b-versatile' },
-              latencyMs: { type: 'number', example: 85 }
-            }
-          },
-          TranslationResponse: {
-            type: 'object',
-            properties: {
-              originalText: { type: 'string', example: 'നമ്മൾ ടീംസ് കോളിംഗ് ഗേറ്റ്‌വേ സുരക്ഷിതമാണെന്ന് ഉറപ്പാക്കണം.' },
-              translatedText: { type: 'string', example: 'We need to make sure the Teams calling gateway is secure.' },
-              detectedLanguage: { type: 'string', example: 'Malayalam' },
-              translationEngine: { type: 'string', example: 'NVIDIA Riva Translation' }
-            }
-          },
-          Summary: {
-            type: 'object',
-            properties: {
-              executiveSummary: { type: 'string', example: 'Multilingual executive review session aligning on Teams Plugin manifest schema v1.15.' },
-              detailedSummary: { type: 'string', example: 'The engineering team evaluated real-time speech translation latency over NVIDIA Riva.' }
-            }
-          },
-          ActionItem: {
-            type: 'object',
-            properties: {
-              id: { type: 'string', example: 'act-1' },
-              task: { type: 'string', example: 'Publish Calling Webhook API' },
-              assignee: { type: 'string', example: 'Alex Rivera' },
-              priority: { type: 'string', example: 'HIGH' }
-            }
-          },
-          Decision: {
-            type: 'object',
-            properties: {
-              id: { type: 'string', example: 'dec-1' },
-              decision: { type: 'string', example: 'Enforced Manifest v1.15 JSON schema' },
-              impact: { type: 'string', example: 'HIGH' }
-            }
-          },
-          RiskReasoningResponse: {
-            type: 'object',
-            properties: {
-              risks: { type: 'array', items: { type: 'string' }, example: ['High concurrency vector store latency'] },
-              confidenceScore: { type: 'number', example: 96.5 }
-            }
-          },
-          CopilotAnswer: {
-            type: 'object',
-            properties: {
-              conversationId: { type: 'string', example: 'conv-001' },
-              content: { type: 'string', example: 'Based on organizational meeting intelligence [1]...' },
-              confidence: { type: 'number', example: 98.4 },
-              citations: { type: 'array', items: { $ref: '#/components/schemas/Citation' } }
-            }
-          },
-          Citation: {
-            type: 'object',
-            properties: {
-              id: { type: 'number', example: 1 },
-              meetingTitle: { type: 'string', example: 'Teams Plugin & Calling Webhook Sync' },
-              section: { type: 'string', example: 'EXECUTIVE_SUMMARY' }
-            }
-          },
-          CopilotConversation: {
-            type: 'object',
-            properties: {
-              id: { type: 'string', example: 'conv-001' },
-              messages: { type: 'array', items: { type: 'object' } }
-            }
-          },
-          Meeting: {
-            type: 'object',
-            properties: {
-              id: { type: 'string', example: 'meet-1' },
-              title: { type: 'string', example: 'Architecture Review' },
-              organizer: { type: 'string', example: 'Sarah Connor' },
-              date: { type: 'string', example: '2026-07-29T10:00:00Z' }
-            }
-          },
-          Notification: {
-            type: 'object',
-            properties: {
-              notificationId: { type: 'string', example: 'notif-178541' },
-              status: { type: 'string', example: 'Delivered' }
-            }
-          },
-          HealthResponse: {
-            type: 'object',
-            properties: {
-              status: { type: 'string', example: 'Healthy' }
-            }
-          },
-          ErrorResponse: {
-            type: 'object',
-            properties: {
-              error: { type: 'string', example: 'Invalid request payload or resource not found' }
+              '200': { description: 'Copilot Response Generated' }
             }
           }
         }
