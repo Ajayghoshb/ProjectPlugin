@@ -64,6 +64,9 @@ model Meeting {
   mom              String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+
+  @@index([organizer])
+  @@index([status])
 }
 
 model AIJob {
@@ -75,6 +78,9 @@ model AIJob {
   maxRetries Int      @default(3)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@index([meetingId])
+  @@index([status])
 }
 
 model KnowledgeDocument {
@@ -84,6 +90,8 @@ model KnowledgeDocument {
   executiveSummary String?
   detailedSummary  String?
   indexedAt        DateTime @default(now())
+
+  @@index([meetingId])
 }
 
 model NotificationPreference {
@@ -115,6 +123,9 @@ model CustomMeetingReport {
   timeline         Json?
   recommendations  Json?
   createdAt        DateTime @default(now())
+
+  @@index([status])
+  @@index([createdAt])
 }
 
 model MeetingTranscript {
@@ -135,4 +146,7 @@ model MeetingTranscript {
   translationScore   Float    @default(0.98)
   status             String   @default("PROCESSED")
   createdAt          DateTime @default(now())
+
+  @@index([meetingId])
+  @@index([speakerId])
 }
