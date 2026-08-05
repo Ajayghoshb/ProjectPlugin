@@ -2047,6 +2047,16 @@ app.post('/api/teams/meeting/:id/sync', (req, res) => {
   });
 });
 
+// Bot Framework Webhook Endpoint for Microsoft Teams Channel Activity & Messaging
+app.post('/api/messages', (req, res) => {
+  const activity = req.body || {};
+  console.log(`[Teams Bot Activity] Processing incoming activity type: '${activity.type || 'message'}' from user: '${activity.from?.name || activity.from?.id || 'Teams User'}'`);
+  res.status(200).json({
+    type: 'message',
+    text: `Think It Bot received your request: "${activity.text || 'Action received'}". Meeting memory synthesis active.`
+  });
+});
+
 // Express Backend REST APIs for Phase 11 Microsoft Teams Collaboration & Notification Layer
 const userNotificationPrefsMap: Map<string, any> = new Map();
 

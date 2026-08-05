@@ -65,7 +65,7 @@
         "groupchat"
       ],
       "supportsFiles": false,
-      "isNotificationOnly": true
+      "isNotificationOnly": false
     }
   ],
   "authorization": {
