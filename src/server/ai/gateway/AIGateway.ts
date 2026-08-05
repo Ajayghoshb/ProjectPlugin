@@ -7,6 +7,13 @@ import { NemotronReasoningProvider } from '../providers/nemotron/NemotronReasoni
 import { LlamaVisionProvider } from '../providers/llama/LlamaVisionProvider';
 import { GroqProvider } from '../providers/groq/GroqProvider';
 import { NvidiaNimProvider } from '../providers/nim/NvidiaNimProvider';
+import { metricsTracker } from '../../monitoring/metrics';
+
+interface CircuitState {
+  status: 'CLOSED' | 'OPEN' | 'HALF_OPEN';
+  failures: number;
+  nextAttempt: number;
+}
 
 export class AIGateway {
   public static kimi = new KimiProvider();
@@ -16,6 +23,59 @@ export class AIGateway {
   public static llamaVision = new LlamaVisionProvider();
   public static groq = new GroqProvider();
   public static nim = new NvidiaNimProvider();
+
+  private static circuits: Map<string, CircuitState> = new Map();
+  private static MAX_FAILURES = 3;
+  private static COOL_DOWN_MS = 30000; // 30 seconds circuit open period
+
+  public static async executeWithCircuitBreaker<T>(
+    providerName: string,
+    operation: () => Promise<T>
+  ): Promise<T> {
+    const circuit = AIGateway.circuits.get(providerName) || { status: 'CLOSED', failures: 0, nextAttempt: 0 };
+    const now = Date.now();
+
+    if (circuit.status === 'OPEN') {
+      if (now > circuit.nextAttempt) {
+        circuit.status = 'HALF_OPEN';
+      } else {
+        metricsTracker.incrementFailover();
+        throw new Error(`Circuit Breaker OPEN for provider ${providerName}. Failover triggered.`);
+      }
+    }
+
+    try {
+      const result = await AIGateway.retryWithBackoff(operation);
+      circuit.status = 'CLOSED';
+      circuit.failures = 0;
+      AIGateway.circuits.set(providerName, circuit);
+      return result;
+    } catch (err) {
+      circuit.failures += 1;
+      if (circuit.failures >= AIGateway.MAX_FAILURES) {
+        circuit.status = 'OPEN';
+        circuit.nextAttempt = Date.now() + AIGateway.COOL_DOWN_MS;
+        console.warn(`[AI Circuit Breaker OPEN] ${providerName} tripped after ${circuit.failures} consecutive failures.`);
+      }
+      AIGateway.circuits.set(providerName, circuit);
+      metricsTracker.incrementFailover();
+      throw err;
+    }
+  }
+
+  public static async retryWithBackoff<T>(
+    fn: () => Promise<T>,
+    retries: number = 3,
+    delayMs: number = 500
+  ): Promise<T> {
+    try {
+      return await fn();
+    } catch (error) {
+      if (retries <= 1) throw error;
+      await new Promise(res => setTimeout(res, delayMs));
+      return AIGateway.retryWithBackoff(fn, retries - 1, delayMs * 2);
+    }
+  }
 
   public static async routeJob(job: AIJob): Promise<boolean> {
     AILogger.jobStateChange(job.id, job.status, 'PROCESSING');
@@ -35,14 +95,11 @@ export class AIGateway {
   }
 
   public static getHealthStatus(): Record<string, boolean> {
-    return {
-      'groq': true,
-      'nvidia-nim': true,
-      'kimi': true,
-      'riva': true,
-      'nemotron-embedding': true,
-      'nemotron-reasoning': true,
-      'llama-vision': true
-    };
+    const statuses: Record<string, boolean> = {};
+    for (const p of ['groq', 'nvidia-nim', 'kimi', 'riva', 'nemotron-embedding', 'nemotron-reasoning', 'llama-vision']) {
+      const c = AIGateway.circuits.get(p);
+      statuses[p] = !c || c.status !== 'OPEN';
+    }
+    return statuses;
   }
 }
