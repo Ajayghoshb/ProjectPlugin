@@ -12,6 +12,7 @@ import { DatabaseClient } from './src/server/db/client';
 import { AIGateway } from './src/server/ai/gateway/AIGateway';
 import { SpeechGateway } from './src/server/ai/speech/SpeechGateway';
 import { requestIdMiddleware } from './src/server/middleware/requestId';
+import { securityHeadersMiddleware, rateLimiterMiddleware } from './src/server/middleware/security';
 import { globalErrorHandler, AppError } from './src/server/middleware/errorHandler';
 import { LocalQueueProvider } from './src/server/ai/queue/LocalQueueProvider';
 
