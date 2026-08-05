@@ -95,3 +95,25 @@ model NotificationPreference {
   deliveryChannel        String   @default("TEAMS_BOT")
   updatedAt              DateTime @updatedAt
 }
+
+model CustomMeetingReport {
+  id               String   @id @default(uuid())
+  meetingName      String
+  uploadDate       DateTime @default(now())
+  processingDate   DateTime @default(now())
+  aiProviderUsed   String   @default("AIGateway Router")
+  processingTimeMs Int      @default(1200)
+  status           String   @default("COMPLETED")
+  fileTypes        String[]
+  keywords         String[]
+  tags             String[]
+  summary          String?
+  mom              String?
+  actionItems      Json?
+  decisions        Json?
+  risks            Json?
+  timeline         Json?
+  recommendations  Json?
+  createdAt        DateTime @default(now())
+}
+

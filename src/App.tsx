@@ -12,6 +12,7 @@ import AIAssistant from './components/AIAssistant';
 import TheBrain from './components/TheBrain';
 import WorkspaceAgents from './components/WorkspaceAgents';
 import PlugIt from './components/PlugIt';
+import CustomReportModule from './components/CustomReportModule';
 import { KeyRound, Sparkles, AlertCircle, RefreshCw, Lock, Unlock, ShieldAlert, Layers, BarChart3, Shield, Terminal, Cpu } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { API_URL } from './config/api';
@@ -659,6 +660,9 @@ export default function App() {
 
               {activeTab === 'plugit' && (
                 <PlugIt />
+              )}
+              {activeTab === 'custom-report' && (
+                <CustomReportModule />
               )}
             </>
           )}

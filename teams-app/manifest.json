@@ -39,6 +39,14 @@
       "scopes": [
         "personal"
       ]
+    },
+    {
+      "entityId": "customReport",
+      "name": "Custom Report",
+      "contentUrl": "https://project-plugin.vercel.app/#/custom-report?inTeams=true",
+      "scopes": [
+        "personal"
+      ]
     }
   ],
   "permissions": [

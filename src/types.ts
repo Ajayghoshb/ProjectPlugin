@@ -78,6 +78,30 @@ export interface JiraEmailMapping {
   emailAddress: string;
 }
 
+export interface CustomMeetingReport {
+  id: string;
+  meetingName: string;
+  uploadDate: string;
+  processingDate: string;
+  aiProviderUsed: string;
+  processingTimeMs: number;
+  status: 'COMPLETED' | 'PROCESSING' | 'ERROR';
+  fileNames: string[];
+  fileTypes: string[];
+  keywords: string[];
+  tags: string[];
+  summary?: string;
+  executiveSummary?: string;
+  mom?: string;
+  actionItems?: { owner: string; title: string; priority: 'Low' | 'Medium' | 'High'; deadline: string; status: 'Pending' | 'In Progress' | 'Completed' }[];
+  decisions?: { decision: string; impact: string; owner: string }[];
+  risks?: { risk: string; severity: 'Low' | 'Medium' | 'High'; mitigation: string }[];
+  detailedConversation?: { topic: string; discussion: string; decision: string; conclusion: string }[];
+  timeline?: { timestamp: string; speaker: string; topic: string; summary: string }[];
+  recommendations?: { category: string; suggestion: string; action: string }[];
+  rawTranscript?: string;
+}
+
 export interface DbSchema {
   jiraConnections: JiraConnection[];
   teamsConnections: TeamsConnection[];
@@ -87,6 +111,7 @@ export interface DbSchema {
   meetings: Meeting[];
   chats: ChatMessage[];
   jiraEmailMappings?: JiraEmailMapping[];
+  customReports?: CustomMeetingReport[];
 }
 
 export type RoleType = 'Admin' | 'Manager' | 'Member';

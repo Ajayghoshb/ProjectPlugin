@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, CalendarDays, Shield, Brain, Zap } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, Shield, Brain, Zap, FileText } from 'lucide-react';
 import { RoleType } from '../types';
 
 interface SidebarProps {
@@ -12,6 +12,7 @@ interface SidebarProps {
 export default function Sidebar({ activeTab, setActiveTab, activeRole, setActiveRole }: SidebarProps) {
   const menuItems = [
     { id: 'dashboard', label: 'Project Hub', icon: LayoutDashboard, roles: ['Admin', 'Manager', 'Member'] },
+    { id: 'custom-report', label: 'Custom Report', icon: FileText, roles: ['Admin', 'Manager', 'Member'] },
     { id: 'meetings', label: 'Scheduler', icon: CalendarDays, roles: ['Admin', 'Manager', 'Member'] },
     { id: 'brain', label: 'the Memory', icon: Brain, roles: ['Admin', 'Manager', 'Member'] },
     { id: 'plugit', label: 'PLUGIT', icon: Zap, roles: ['Admin', 'Manager', 'Member'] },
