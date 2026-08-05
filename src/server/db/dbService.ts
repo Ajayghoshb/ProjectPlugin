@@ -16,6 +16,9 @@ function readDbFile(): any {
 }
 
 function writeDbFile(data: any): void {
+  if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+    throw new Error("Production database configuration missing: DATABASE_URL required for persistent storage");
+  }
   try {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
   } catch (err) {

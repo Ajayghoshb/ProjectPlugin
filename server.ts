@@ -7,6 +7,7 @@ import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
 
+import { DatabaseClient } from './src/server/db/client';
 import { AIGateway } from './src/server/ai/gateway/AIGateway';
 import { meetingAgentOrchestrator } from './src/server/meeting-agent/orchestrator/agent.orchestrator';
 import { agentHealthManager } from './src/server/meeting-agent/health/health.manager';
@@ -5159,6 +5160,8 @@ There are **no perfect overlapping free slots** for all requested participants o
 
 // Serve frontend assets / boot Vite
 async function startServer() {
+  await DatabaseClient.validateStartupDatabase();
+
   if (process.env.NODE_ENV !== "production") {
     console.log("Starting server in DEVELOPMENT mode with Vite Middleware.");
     const vite = await createViteServer({

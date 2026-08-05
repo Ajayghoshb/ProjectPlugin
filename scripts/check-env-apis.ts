@@ -30,10 +30,10 @@ async function runDiagnostics() {
   const dbUrl = process.env.DATABASE_URL;
   const isRealDb = dbUrl && !dbUrl.includes('localhost') && !dbUrl.includes('postgres:postgres');
   results.push({
-    service: 'PostgreSQL Database',
+    service: 'Neon Cloud PostgreSQL Database',
     configured: !!isRealDb,
-    status: 'FALLBACK_READY',
-    details: isRealDb ? `ConnectionString set (${dbUrl.split('@')[1] || 'localhost'})` : 'Using Local Storage Fallback Engine (db.json)'
+    status: isRealDb ? 'ONLINE' : 'UNCONFIGURED',
+    details: isRealDb ? `ConnectionString set (${dbUrl.split('@')[1] || 'Neon PostgreSQL Cloud'})` : 'Database connection string unconfigured in .env'
   });
 
   // 2. NVIDIA NIM / Llama API Key Test

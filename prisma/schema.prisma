@@ -1,10 +1,10 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model User {
@@ -50,31 +50,31 @@ model TeamsConnection {
 }
 
 model Meeting {
-  id                String   @id @default(uuid())
-  title             String
-  subject           String
-  projectName       String?
-  organizer         String
-  date              DateTime
-  status            String   @default("COMPLETED")
-  durationMinutes   Int      @default(30)
-  summary           String?
-  executiveSummary  String?
-  detailedSummary   String?
-  mom               String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id               String   @id @default(uuid())
+  title            String
+  subject          String
+  projectName      String?
+  organizer        String
+  date             DateTime
+  status           String   @default("COMPLETED")
+  durationMinutes  Int      @default(30)
+  summary          String?
+  executiveSummary String?
+  detailedSummary  String?
+  mom              String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model AIJob {
-  id          String   @id @default(uuid())
-  meetingId   String
-  status      String   @default("QUEUED")
-  priority    String   @default("NORMAL")
-  retryCount  Int      @default(0)
-  maxRetries  Int      @default(3)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(uuid())
+  meetingId  String
+  status     String   @default("QUEUED")
+  priority   String   @default("NORMAL")
+  retryCount Int      @default(0)
+  maxRetries Int      @default(3)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model KnowledgeDocument {
@@ -116,4 +116,3 @@ model CustomMeetingReport {
   recommendations  Json?
   createdAt        DateTime @default(now())
 }
-
