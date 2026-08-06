@@ -628,24 +628,24 @@ export default function ProjectGrid({
                   </div>
                 )}
 
-                <div className="flex items-center justify-between border-t border-slate-150 pt-4 mt-5 gap-3">
+                <div className="flex items-center gap-2.5 border-t border-slate-150 pt-4 mt-5">
                   <button
                     onClick={() => onOpenProject(proj)}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-3 rounded-lg cursor-pointer transition-colors"
+                    className="flex-1 inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold text-xs py-2.5 px-5 rounded-xl cursor-pointer transition-all shadow-sm shadow-blue-500/20"
                   >
                     <span>Open Details</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-4 h-4" />
                   </button>
 
                   {activeRole !== 'Member' && (
                     <button
                       onClick={() => handleSync(proj.key)}
                       disabled={syncingKey === proj.key}
-                      className="inline-flex items-center justify-center gap-1 bg-yellow-400 hover:bg-yellow-505 bg-yellow-400 hover:bg-yellow-500 border border-yellow-400 text-black p-2 rounded-lg cursor-pointer disabled:bg-slate-100 disabled:text-slate-400 transition-colors"
+                      className="w-10 h-10 inline-flex items-center justify-center bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold rounded-xl cursor-pointer disabled:bg-slate-100 disabled:text-slate-400 transition-all shrink-0 shadow-xs active:scale-95"
                       title="Sync Project with Server Jira Endpoint"
                       id={`btn-sync-${proj.key.toLowerCase()}`}
                     >
-                      <RefreshCw className={`w-3.5 h-3.5 text-black ${syncingKey === proj.key ? 'animate-spin' : ''}`} />
+                      <RefreshCw className={`w-4 h-4 text-slate-950 font-bold ${syncingKey === proj.key ? 'animate-spin' : ''}`} />
                     </button>
                   )}
                 </div>
