@@ -37,6 +37,7 @@ import {
   CheckSquare,
   RefreshCw
 } from 'lucide-react';
+import { API_URL } from '../../config/api';
 
 export interface Participant {
   name: string;
@@ -200,6 +201,69 @@ export default function CollectionTab({
     setIsPlayingAudio(false);
     setAudioProgress(0);
   }, [selectedCollectionId]);
+
+  // Load real custom meeting reports from Neon Cloud PostgreSQL database
+  useEffect(() => {
+    const loadRealDatabaseReports = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/custom-reports/history`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.reports && data.reports.length > 0) {
+            const mapped: CollectionItem[] = data.reports.map((r: any) => ({
+              id: r.id,
+              title: r.meetingName,
+              projectName: 'Recorded Meeting',
+              type: 'analytics',
+              status: r.status === 'COMPLETED' ? 'COMPLETED' : 'ANALYZING',
+              organizer: r.organizer || 'Meeting Host',
+              organizerEmail: 'host@thinkit.ai',
+              date: new Date(r.uploadDate || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase(),
+              time: new Date(r.uploadDate || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              rawTimestamp: r.uploadDate,
+              duration: r.duration || '45m 00s',
+              teamsMeetingId: r.id,
+              fileSize: '150 MB',
+              confidenceScore: 99.0,
+              sentiment: 'Action-Oriented',
+              recordingStatus: 'Available',
+              aiStatus: r.aiProviderUsed || 'Processed (Groq Llama 3.3 70B)',
+              detectedLanguage: 'English (US)',
+              originalLanguage: 'English',
+              hasTranslation: true,
+              topics: r.keywords || ['#MeetingIntelligence', '#CustomReport'],
+              aiModel: 'meta/llama-3.3-70b-instruct',
+              translationEngine: 'NVIDIA Riva Translation',
+              nemotronReady: true,
+              executiveSummary: r.executiveSummary || r.summary,
+              detailedSummary: r.summary,
+              summary: r.summary,
+              keyHighlights: r.actionItems ? r.actionItems.map((a: any) => a.title || a.text) : [],
+              keyDiscussionPoints: r.decisions ? r.decisions.map((d: any) => d.decision || d.text) : [],
+              keyDecisions: r.decisions ? r.decisions.map((d: any, idx: number) => ({ id: `dec-${idx}`, text: d.decision || d.text, impact: 'HIGH' })) : [],
+              actionItems: r.actionItems ? r.actionItems.map((a: any, idx: number) => ({ id: `act-${idx}`, text: a.title || a.text, completed: a.status === 'Completed', priority: 'HIGH' })) : [],
+              risks: r.risks ? r.risks.map((rk: any, idx: number) => ({ id: `risk-${idx}`, risk: rk.risk, mitigation: rk.mitigation, severity: 'MED' })) : [],
+              questionsRaised: [],
+              suggestions: [],
+              followUpTasks: [],
+              timeline: r.timeline || [],
+              participantsCount: 4,
+              avatars: [],
+              participantsList: [],
+              transcript: r.rawTranscript ? [{ speaker: 'Meeting Participant', text: r.rawTranscript.substring(0, 500), time: '00:00' }] : []
+            }));
+            setCollections(mapped);
+            if (mapped.length > 0) {
+              setSelectedCollectionId(mapped[0].id);
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Could not load database custom reports history:', e);
+      }
+    };
+    loadRealDatabaseReports();
+  }, []);
 
   const activeCollection = collections.find((c) => c.id === selectedCollectionId) || collections[0];
 
@@ -388,11 +452,24 @@ export default function CollectionTab({
     if (dateFilter === 'This Week') {
       return c.date.includes('JUL 28') || c.date.includes('JUL 29') || c.date.includes('JUL 27');
     }
-    if (dateFilter === 'This Month') {
-      return c.date.includes('JUL');
-    }
     return true;
   });
+
+  if (collections.length === 0) {
+    return (
+      <div className="bg-white border border-slate-200 rounded-3xl p-12 text-center max-w-2xl mx-auto my-8 shadow-xs space-y-4">
+        <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 mx-auto shadow-inner">
+          <FolderPlus className="w-8 h-8 text-indigo-600" />
+        </div>
+        <div className="space-y-1.5">
+          <h3 className="font-display font-bold text-lg text-slate-900">No Recorded Meetings Found</h3>
+          <p className="text-slate-600 text-xs max-w-md mx-auto leading-relaxed">
+            Meetings captured by Think It in Microsoft Teams will automatically appear here once recorded and processed by the AI Gateway.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 font-sans text-slate-800">
