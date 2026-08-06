@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.15/MicrosoftTeams.schema.json",
   "manifestVersion": "1.15",
   "version": "1.0.0",
-  "id": "c0305b4c-875b-4d88-a25b-f1f4381b87a9",
+  "id": "8ec8a471-4328-4e8f-8c69-e64abdf2725",
   "packageName": "com.thinkpalm.thinkit.teamsapp",
   "developer": {
     "name": "ThinkPalm Technologies",
@@ -11,12 +11,12 @@
     "termsOfUseUrl": "https://thinkpalm.com/terms"
   },
   "name": {
-    "short": "Think It",
-    "full": "Think It - AI Meeting Intelligence & Enterprise Memory"
+    "short": "ThinkItAIMeetingAssistant",
+    "full": "ThinkItAIMeetingAssistant - AI Meeting Intelligence & Enterprise Memory"
   },
   "description": {
     "short": "AI Meeting Assistant for Microsoft Teams",
-    "full": "Think It automatically captures Microsoft Teams meetings, synthesizes executive summaries, formal MOMs, action items, decisions, and regional dialogue translations using Meta Llama 3.3 70B & NVIDIA Riva."
+    "full": "ThinkItAIMeetingAssistant automatically captures Microsoft Teams meetings, synthesizes executive summaries, formal MOMs, action items, decisions, and regional dialogue translations using Meta Llama 3.3 70B & NVIDIA Riva."
   },
   "icons": {
     "color": "color.png",
@@ -61,12 +61,12 @@
     "*.thinkpalm.com"
   ],
   "webApplicationInfo": {
-    "id": "eec115d2-8418-4d66-8e18-b4283ffca2b1",
-    "resource": "api://project-plugin.vercel.app/eec115d2-8418-4d66-8e18-b4283ffca2b1"
+    "id": "8ec8a471-4328-4e8f-8c69-e64abdf2725",
+    "resource": "api://project-plugin.vercel.app/8ec8a471-4328-4e8f-8c69-e64abdf2725"
   },
   "bots": [
     {
-      "botId": "eec115d2-8418-4d66-8e18-b4283ffca2b1",
+      "botId": "8ec8a471-4328-4e8f-8c69-e64abdf2725",
       "scopes": [
         "personal",
         "team",
