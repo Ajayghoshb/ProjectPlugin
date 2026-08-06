@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.15/MicrosoftTeams.schema.json",
   "manifestVersion": "1.15",
   "version": "1.0.0",
-  "id": "8ec8a471-4328-4e8f-8c69-e64abdf2725",
+  "id": "8ec8a471-4328-4e8f-8c69-e64abdf2725e",
   "packageName": "com.thinkpalm.thinkit.teamsapp",
   "developer": {
     "name": "ThinkPalm Technologies",
@@ -61,12 +61,12 @@
     "*.thinkpalm.com"
   ],
   "webApplicationInfo": {
-    "id": "8ec8a471-4328-4e8f-8c69-e64abdf2725",
-    "resource": "api://project-plugin.vercel.app/8ec8a471-4328-4e8f-8c69-e64abdf2725"
+    "id": "8ec8a471-4328-4e8f-8c69-e64abdf2725e",
+    "resource": "api://project-plugin.vercel.app/8ec8a471-4328-4e8f-8c69-e64abdf2725e"
   },
   "bots": [
     {
-      "botId": "8ec8a471-4328-4e8f-8c69-e64abdf2725",
+      "botId": "8ec8a471-4328-4e8f-8c69-e64abdf2725e",
       "scopes": [
         "personal",
         "team",

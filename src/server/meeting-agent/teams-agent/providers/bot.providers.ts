@@ -51,9 +51,9 @@ export class MicrosoftTeamsBotProvider {
   private tenantId: string;
 
   constructor() {
-    this.appId = process.env.MICROSOFT_APP_ID || process.env.TEAMS_APP_ID || '8ec8a471-4328-4e8f-8c69-e64abdf2725';
-    this.botId = process.env.MICROSOFT_APP_ID || process.env.TEAMS_BOT_ID || '8ec8a471-4328-4e8f-8c69-e64abdf2725';
-    this.tenantId = process.env.MICROSOFT_APP_TENANT_ID || process.env.AZURE_TENANT_ID || 'eec115d2-8418-4d66-8e18-b4283ffca2b';
+    this.appId = process.env.MICROSOFT_APP_ID || process.env.TEAMS_APP_ID || '8ec8a471-4328-4e8f-8c69-e64abdf2725e';
+    this.botId = process.env.MICROSOFT_APP_ID || process.env.TEAMS_BOT_ID || '8ec8a471-4328-4e8f-8c69-e64abdf2725e';
+    this.tenantId = process.env.MICROSOFT_APP_TENANT_ID || process.env.AZURE_TENANT_ID || 'eec115d2-8418-4d66-8e18-b4283ffca2b1';
   }
 
   getBotStatus(): any {
