@@ -254,12 +254,20 @@ Status: Approved & Verified
   }
 });
 
-// 2. Fetch Custom Report History (Neon Cloud PostgreSQL)
+// 2. Fetch Custom Report History (Neon Cloud PostgreSQL with Tenant/User Isolation)
 app.get('/api/custom-reports/history', async (req, res) => {
   try {
+    const tenantId = (req.headers['x-tenant-id'] as string) || (req.query.tenantId as string) || undefined;
+    const userId = (req.headers['x-user-id'] as string) || (req.query.userId as string) || undefined;
+
     if (DatabaseClient.isConnected()) {
       const prisma = DatabaseClient.getPrisma();
+      const whereClause: any = {};
+      if (tenantId) whereClause.tenantId = tenantId;
+      if (userId) whereClause.userId = userId;
+
       const dbReports = await prisma.customMeetingReport.findMany({
+        where: whereClause,
         orderBy: { createdAt: 'desc' },
         take: 50
       });
@@ -281,7 +289,7 @@ app.get('/api/custom-reports/history', async (req, res) => {
     }
     res.status(200).json({ total: 0, reports: [] });
   } catch (err: any) {
-    res.status(500).json({ error: err.message || 'Failed to fetch custom report history' });
+    res.status(500).json({ error: err.message || 'Failed to fetch report history' });
   }
 });
 

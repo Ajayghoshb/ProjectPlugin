@@ -37,7 +37,22 @@ const vertexItemVariants = {
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [isInTeams] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const urlParams = new URLSearchParams(window.location.search || window.location.hash.split('?')[1] || '');
+    return urlParams.has('inTeams') || window.location.href.includes('inTeams=true') || window.name.includes('teams');
+  });
+
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.toLowerCase();
+      if (hash.includes('settings')) return 'settings';
+      if (hash.includes('collection')) return 'brain';
+    }
+    const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search || window.location.hash.split('?')[1] || '') : null;
+    const inTeamsParam = urlParams?.has('inTeams') || (typeof window !== 'undefined' && window.location.href.includes('inTeams=true'));
+    return inTeamsParam ? 'brain' : 'dashboard';
+  });
   const [activeRole, setActiveRole] = useState<RoleType>('Admin');
 
   // Vertex Security States
@@ -313,27 +328,60 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden font-sans" id="app-container">
-      {/* Lateral navigation controls */}
-      <Sidebar
-        activeTab={activeTab}
-        setActiveTab={(t) => {
-          setActiveTab(t);
-        }}
-        activeRole={activeRole}
-        setActiveRole={setActiveRole}
-      />
+      {/* Lateral navigation controls - hidden when inside Teams */}
+      {!isInTeams && (
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={(t) => {
+            setActiveTab(t);
+          }}
+          activeRole={activeRole}
+          setActiveRole={setActiveRole}
+        />
+      )}
 
       {/* Main Workspace Frame */}
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        {/* Global multi-domain Search header */}
-        <SearchAndHeader
-          projects={db.projects}
-          members={db.members}
-          onSelectProject={selectProject}
-          onSelectMember={selectMember}
-          onResetDb={handleResetDb}
-          userEmail="ajayaghosh.b@thinkpalm.com"
-        />
+        {/* Teams Personal Tab Header (Collection & Settings Only) */}
+        {isInTeams ? (
+          <div className="bg-slate-900 border-b border-slate-800 px-6 py-3.5 flex items-center justify-between shrink-0 shadow-md">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white tracking-widest text-sm shadow-md shadow-indigo-500/20">
+                TI
+              </div>
+              <div>
+                <h1 className="font-display font-semibold text-xs leading-tight text-white tracking-wide">ThinkItAIMeetingAssistant</h1>
+                <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Recorded Meeting Intelligence Tab
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 bg-slate-950 p-1 rounded-xl border border-slate-800">
+              <button 
+                onClick={() => setActiveTab('brain')} 
+                className={`px-4 py-2 rounded-lg text-xs font-semibold font-display transition-all ${activeTab === 'brain' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+              >
+                Collection (Recorded Meetings)
+              </button>
+              <button 
+                onClick={() => setActiveTab('settings')} 
+                className={`px-4 py-2 rounded-lg text-xs font-semibold font-display transition-all ${activeTab === 'settings' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+              >
+                Settings
+              </button>
+            </div>
+          </div>
+        ) : (
+          <SearchAndHeader
+            projects={db.projects}
+            members={db.members}
+            onSelectProject={selectProject}
+            onSelectMember={selectMember}
+            onResetDb={handleResetDb}
+            userEmail="ajayaghosh.b@thinkpalm.com"
+          />
+        )}
 
         {/* Dynamic Inner page flow */}
         <main className="flex-1 overflow-y-auto px-6 py-6 max-w-7xl mx-auto w-full">
@@ -654,6 +702,23 @@ export default function App() {
                   meetings={db.meetings}
                   projects={db.projects}
                   members={db.members}
+                  onRefreshData={fetchData}
+                />
+              )}
+
+              {activeTab === 'settings' && (
+                <ConnectionsManager
+                  jiraConnections={db.jiraConnections}
+                  teamsConnections={db.teamsConnections}
+                  googleConnections={db.googleConnections}
+                  jiraEmailMappings={db.jiraEmailMappings || []}
+                  projects={db.projects}
+                  members={db.members}
+                  meetings={db.meetings}
+                  onConnectJira={handleConnectJira}
+                  onConnectTeams={handleConnectTeams}
+                  onConnectGoogle={handleConnectGoogle}
+                  onSaveJiraProjects={handleSaveJiraProjects}
                   onRefreshData={fetchData}
                 />
               )}
