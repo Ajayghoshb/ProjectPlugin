@@ -90,12 +90,8 @@
           "type": "Delegated"
         },
         {
-          "name": "CallTranscript.Read.Group",
-          "type": "Application"
-        },
-        {
-          "name": "CallRecording.Read.Group",
-          "type": "Application"
+          "name": "OnlineMeeting.ReadBasic.Chat",
+          "type": "Delegated"
         }
       ]
     }
