@@ -30,8 +30,8 @@ export class GraphSubscriptionManager {
     }
 
     const notificationUrl = process.env.BOT_ENDPOINT || 'https://projectplugin-api.onrender.com/api/messages';
-    // Subscription expiration maximum for Graph onlineMeetings is 4230 minutes (~3 days)
-    const expirationDateTime = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
+    // Subscription expiration maximum for Graph onlineMeetings is strictly 4230 minutes (~70.5 hours)
+    const expirationDateTime = new Date(Date.now() + 4000 * 60 * 1000).toISOString();
 
     const payload = {
       changeType: 'created,updated',
