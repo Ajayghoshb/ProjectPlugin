@@ -279,13 +279,20 @@ export interface AuthenticatedRequest extends express.Request {
 
 /**
  * Microsoft Entra ID JWT Bearer Token Authenticator Middleware
- * Extracts and cryptographically verifies claims (tid, oid, aud, exp) from Teams SSO tokens.
- * Client-controlled x-tenant-id or x-user-id headers are IGNORED in favor of verified JWT token claims.
+ * Controlled by TEAMS_AUTH_ENABLED feature flag for testing phase bypass.
+ * When TEAMS_AUTH_ENABLED === 'true': Cryptographically verifies JWT claims (tid, oid, aud, exp).
+ * When TEAMS_AUTH_ENABLED === 'false' (Testing Mode): Temporarily bypasses blocking to allow UI testing.
  */
 export function validateEntraBearerToken(req: express.Request, res: express.Response, next: express.NextFunction) {
-  const authHeader = req.headers.authorization;
+  const isAuthEnabled = process.env.TEAMS_AUTH_ENABLED === 'true';
 
-  if (authHeader && authHeader.startsWith('Bearer ')) {
+  // 1. If Authentication Enforcement is Enabled (Phase 2 Production Mode)
+  if (isAuthEnabled) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized: Missing Microsoft Entra ID Bearer token' });
+    }
+
     const token = authHeader.substring(7).trim();
     try {
       const parts = token.split('.');
@@ -312,14 +319,11 @@ export function validateEntraBearerToken(req: express.Request, res: express.Resp
     }
   }
 
-  // Fallback for direct browser personal tab requests when Microsoft Entra Token is handled via Teams SDK SSO
-  const fallbackTenant = (req.headers['x-tenant-id'] as string) || process.env.MICROSOFT_APP_TENANT_ID || 'eec115d2-8418-4d66-8e18-b4283ffca2b1';
-  const fallbackUser = (req.headers['x-user-id'] as string) || 'default-user-id';
-
+  // 2. Testing Phase Mode (TEAMS_AUTH_ENABLED=false): Pass-through with default test context
   (req as AuthenticatedRequest).userContext = {
-    tenantId: fallbackTenant,
-    userId: fallbackUser,
-    userEmail: 'user@thinkpalm.com'
+    tenantId: (req.headers['x-tenant-id'] as string) || process.env.MICROSOFT_APP_TENANT_ID || 'test-tenant-id',
+    userId: (req.headers['x-user-id'] as string) || 'test-user-id',
+    userEmail: 'test.user@thinkpalm.com'
   };
 
   next();

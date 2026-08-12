@@ -69,19 +69,5 @@
       "supportsCalling": true,
       "supportsVideo": false
     }
-  ],
-  "authorization": {
-    "permissions": {
-      "resourceSpecific": [
-        {
-          "name": "OnlineMeetingTranscript.Read.Chat",
-          "type": "Delegated"
-        },
-        {
-          "name": "OnlineMeetingRecording.Read.Chat",
-          "type": "Delegated"
-        }
-      ]
-    }
-  }
+  ]
 }
