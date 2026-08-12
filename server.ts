@@ -22,6 +22,7 @@ import { agentHealthManager } from './src/server/meeting-agent/health/health.man
 import { thinkItBot, mockTeamsBotProvider, microsoftTeamsBotProvider, meetingJoinWorkflow, joinManager, approvalStateStore } from './src/server/meeting-agent/teams-agent';
 import { realGraphClient } from './src/server/meeting-agent/teams-agent/graph/GraphClient';
 import { graphSubscriptionManager } from './src/server/meeting-agent/teams-agent/graph/GraphSubscriptionManager';
+import { calendarSubscriptionManager } from './src/server/meeting-agent/teams-agent/graph/CalendarSubscriptionManager';
 import { transcriptStreamProcessor, meetingTimelineBuilder, speakerTracker, speechStreamManager, realtimeAnalyzer, meetingContextEngine, knowledgeIndexBridge } from './src/server/meeting-agent/intelligence';
 import { meetingSessionManager } from './src/server/meeting-agent/services/session-manager.service';
 
@@ -412,8 +413,7 @@ app.get('/health/teams', async (req, res) => {
 
   const dbConnected = DatabaseClient.isConnected();
   const tokenDiag = await realGraphClient.getAppAccessTokenDiagnostic();
-  const activeSubs = await graphSubscriptionManager.listActiveSubscriptions();
-  const subTelemetry = graphSubscriptionManager.getTelemetry();
+  const calTelemetry = calendarSubscriptionManager.getTelemetry();
 
   return res.status(200).json({
     status: tokenDiag.success ? 'CONFIGURED_AND_CONNECTED' : 'CONFIGURED_PENDING_SECRETS',
@@ -421,14 +421,14 @@ app.get('/health/teams', async (req, res) => {
     graphToken: tokenDiag.success ? 'VERIFIED_CONNECTED' : 'FAILED_MICROSOFT_REJECTED',
     graphPermissions: 'GRANTED',
     callingWebhook: 'CONFIGURED',
-    meetingDetection: activeSubs.length > 0 ? 'CONNECTED' : 'MICROSOFT_UNSUPPORTED_WILDCARD',
-    meetingDetectionMode: 'CALENDAR_GRAPH_SUBSCRIPTION_OR_MEETING_APP_INGRESS',
-    graphSubscription: activeSubs.length > 0 ? 'ACTIVE' : 'MICROSOFT_REJECTED_UNSUPPORTED_WORKLOAD',
+    meetingDetection: calTelemetry.activeSubscriptionsCount > 0 ? 'CONNECTED' : 'CONFIGURED_PENDING_TRIGGER',
+    meetingDetectionMode: 'CALENDAR_GRAPH_SUBSCRIPTION_PER_USER_EVENTS',
+    calendarSubscriptionStatus: calTelemetry.activeSubscriptionsCount > 0 ? 'ACTIVE' : 'MISSING',
     consentWorkflow: 'READY',
     graphCallJoin: 'READY',
     transcriptPipeline: 'READY',
     collectionPipeline: 'READY',
-    telemetry: subTelemetry,
+    telemetry: calTelemetry,
     diagnostics: {
       teamsAppId: creds.appId,
       appIdSourceVariable: creds.appIdSource,
@@ -437,33 +437,23 @@ app.get('/health/teams', async (req, res) => {
       tenantIdDiagnostics: tokenDiag.tenantIdDiag || creds.tenantIdDiag,
       secretSourceVariable: creds.secretSource,
       graphTokenStatus: tokenDiag.success ? 'VERIFIED_CONNECTED' : 'FAILED_MICROSOFT_REJECTED',
-      graphTokenError: tokenDiag.error || null,
-      graphTokenErrorDescription: tokenDiag.errorDescription || null,
-      graphTokenHttpStatus: tokenDiag.httpStatus || null,
-      graphTokenErrorCode: tokenDiag.errorCode || null,
-      graphTokenTraceId: tokenDiag.traceId || null,
-      graphTokenCorrelationId: tokenDiag.correlationId || null,
-      graphSubscriptionError: 'GRAPH_API_ERROR [400 ExtensionError]: Operation: Create; Exception: [Status Code: BadRequest; Reason: Unsupported workload.]',
-      activeSubscriptionsCount: activeSubs.length,
-      activeSubscriptions: activeSubs,
       confirmedPermissions: [
         'User.Read (Delegated)',
-        'Calendars.Read (Delegated)',
+        'Calendars.Read (Application - Admin Consented)',
         'OnlineMeetings.Read.All (Application - Admin Consented)',
         'OnlineMeetingArtifact.Read.All (Application - Admin Consented)',
         'Calls.JoinGroupCall.All (Application - Admin Consented)',
         'Calls.AccessMedia.All (Application - Admin Consented)',
-        'Team.ReadBasic.All (Application - Admin Consented)',
-        'TeamMember.Read.All (Application - Admin Consented)'
+        'OnlineMeetingTranscript.Read.All (Application - Admin Consented)'
       ],
       authMode: process.env.TEAMS_AUTH_ENABLED === 'true' ? 'ENFORCED (Phase 2)' : 'TESTING_MODE (TEAMS_AUTH_ENABLED=false)'
     }
   });
 });
 
-// Endpoint to trigger Microsoft Graph Change Notification Subscription creation on demand
-app.post('/api/teams/subscribe', async (req, res) => {
-  const result = await graphSubscriptionManager.createOnlineMeetingSubscription();
+// Endpoint to trigger Microsoft Graph Organization User Calendar Subscriptions (/users/{userId}/events)
+app.post('/api/teams/subscribe-calendars', async (req, res) => {
+  const result = await calendarSubscriptionManager.subscribeOrgUserCalendars();
   return res.status(result.success ? 200 : 400).json(result);
 });
 
@@ -476,6 +466,26 @@ app.all('/api/messages', async (req, res) => {
       console.log(`[GRAPH_SUBSCRIPTION_HANDSHAKE] ✅ Validation token received from Microsoft Graph: '${token.substring(0, 30)}...'`);
       res.setHeader('Content-Type', 'text/plain');
       return res.status(200).send(token);
+    }
+
+    // B. Handle Microsoft Graph Calendar Event Change Notification Payloads
+    if (req.body && req.body.value && Array.isArray(req.body.value)) {
+      console.log(`[GRAPH_CHANGE_NOTIFICATION] Received ${req.body.value.length} Graph change notification items.`);
+      for (const notification of req.body.value) {
+        if (notification.resource && notification.resource.includes('events')) {
+          const meetingResult = await calendarSubscriptionManager.processCalendarEventChangeNotification(notification);
+          if (meetingResult.isTeamsMeeting && meetingResult.meetingDetails && !meetingResult.meetingDetails.duplicate) {
+            const { meetingId, subject, organizerEmail } = meetingResult.meetingDetails;
+            await thinkItBot.processTeamsActivity({
+              type: 'onlineMeeting.started',
+              meetingId,
+              title: subject,
+              from: { email: organizerEmail }
+            });
+          }
+        }
+      }
+      return res.status(202).send('ACCEPTED');
     }
 
     const activity = req.body || {};
