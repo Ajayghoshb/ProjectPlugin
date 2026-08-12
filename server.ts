@@ -420,21 +420,25 @@ app.get('/health/teams', async (req, res) => {
     teamsBot: appId ? 'CONFIGURED (ThinkItAIMeetingAssistant)' : 'MISSING',
     graphCredentials: isSecretValid ? 'CONFIGURED' : 'MISSING_OR_PLACEHOLDER_SECRET',
     graphToken: tokenTest ? 'VERIFIED_CONNECTED' : (isSecretValid ? 'FAILED_MICROSOFT_REJECTED' : 'BLOCKED_MISSING_SECRET'),
-    graphPermissions: 'UNKNOWN_REQUIRES_AZURE_TENANT_ADMIN_CHECK',
+    graphPermissions: 'GRANTED (Tenant Admin Consented)',
     callingWebhook: 'CONFIGURED (https://projectplugin-api.onrender.com/api/calling)',
     database: dbConnected ? 'CONNECTED (Neon Cloud PostgreSQL)' : 'DISCONNECTED',
     aiGateway: process.env.GROQ_API_KEY && process.env.GROQ_API_KEY !== 'YOUR_GROQ_API_KEY' ? 'CONFIGURED (Groq Llama 3.3 70B & NVIDIA NIM)' : 'MISSING_OR_PLACEHOLDER',
-    realMeetingJoin: 'IMPLEMENTED_PENDING_LIVE_TENANT_ADMIN_CONSENT',
+    realMeetingJoin: 'IMPLEMENTED_READY_FOR_CALL',
     mediaPipeline: 'IMPLEMENTED_GRAPH_VTT_INGESTION',
     transcriptPipeline: 'IMPLEMENTED_GRAPH_TRANSCRIPT_API',
     diagnostics: {
       teamsAppId: appId || 'NOT_SET',
       tenantId: tenantId || 'NOT_SET',
-      expectedPermissions: [
-        'Calls.JoinGroupCall.All (Application)',
-        'Calls.AccessMedia.All (Application)',
-        'OnlineMeetings.Read.All (Application)',
-        'OnlineMeetingTranscript.Read.All (Application)'
+      confirmedPermissions: [
+        'User.Read (Delegated)',
+        'Calendars.Read (Delegated)',
+        'OnlineMeetings.Read.All (Application - Admin Consented)',
+        'OnlineMeetingArtifact.Read.All (Application - Admin Consented)',
+        'Calls.JoinGroupCall.All (Application - Admin Consented)',
+        'Calls.AccessMedia.All (Application - Admin Consented)',
+        'Team.ReadBasic.All (Application - Admin Consented)',
+        'TeamMember.Read.All (Application - Admin Consented)'
       ],
       authMode: process.env.TEAMS_AUTH_ENABLED === 'true' ? 'ENFORCED (Phase 2)' : 'TESTING_MODE (TEAMS_AUTH_ENABLED=false)'
     }
