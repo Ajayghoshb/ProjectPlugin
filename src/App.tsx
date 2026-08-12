@@ -388,8 +388,30 @@ export default function App() {
           {loading ? (
             <div className="py-32 text-center space-y-4">
               <RefreshCw className="w-10 h-10 text-blue-500 animate-spin mx-auto" />
-              <p className="text-slate-500 font-display font-medium text-sm">Negotiating proxy tunnels and REST keys...</p>
+              <p className="text-slate-500 font-display font-medium text-sm">Initializing Teams Meeting Intelligence Engine...</p>
             </div>
+          ) : isInTeams ? (
+            /* Strict Microsoft Teams Dedicated Application Shell */
+            <>
+              {activeTab === 'settings' ? (
+                <ConnectionsManager
+                  jiraConnections={db.jiraConnections}
+                  teamsConnections={db.teamsConnections}
+                  googleConnections={db.googleConnections}
+                  jiraEmailMappings={db.jiraEmailMappings || []}
+                  projects={db.projects}
+                  members={db.members}
+                  meetings={db.meetings}
+                  onConnectJira={handleConnectJira}
+                  onConnectTeams={handleConnectTeams}
+                  onConnectGoogle={handleConnectGoogle}
+                  onSaveJiraProjects={handleSaveJiraProjects}
+                  onRefreshData={fetchData}
+                />
+              ) : (
+                <PlugIt />
+              )}
+            </>
           ) : (
             <>
               {activeTab === 'dashboard' && (
