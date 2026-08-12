@@ -12,15 +12,17 @@
  * call or add the bot, this class manages Microsoft Graph Change Notifications for user calendar events
  * on '/users/{userId}/events' using the Entra Application permission 'Calendars.Read'.
  * 
- * WORKFLOW:
- * ---------
+ * WORKFLOW & RECONCILIATION:
+ * --------------------------
  * 1. Discover organization user mailboxes via Microsoft Graph API 'GET /v1.0/users'.
- * 2. Create an Outlook event subscription ('POST /v1.0/subscriptions') for resource '/users/{userId}/events'.
- * 3. Receive change notification webhooks at 'POST /api/graph/notifications'.
- * 4. Fetch event details from Graph to verify 'isOnlineMeeting === true'.
- * 5. Extract 'onlineMeetingId', 'joinWebUrl', 'organizerEmail', 'subject', and 'scheduledStart'.
- * 6. Send the Adaptive Consent Card ("Think It wants to join this meeting") to the meeting organizer.
- * 7. Track idempotent meeting state transitions and prevent duplicate notifications.
+ * 2. Query existing active Graph subscriptions via 'GET /v1.0/subscriptions' to prevent duplicate subscriptions.
+ * 3. Reconcile existing subscriptions or create a new Outlook event subscription ('POST /v1.0/subscriptions')
+ *    for resource '/users/{userId}/events'.
+ * 4. Receive change notification webhooks at 'POST /api/graph/notifications'.
+ * 5. Fetch event details from Graph to verify 'isOnlineMeeting === true'.
+ * 6. Extract 'onlineMeetingId', 'joinWebUrl', 'organizerEmail', 'subject', and 'scheduledStart'.
+ * 7. Send the Adaptive Consent Card ("Think It wants to join this meeting") to the meeting organizer.
+ * 8. Track idempotent meeting state transitions and prevent duplicate notifications.
  */
 
 import { realGraphClient } from './GraphClient';
@@ -53,7 +55,7 @@ export class CalendarSubscriptionManager {
   private lastSuccessfulBotJoin: string | null = null;
 
   /**
-   * Discovers organization users and creates Microsoft Graph Calendar Subscriptions (/users/{userId}/events).
+   * Discovers organization users, reconciles existing subscriptions, and creates missing Graph Calendar Subscriptions (/users/{userId}/events).
    * Expiration is set to 4000 minutes (~66 hours) to satisfy Graph's 4230-minute limit.
    */
   async subscribeOrgUserCalendars(): Promise<{ success: boolean; activeSubscriptionsCount: number; subscriptions: CalendarSubscription[]; errors: string[] }> {
@@ -71,7 +73,27 @@ export class CalendarSubscriptionManager {
     const createdSubs: CalendarSubscription[] = [];
 
     try {
-      // 2. Fetch organization user mailboxes using Microsoft Graph API
+      // 2. Fetch existing Graph subscriptions to prevent duplicate subscription creation
+      console.log(`[CALENDAR_SUBSCRIPTION] Reconciling existing Graph subscriptions via GET /subscriptions...`);
+      const existingSubsMap = new Map<string, any>();
+      try {
+        const existingRes = await fetch(`${this.graphEndpoint}/subscriptions`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (existingRes.ok) {
+          const existingData = await existingRes.json();
+          for (const sub of (existingData.value || [])) {
+            if (sub.resource) {
+              existingSubsMap.set(sub.resource, sub);
+            }
+          }
+          console.log(`[CALENDAR_SUBSCRIPTION] Found ${existingSubsMap.size} existing active Graph subscriptions.`);
+        }
+      } catch (err: any) {
+        console.warn(`[CALENDAR_SUBSCRIPTION] ⚠️ Could not fetch existing subscriptions for reconciliation:`, err.message || err);
+      }
+
+      // 3. Fetch organization user mailboxes using Microsoft Graph API
       console.log(`[CALENDAR_SUBSCRIPTION] Discovering organization users via GET /users...`);
       const usersRes = await fetch(`${this.graphEndpoint}/users?$select=id,userPrincipalName,mail&$top=50`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -88,11 +110,30 @@ export class CalendarSubscriptionManager {
       const users: any[] = usersData.value || [];
       console.log(`[CALENDAR_SUBSCRIPTION] Discovered ${users.length} organization user mailboxes.`);
 
-      // 3. Create a Graph subscription for each user's calendar events (/users/{userId}/events)
+      // 4. Reconcile or create a Graph subscription for each user's calendar events (/users/{userId}/events)
       for (const user of users) {
         const userId = user.id;
         const userEmail = user.mail || user.userPrincipalName;
         const resource = `/users/${userId}/events`;
+
+        // Check if an unexpired subscription already exists for this exact resource
+        const existingSub = existingSubsMap.get(resource);
+        if (existingSub) {
+          const subRecord: CalendarSubscription = {
+            id: existingSub.id,
+            userId,
+            userEmail,
+            resource,
+            changeType: existingSub.changeType || 'created,updated',
+            clientState: existingSub.clientState,
+            notificationUrl: existingSub.notificationUrl || notificationUrl,
+            expirationDateTime: existingSub.expirationDateTime
+          };
+          this.activeCalendarSubscriptions.set(existingSub.id, subRecord);
+          createdSubs.push(subRecord);
+          console.log(`[CALENDAR_SUBSCRIPTION] ℹ️ Existing active subscription found for '${userEmail}' (${resource}) -> SubID: '${existingSub.id}'. Reconciled.`);
+          continue;
+        }
 
         const payload = {
           changeType: 'created,updated',
