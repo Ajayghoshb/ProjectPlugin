@@ -80,18 +80,6 @@
         {
           "name": "OnlineMeetingRecording.Read.Chat",
           "type": "Delegated"
-        },
-        {
-          "name": "OnlineMeetingTranscript.Read.Group",
-          "type": "Delegated"
-        },
-        {
-          "name": "OnlineMeetingRecording.Read.Group",
-          "type": "Delegated"
-        },
-        {
-          "name": "OnlineMeeting.ReadBasic.Chat",
-          "type": "Delegated"
         }
       ]
     }
