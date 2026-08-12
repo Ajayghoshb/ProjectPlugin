@@ -17,72 +17,135 @@ export interface GraphTokenDiagnosticResult {
   errorCode?: string;
   traceId?: string;
   correlationId?: string;
+  tenantIdDiag?: {
+    length: number;
+    isUuidFormat: boolean;
+    prefix: string;
+    suffix: string;
+    sourceVariable: string;
+  };
+  secretSource?: string;
+  appIdSource?: string;
+}
+
+/**
+ * Strips accidental surrounding quotes, single quotes, carriage returns, and whitespace from environment values
+ */
+function sanitizeEnvString(val: string | undefined): string {
+  if (!val) return '';
+  return val.replace(/['"\s\r\n]/g, '').trim();
 }
 
 export class RealMicrosoftGraphClient {
   private graphEndpoint: string = 'https://graph.microsoft.com/v1.0';
 
   /**
-   * Dynamically resolve Graph App Credentials with deterministic fallback & placeholder filtering
+   * Dynamically resolve Graph App Credentials with deterministic fallback, quote sanitization & placeholder filtering
    */
-  public getCredentials(): { appId: string; tenantId: string; appSecret: string } {
-    const appId = (
-      process.env.MICROSOFT_GRAPH_CLIENT_ID ||
-      process.env.MICROSOFT_APP_ID ||
-      process.env.AZURE_CLIENT_ID ||
-      '8ec8a471-4328-4e8f-8c69-e64abdf2725e'
-    ).trim();
+  public getCredentials(): {
+    appId: string;
+    tenantId: string;
+    appSecret: string;
+    appIdSource: string;
+    tenantIdSource: string;
+    secretSource: string;
+    tenantIdDiag: {
+      length: number;
+      isUuidFormat: boolean;
+      prefix: string;
+      suffix: string;
+      sourceVariable: string;
+    };
+  } {
+    let appId = '';
+    let appIdSource = 'DEFAULT_FALLBACK';
+    if (process.env.MICROSOFT_GRAPH_CLIENT_ID) {
+      appId = sanitizeEnvString(process.env.MICROSOFT_GRAPH_CLIENT_ID);
+      appIdSource = 'MICROSOFT_GRAPH_CLIENT_ID';
+    } else if (process.env.MICROSOFT_APP_ID) {
+      appId = sanitizeEnvString(process.env.MICROSOFT_APP_ID);
+      appIdSource = 'MICROSOFT_APP_ID';
+    } else if (process.env.AZURE_CLIENT_ID) {
+      appId = sanitizeEnvString(process.env.AZURE_CLIENT_ID);
+      appIdSource = 'AZURE_CLIENT_ID';
+    } else {
+      appId = '8ec8a471-4328-4e8f-8c69-e64abdf2725e';
+    }
 
-    const tenantId = (
-      process.env.MICROSOFT_APP_TENANT_ID ||
-      process.env.MICROSOFT_GRAPH_TENANT_ID ||
-      process.env.AZURE_TENANT_ID ||
-      'eec115d2-8418-4d66-8e18-b4283ffca2b1'
-    ).trim();
+    let tenantId = '';
+    let tenantIdSource = 'DEFAULT_FALLBACK';
+    if (process.env.MICROSOFT_APP_TENANT_ID) {
+      tenantId = sanitizeEnvString(process.env.MICROSOFT_APP_TENANT_ID);
+      tenantIdSource = 'MICROSOFT_APP_TENANT_ID';
+    } else if (process.env.MICROSOFT_GRAPH_TENANT_ID) {
+      tenantId = sanitizeEnvString(process.env.MICROSOFT_GRAPH_TENANT_ID);
+      tenantIdSource = 'MICROSOFT_GRAPH_TENANT_ID';
+    } else if (process.env.AZURE_TENANT_ID) {
+      tenantId = sanitizeEnvString(process.env.AZURE_TENANT_ID);
+      tenantIdSource = 'AZURE_TENANT_ID';
+    } else {
+      tenantId = 'eec115d2-8418-4d66-8e18-b4283ffca2b1';
+    }
 
-    const secretCandidates = [
-      process.env.MICROSOFT_GRAPH_CLIENT_SECRET,
-      process.env.MICROSOFT_APP_PASSWORD,
-      process.env.AZURE_CLIENT_SECRET
-    ];
+    const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    const isUuidFormat = uuidRegex.test(tenantId);
+    const tenantIdDiag = {
+      length: tenantId.length,
+      isUuidFormat,
+      prefix: tenantId.length >= 4 ? tenantId.substring(0, 4) : tenantId,
+      suffix: tenantId.length >= 4 ? tenantId.substring(tenantId.length - 4) : tenantId,
+      sourceVariable: tenantIdSource
+    };
 
     let appSecret = '';
+    let secretSource = 'NONE';
+    const secretCandidates = [
+      { name: 'MICROSOFT_GRAPH_CLIENT_SECRET', val: process.env.MICROSOFT_GRAPH_CLIENT_SECRET },
+      { name: 'MICROSOFT_APP_PASSWORD', val: process.env.MICROSOFT_APP_PASSWORD },
+      { name: 'AZURE_CLIENT_SECRET', val: process.env.AZURE_CLIENT_SECRET }
+    ];
+
     for (const candidate of secretCandidates) {
+      const sanitized = sanitizeEnvString(candidate.val);
       if (
-        candidate &&
-        candidate.trim() !== '' &&
-        candidate.trim() !== 'YOUR_TEAMS_BOT_PASSWORD' &&
-        candidate.trim() !== 'YOUR_AZURE_CLIENT_SECRET' &&
-        candidate.trim() !== 'YOUR_MICROSOFT_GRAPH_CLIENT_SECRET'
+        sanitized !== '' &&
+        sanitized !== 'YOUR_TEAMS_BOT_PASSWORD' &&
+        sanitized !== 'YOUR_AZURE_CLIENT_SECRET' &&
+        sanitized !== 'YOUR_MICROSOFT_GRAPH_CLIENT_SECRET'
       ) {
-        appSecret = candidate.trim();
+        appSecret = sanitized;
+        secretSource = candidate.name;
         break;
       }
     }
 
-    return { appId, tenantId, appSecret };
+    return { appId, tenantId, appSecret, appIdSource, tenantIdSource, secretSource, tenantIdDiag };
   }
 
   /**
    * Acquire Service-to-Service Access Token with Safe Diagnostic Details
    */
   async getAppAccessTokenDiagnostic(): Promise<GraphTokenDiagnosticResult> {
-    const { appId, tenantId, appSecret } = this.getCredentials();
+    const creds = this.getCredentials();
 
-    if (!appSecret) {
+    if (!creds.appSecret) {
       return {
         success: false,
         error: 'MISSING_OR_PLACEHOLDER_SECRET',
-        errorDescription: 'No valid secret found in MICROSOFT_GRAPH_CLIENT_SECRET, MICROSOFT_APP_PASSWORD, or AZURE_CLIENT_SECRET.'
+        errorDescription: 'No valid secret found in MICROSOFT_GRAPH_CLIENT_SECRET, MICROSOFT_APP_PASSWORD, or AZURE_CLIENT_SECRET.',
+        tenantIdDiag: creds.tenantIdDiag,
+        secretSource: creds.secretSource,
+        appIdSource: creds.appIdSource
       };
     }
 
     try {
-      console.log(`[GRAPH] Token acquisition started for App ID '${appId}' on Entra tenant '${tenantId}'...`);
-      const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
+      console.log(`[GRAPH] Token acquisition started using App ID Source '${creds.appIdSource}', Tenant Source '${creds.tenantIdSource}' (Length: ${creds.tenantIdDiag.length}, UUID: ${creds.tenantIdDiag.isUuidFormat}, Prefix: ${creds.tenantIdDiag.prefix}..., Suffix: ...${creds.tenantIdDiag.suffix}), Secret Source '${creds.secretSource}'...`);
+      
+      const tokenUrl = `https://login.microsoftonline.com/${creds.tenantId}/oauth2/v2.0/token`;
       const body = new URLSearchParams({
-        client_id: appId,
-        client_secret: appSecret,
+        client_id: creds.appId,
+        client_secret: creds.appSecret,
         grant_type: 'client_credentials',
         scope: 'https://graph.microsoft.com/.default'
       });
@@ -111,7 +174,10 @@ export class RealMicrosoftGraphClient {
           errorDescription,
           errorCode,
           traceId,
-          correlationId
+          correlationId,
+          tenantIdDiag: creds.tenantIdDiag,
+          secretSource: creds.secretSource,
+          appIdSource: creds.appIdSource
         };
       }
 
@@ -120,14 +186,20 @@ export class RealMicrosoftGraphClient {
       return {
         success: true,
         token: data.access_token,
-        httpStatus: 200
+        httpStatus: 200,
+        tenantIdDiag: creds.tenantIdDiag,
+        secretSource: creds.secretSource,
+        appIdSource: creds.appIdSource
       };
     } catch (err: any) {
       console.error('[GRAPH] ❌ Token acquisition network exception:', err.message || err);
       return {
         success: false,
         error: 'NETWORK_EXCEPTION',
-        errorDescription: err.message || 'Network exception calling Entra ID OAuth2 endpoint'
+        errorDescription: err.message || 'Network exception calling Entra ID OAuth2 endpoint',
+        tenantIdDiag: creds.tenantIdDiag,
+        secretSource: creds.secretSource,
+        appIdSource: creds.appIdSource
       };
     }
   }

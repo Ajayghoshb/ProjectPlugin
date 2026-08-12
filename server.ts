@@ -427,7 +427,11 @@ app.get('/health/teams', async (req, res) => {
     transcriptPipeline: 'READY',
     diagnostics: {
       teamsAppId: creds.appId,
+      appIdSourceVariable: creds.appIdSource,
       tenantId: creds.tenantId,
+      tenantIdSourceVariable: creds.tenantIdSource,
+      tenantIdDiagnostics: tokenDiag.tenantIdDiag || creds.tenantIdDiag,
+      secretSourceVariable: creds.secretSource,
       graphTokenStatus: tokenDiag.success ? 'VERIFIED_CONNECTED' : 'FAILED_MICROSOFT_REJECTED',
       graphTokenError: tokenDiag.error || null,
       graphTokenErrorDescription: tokenDiag.errorDescription || null,
