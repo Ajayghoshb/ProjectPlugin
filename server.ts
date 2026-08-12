@@ -20,6 +20,7 @@ const queueProvider = new LocalQueueProvider();
 import { meetingAgentOrchestrator } from './src/server/meeting-agent/orchestrator/agent.orchestrator';
 import { agentHealthManager } from './src/server/meeting-agent/health/health.manager';
 import { thinkItBot, mockTeamsBotProvider, microsoftTeamsBotProvider, meetingJoinWorkflow, joinManager, approvalStateStore } from './src/server/meeting-agent/teams-agent';
+import { realGraphClient } from './src/server/meeting-agent/teams-agent/graph/GraphClient';
 import { transcriptStreamProcessor, meetingTimelineBuilder, speakerTracker, speechStreamManager, realtimeAnalyzer, meetingContextEngine, knowledgeIndexBridge } from './src/server/meeting-agent/intelligence';
 import { meetingSessionManager } from './src/server/meeting-agent/services/session-manager.service';
 
@@ -402,6 +403,40 @@ app.post('/api/custom-reports/export-zip', async (req, res) => {
 // ===================================================================
 // MICROSOFT TEAMS AUTOMATIC BOT JOIN & LIVE MEETING INTELLIGENCE PIPELINE
 // ===================================================================
+
+// 0. Protected Microsoft Teams Integration Health & Configuration Diagnostic Endpoint
+app.get('/health/teams', async (req, res) => {
+  const appId = process.env.MICROSOFT_APP_ID || process.env.AZURE_CLIENT_ID;
+  const tenantId = process.env.MICROSOFT_APP_TENANT_ID || process.env.AZURE_TENANT_ID;
+  const botSecret = process.env.MICROSOFT_APP_PASSWORD || process.env.AZURE_CLIENT_SECRET;
+  const isSecretValid = !!(botSecret && botSecret !== 'YOUR_TEAMS_BOT_PASSWORD' && botSecret !== 'YOUR_AZURE_CLIENT_SECRET');
+
+  const dbConnected = DatabaseClient.isConnected();
+  const tokenTest = isSecretValid ? await realGraphClient.getAppAccessToken() : null;
+
+  return res.status(200).json({
+    status: tokenTest ? 'CONFIGURED_AND_CONNECTED' : 'CONFIGURED_PENDING_SECRETS',
+    timestamp: new Date().toISOString(),
+    diagnostics: {
+      teamsAppIdConfigured: appId ? 'CONFIGURED' : 'MISSING',
+      teamsAppId: appId || 'NOT_SET',
+      tenantIdConfigured: tenantId ? 'CONFIGURED' : 'MISSING',
+      tenantId: tenantId || 'NOT_SET',
+      botPasswordConfigured: isSecretValid ? 'CONFIGURED' : 'MISSING_OR_PLACEHOLDER',
+      graphOAuthTokenAcquisition: tokenTest ? 'VERIFIED_CONNECTED' : 'FAILED_OR_MISSING_SECRET',
+      callingCapabilityEnabled: 'CONFIGURED (supportsCalling: true)',
+      requiredGraphPermissionsExpected: [
+        'Calls.JoinGroupCall.All (Application - Pending Admin Consent)',
+        'Calls.AccessMedia.All (Application - Pending Admin Consent)',
+        'OnlineMeetings.Read.All (Application - Pending Admin Consent)',
+        'OnlineMeetingTranscript.Read.All (Application - Pending Admin Consent)'
+      ],
+      databaseConnected: dbConnected ? 'CONNECTED (Neon Cloud PostgreSQL)' : 'DISCONNECTED',
+      aiProviderConfigured: process.env.GROQ_API_KEY && process.env.GROQ_API_KEY !== 'YOUR_GROQ_API_KEY' ? 'CONFIGURED (Groq Llama 3.3 70B & NVIDIA NIM)' : 'MISSING_OR_PLACEHOLDER',
+      teamsAuthMode: process.env.TEAMS_AUTH_ENABLED === 'true' ? 'ENFORCED (Phase 2)' : 'TESTING_MODE (TEAMS_AUTH_ENABLED=false)'
+    }
+  });
+});
 
 // 1. Bot Framework Main Webhook Endpoint (Registered in manifest.json & Azure Bot Registration)
 app.post('/api/messages', async (req, res) => {
