@@ -1,3 +1,23 @@
+/**
+ * =========================================================================================
+ * THINK IT AI MEETING ASSISTANT — DEPRECATED WILDCARD GRAPH SUBSCRIPTION MANAGER
+ * =========================================================================================
+ * 
+ * ARCHITECTURAL NOTICE:
+ * ---------------------
+ * This class originally attempted a global tenant-wide wildcard subscription on '/communications/onlineMeetings'.
+ * 
+ * MICROSOFT PLATFORM REJECTION EVIDENCE:
+ * --------------------------------------
+ * Microsoft Graph API explicitly rejects wildcard subscriptions on '/communications/onlineMeetings' with:
+ * `HTTP 400 [ExtensionError]: Operation: Create; Exception: [Status Code: BadRequest; Reason: Unsupported workload.]`
+ * 
+ * ACTIVE PRODUCTION REPLACEMENT:
+ * ------------------------------
+ * Use 'CalendarSubscriptionManager' (src/server/meeting-agent/teams-agent/graph/CalendarSubscriptionManager.ts),
+ * which uses Microsoft's supported resource '/users/{userId}/events' with 'Calendars.Read' Application permission.
+ */
+
 import { realGraphClient } from './GraphClient';
 
 export interface GraphSubscription {
@@ -19,8 +39,8 @@ export class GraphSubscriptionManager {
   private lastSuccessfulBotJoin: string | null = null;
 
   /**
-   * Create Microsoft Graph Change Notification Subscription for Tenant Online Meetings
-   * Target Resource: /communications/onlineMeetings
+   * DEPRECATED: Attempts wildcard /communications/onlineMeetings subscription.
+   * Microsoft Graph rejects this with HTTP 400 'Unsupported workload'.
    */
   async createOnlineMeetingSubscription(): Promise<{ success: boolean; subscription?: GraphSubscription; error?: string }> {
     const token = await realGraphClient.getAppAccessToken();
@@ -30,7 +50,6 @@ export class GraphSubscriptionManager {
     }
 
     const notificationUrl = process.env.BOT_ENDPOINT || 'https://projectplugin-api.onrender.com/api/messages';
-    // Subscription expiration maximum for Graph onlineMeetings is strictly 4230 minutes (~70.5 hours)
     const expirationDateTime = new Date(Date.now() + 4000 * 60 * 1000).toISOString();
 
     const payload = {
@@ -72,7 +91,7 @@ export class GraphSubscriptionManager {
   }
 
   /**
-   * List Active Microsoft Graph Subscriptions
+   * Lists active Graph Subscriptions
    */
   async listActiveSubscriptions(): Promise<GraphSubscription[]> {
     const token = await realGraphClient.getAppAccessToken();

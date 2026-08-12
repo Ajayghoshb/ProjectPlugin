@@ -1,3 +1,24 @@
+/**
+ * =========================================================================================
+ * THINK IT AI MEETING ASSISTANT — MICROSOFT GRAPH TRANSCRIPT SUBSCRIPTION MANAGER
+ * =========================================================================================
+ * 
+ * ARCHITECTURAL PURPOSE:
+ * ----------------------
+ * Handles Microsoft Graph change notifications for meeting transcripts on resource
+ * '/communications/onlineMeetings/getAllTranscripts' using Application permission
+ * 'OnlineMeetingTranscript.Read.All'.
+ * 
+ * WORKFLOW:
+ * ---------
+ * 1. Create a subscription for '/communications/onlineMeetings/getAllTranscripts'.
+ * 2. Receive change notification webhooks at 'POST /api/graph/notifications'.
+ * 3. Extract 'meetingId', 'userId', and 'transcriptId'.
+ * 4. Fetch the official WebVTT (VTT) transcript content from Microsoft Graph API.
+ * 5. Pass the raw transcript to the AI Gateway (Groq & NVIDIA NIM) for processing.
+ * 6. Store Executive Summary, MOM, Key Decisions, Action Items & Risks in Neon Cloud PostgreSQL.
+ */
+
 import { realGraphClient } from './GraphClient';
 
 export interface TranscriptSubscription {
@@ -15,7 +36,7 @@ export class TranscriptSubscriptionManager {
   private lastTranscriptReceived: string | null = null;
 
   /**
-   * Subscribe to Tenant Meeting Transcript Availability Change Notifications
+   * Subscribes to tenant-wide meeting transcript availability change notifications
    * Target Resource: /communications/onlineMeetings/getAllTranscripts
    */
   async createTranscriptSubscription(): Promise<{ success: boolean; subscription?: TranscriptSubscription; error?: string }> {
@@ -74,7 +95,7 @@ export class TranscriptSubscriptionManager {
   }
 
   /**
-   * Process incoming transcript change notification payload
+   * Processes incoming transcript change notifications and fetches the VTT content from Graph.
    */
   async processTranscriptNotification(notification: any): Promise<{ success: boolean; transcriptText?: string; error?: string }> {
     this.lastTranscriptNotification = new Date().toISOString();
@@ -99,6 +120,9 @@ export class TranscriptSubscriptionManager {
     return { success: false, error: 'Failed to retrieve transcript content' };
   }
 
+  /**
+   * Returns safe telemetry status object for GET /health/teams diagnostic endpoint
+   */
   getTelemetry() {
     return {
       activeSubscription: this.activeSubscription,

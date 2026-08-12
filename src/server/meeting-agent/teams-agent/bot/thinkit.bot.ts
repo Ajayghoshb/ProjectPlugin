@@ -1,3 +1,23 @@
+/**
+ * =========================================================================================
+ * THINK IT AI MEETING ASSISTANT — TEAMS BOT ACTIVITY PROCESSOR
+ * =========================================================================================
+ * 
+ * ARCHITECTURAL PURPOSE:
+ * ----------------------
+ * Processes incoming Microsoft Teams Bot Framework activities and Adaptive Card action submits.
+ * 
+ * WORKFLOW & DECISION ROUTING:
+ * ----------------------------
+ * 1. Organizer Consent Card Actions:
+ *    - 'ALLOW_JOIN': Logs [CONSENT_GRANTED], triggers Graph call join ('POST /v1.0/communications/calls').
+ *    - 'DECLINE_JOIN': Logs [CONSENT_DECLINED], does NOT join or record call.
+ * 
+ * 2. Meeting Ingress Events ('meeting.started' / 'onlineMeeting.started'):
+ *    - Resolves meeting details, subject, and organizer email.
+ *    - Renders and delivers the "Think It wants to join this meeting" Adaptive Card to the organizer.
+ */
+
 import { IBotAdapter, MockBotAdapter } from './bot.adapter';
 import { teamsEventPublisher } from '../events/teams.events';
 import { meetingAgentOrchestrator } from '../../orchestrator/agent.orchestrator';
@@ -27,8 +47,11 @@ export class ThinkItBot {
     return `🤖 **Think It AI Assistant**: Ready to capture meeting intelligence upon organizer consent.`;
   }
 
+  /**
+   * Main entry point for processing incoming Bot Framework activities and Adaptive Card submits.
+   */
   async processTeamsActivity(activity: any): Promise<any> {
-    // Safe Ingress Diagnostic Event Telemetry
+    // Safe Ingress Diagnostic Event Telemetry — Excludes tokens and personal content
     console.log(`[REAL_TEAMS_EVENT_RECEIVED]`, JSON.stringify({
       eventType: activity.eventType || activity.type || 'unknown',
       activityType: activity.type || 'message',
@@ -50,7 +73,7 @@ export class ThinkItBot {
         console.log(`[CONSENT_GRANTED] Organizer '${organizer}' allowed Think It to join meeting '${meetingId}'.`);
         console.log(`[GRAPH_JOIN_REQUESTED] Issuing Microsoft Graph Cloud Communications call join request for '${meetingId}'...`);
 
-        // Execute real Graph Communications Call Join
+        // Execute real Graph Communications Call Join API (POST /v1.0/communications/calls)
         const joinResult = await realGraphClient.joinCall({
           joinWebUrl: meetingId,
           organizerId: organizer
@@ -95,6 +118,7 @@ export class ThinkItBot {
       console.log(`[MEETING_DETECTED] Real Microsoft Teams meeting detected: '${title}' (${meetingId})`);
       console.log(`[CONSENT_REQUESTED] Sending Organizer Consent Adaptive Card for '${title}'...`);
 
+      // Send the Adaptive Consent Card to the organizer
       const card = buildJoinRequestCard(meetingId, title, organizer);
       await this.adapter.sendCard(activity.conversation?.id || 'conv-meeting', card);
 

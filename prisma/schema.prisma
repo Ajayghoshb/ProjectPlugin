@@ -151,24 +151,38 @@ model MeetingTranscript {
   @@index([speakerId])
 }
 
+// =========================================================================================
+// TEAMS MEETING RECORD — PERSISTENT LIFECYCLE STATE MACHINE MODEL
+// =========================================================================================
+// Represents real Microsoft Teams meeting records discovered via Microsoft Graph Calendar Change
+// Notifications (/users/{userId}/events).
+//
+// Lifecycle Status Transitions:
+// -----------------------------
+// DISCOVERED -> SCHEDULED -> CONSENT_PENDING -> CONSENT_GRANTED (or DECLINED) -> JOIN_REQUESTED
+// -> JOINED -> ACTIVE -> ENDED -> TRANSCRIPT_PENDING -> TRANSCRIPT_RECEIVED -> AI_PROCESSING -> COMPLETED
+//
+// Unique Constraint:
+// ------------------
+// @@unique([tenantId, calendarEventId]) prevents duplicate meeting creation from redundant Graph webhooks.
 model TeamsMeetingRecord {
   id               String    @id @default(uuid())
-  tenantId         String
-  organizerId      String?
-  organizerEmail   String
-  calendarEventId  String
-  onlineMeetingId  String?
-  joinWebUrl       String?
-  subject          String
-  scheduledStart   DateTime?
-  scheduledEnd     DateTime?
-  actualStart      DateTime?
-  actualEnd        DateTime?
-  lifecycleStatus  String    @default("DISCOVERED")
-  consentStatus    String    @default("PENDING")
-  transcriptStatus String    @default("PENDING")
-  aiStatus         String    @default("QUEUED")
-  transcriptId     String?
+  tenantId         String    // Microsoft Entra Tenant ID
+  organizerId      String?   // Microsoft Graph User ID of Meeting Organizer
+  organizerEmail   String    // Email Address of Meeting Organizer
+  calendarEventId  String    // Microsoft Graph Outlook Calendar Event Identifier
+  onlineMeetingId  String?   // Microsoft Graph Teams Online Meeting Identifier
+  joinWebUrl       String?   // Microsoft Teams Meeting Join Web URL
+  subject          String    // Scheduled Meeting Subject / Title
+  scheduledStart   DateTime? // Scheduled Start Timestamp
+  scheduledEnd     DateTime? // Scheduled End Timestamp
+  actualStart      DateTime? // Actual Call Established Timestamp
+  actualEnd        DateTime? // Actual Call Concluded Timestamp
+  lifecycleStatus  String    @default("DISCOVERED") // State Machine Status
+  consentStatus    String    @default("PENDING")    // PENDING | APPROVED | DECLINED
+  transcriptStatus String    @default("PENDING")    // PENDING | RETRIEVED | FAILED
+  aiStatus         String    @default("QUEUED")     // QUEUED | PROCESSING | COMPLETED | FAILED
+  transcriptId     String?   // Microsoft Graph Transcript Identifier
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
@@ -176,4 +190,5 @@ model TeamsMeetingRecord {
   @@index([tenantId])
   @@index([lifecycleStatus])
 }
+
 

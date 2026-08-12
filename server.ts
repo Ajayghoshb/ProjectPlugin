@@ -5892,6 +5892,12 @@ async function startServer() {
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Resource Scheduling & Collaboration platform server running at http://0.0.0.0:${PORT}`);
+    
+    // Automatically initialize/reconcile Microsoft Graph Calendar Subscriptions on Server Boot
+    console.log('[STARTUP] Initializing Microsoft Graph Organization Calendar Subscriptions...');
+    calendarSubscriptionManager.subscribeOrgUserCalendars().catch(err => {
+      console.warn('[CALENDAR_SUBSCRIPTION_STARTUP] ⚠️ Auto-reconciliation background warning:', err.message || err);
+    });
   });
 }
 

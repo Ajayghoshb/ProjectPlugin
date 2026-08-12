@@ -1,5 +1,33 @@
+/**
+ * =========================================================================================
+ * THINK IT AI MEETING ASSISTANT — MICROSOFT GRAPH CALENDAR SUBSCRIPTION MANAGER
+ * =========================================================================================
+ * 
+ * ARCHITECTURAL PURPOSE:
+ * ----------------------
+ * Microsoft Graph API rejects global tenant-wide wildcard subscriptions on '/communications/onlineMeetings'
+ * with HTTP 400 'Unsupported workload'.
+ * 
+ * To achieve automatic organization-level Teams meeting detection without requiring users to manually
+ * call or add the bot, this class manages Microsoft Graph Change Notifications for user calendar events
+ * on '/users/{userId}/events' using the Entra Application permission 'Calendars.Read'.
+ * 
+ * WORKFLOW:
+ * ---------
+ * 1. Discover organization user mailboxes via Microsoft Graph API 'GET /v1.0/users'.
+ * 2. Create an Outlook event subscription ('POST /v1.0/subscriptions') for resource '/users/{userId}/events'.
+ * 3. Receive change notification webhooks at 'POST /api/graph/notifications'.
+ * 4. Fetch event details from Graph to verify 'isOnlineMeeting === true'.
+ * 5. Extract 'onlineMeetingId', 'joinWebUrl', 'organizerEmail', 'subject', and 'scheduledStart'.
+ * 6. Send the Adaptive Consent Card ("Think It wants to join this meeting") to the meeting organizer.
+ * 7. Track idempotent meeting state transitions and prevent duplicate notifications.
+ */
+
 import { realGraphClient } from './GraphClient';
 
+/**
+ * Interface representing an active Microsoft Graph Calendar Subscription
+ */
 export interface CalendarSubscription {
   id: string;
   userId: string;
@@ -16,6 +44,7 @@ export class CalendarSubscriptionManager {
   private activeCalendarSubscriptions: Map<string, CalendarSubscription> = new Map();
   private processedMeetingIds: Set<string> = new Set();
   
+  // Structured Observability Telemetry Timestamps
   private lastCalendarEventReceived: string | null = null;
   private lastTeamsMeetingDetected: string | null = null;
   private lastConsentRequested: string | null = null;
@@ -24,23 +53,25 @@ export class CalendarSubscriptionManager {
   private lastSuccessfulBotJoin: string | null = null;
 
   /**
-   * Discover Tenant Organization Users and Subscribe to Calendar Events (/users/{userId}/events)
+   * Discovers organization users and creates Microsoft Graph Calendar Subscriptions (/users/{userId}/events).
+   * Expiration is set to 4000 minutes (~66 hours) to satisfy Graph's 4230-minute limit.
    */
   async subscribeOrgUserCalendars(): Promise<{ success: boolean; activeSubscriptionsCount: number; subscriptions: CalendarSubscription[]; errors: string[] }> {
+    // 1. Acquire Microsoft Entra ID Application Access Token via client-credentials grant
     const token = await realGraphClient.getAppAccessToken();
     if (!token) {
       console.error('[CALENDAR_SUBSCRIPTION] ❌ Missing Graph access token.');
       return { success: false, activeSubscriptionsCount: 0, subscriptions: [], errors: ['AUTHENTICATION_FAILED: Missing Graph access token'] };
     }
 
-    const notificationUrl = process.env.BOT_ENDPOINT || 'https://projectplugin-api.onrender.com/api/messages';
+    const notificationUrl = process.env.BOT_ENDPOINT || 'https://projectplugin-api.onrender.com/api/graph/notifications';
     // Maximum allowed expiration for Outlook /users/{id}/events is 4230 minutes (~70.5 hours)
     const expirationDateTime = new Date(Date.now() + 4000 * 60 * 1000).toISOString();
     const errors: string[] = [];
     const createdSubs: CalendarSubscription[] = [];
 
     try {
-      // 1. Fetch organization users via Graph API
+      // 2. Fetch organization user mailboxes using Microsoft Graph API
       console.log(`[CALENDAR_SUBSCRIPTION] Discovering organization users via GET /users...`);
       const usersRes = await fetch(`${this.graphEndpoint}/users?$select=id,userPrincipalName,mail&$top=50`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -57,7 +88,7 @@ export class CalendarSubscriptionManager {
       const users: any[] = usersData.value || [];
       console.log(`[CALENDAR_SUBSCRIPTION] Discovered ${users.length} organization user mailboxes.`);
 
-      // 2. Subscribe each user's calendar events
+      // 3. Create a Graph subscription for each user's calendar events (/users/{userId}/events)
       for (const user of users) {
         const userId = user.id;
         const userEmail = user.mail || user.userPrincipalName;
@@ -120,7 +151,8 @@ export class CalendarSubscriptionManager {
   }
 
   /**
-   * Inspect incoming Calendar Event change notification and resolve Teams meeting details
+   * Inspects incoming Calendar Event change notification payloads, resolves event details from
+   * Microsoft Graph, verifies whether the event is an online Teams meeting, and extracts meeting metadata.
    */
   async processCalendarEventChangeNotification(notification: any): Promise<{ isTeamsMeeting: boolean; meetingDetails?: any }> {
     const resource = notification.resource;
@@ -131,7 +163,7 @@ export class CalendarSubscriptionManager {
     if (!token) return { isTeamsMeeting: false };
 
     try {
-      // Fetch full event details from Graph
+      // 1. Fetch full event details from Microsoft Graph API
       const eventRes = await fetch(`${this.graphEndpoint}/${resource}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -148,6 +180,7 @@ export class CalendarSubscriptionManager {
       const subject = eventData.subject || 'Teams Scheduled Meeting';
       const meetingId = eventData.id || `mtg-${Date.now()}`;
 
+      // 2. Reject non-Teams regular calendar entries
       if (!isOnlineMeeting) {
         console.log(`[CALENDAR_EVENT_NOTIFICATION] Event '${subject}' is not a Teams online meeting. Skipping.`);
         return { isTeamsMeeting: false };
@@ -156,7 +189,7 @@ export class CalendarSubscriptionManager {
       console.log(`[TEAMS_MEETING_RESOLVED] ✅ Teams Meeting Detected! Subject: '${subject}', Organizer: '${organizerEmail}', JoinURL: '${joinUrl}'`);
       this.lastTeamsMeetingDetected = `${new Date().toISOString()} (${subject})`;
 
-      // Check duplicate consent requests
+      // 3. Prevent duplicate consent requests for the same meeting ID
       if (this.processedMeetingIds.has(meetingId)) {
         console.log(`[TEAMS_MEETING_RESOLVED] Consent request already sent for meeting '${meetingId}'. Skipping duplicate.`);
         return { isTeamsMeeting: true, meetingDetails: { meetingId, subject, organizerEmail, joinUrl, duplicate: true } };
@@ -181,6 +214,7 @@ export class CalendarSubscriptionManager {
     }
   }
 
+  // Safe Telemetry Logging Helpers
   recordConsentDecision(meetingId: string, decision: string) {
     this.lastConsentDecision = `${new Date().toISOString()} (Meeting: ${meetingId}, Decision: ${decision})`;
   }
@@ -193,6 +227,9 @@ export class CalendarSubscriptionManager {
     this.lastSuccessfulBotJoin = `${new Date().toISOString()} (Meeting: ${meetingId}, CallID: ${callId})`;
   }
 
+  /**
+   * Returns safe telemetry status object for GET /health/teams diagnostic endpoint
+   */
   getTelemetry() {
     return {
       activeSubscriptionsCount: this.activeCalendarSubscriptions.size,
