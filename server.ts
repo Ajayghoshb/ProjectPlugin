@@ -462,6 +462,17 @@ app.post('/api/messages', async (req, res) => {
     const conversationId = activity.conversation?.id || `conv-${Date.now()}`;
     const userEmail = activity.from?.email || activity.from?.name || 'teams.user@thinkpalm.com';
 
+    // Safe Diagnostic Telemetry — No tokens or sensitive user data logged
+    console.log(`[TEAMS_ACTIVITY_RECEIVED]`, JSON.stringify({
+      activityType,
+      eventName: activity.name || activity.eventType || null,
+      conversationType: activity.conversation?.conversationType || null,
+      channelIdPresent: !!activity.channelId,
+      meetingIdPresent: !!(activity.meetingId || activity.id || activity.value?.meetingId),
+      organizerPresent: !!(activity.from?.email || activity.from?.name),
+      timestamp: new Date().toISOString()
+    }));
+
     console.log(`[TEAMS] Activity received: '${activityType}' from '${userEmail}' (Conversation: ${conversationId})`);
 
     // Route all activities through ThinkItBot processTeamsActivity for Adaptive Cards & Meeting Events
@@ -480,6 +491,14 @@ app.post('/api/calling', async (req, res) => {
     const callNotification = req.body || {};
     const state = callNotification.value?.[0]?.state || callNotification.state || 'active';
     const callId = callNotification.value?.[0]?.id || callNotification.id || 'call-01';
+
+    // Safe Diagnostic Telemetry — No tokens or sensitive payload logged
+    console.log(`[CALLING_EVENT_RECEIVED]`, JSON.stringify({
+      changeType: callNotification.changeType || null,
+      resourceState: state,
+      resourceIdPresent: !!callId,
+      timestamp: new Date().toISOString()
+    }));
 
     console.log(`[CALLING] Request received. Call ID: '${callId}', State: '${state}'`);
 
