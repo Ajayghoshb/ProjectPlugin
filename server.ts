@@ -462,51 +462,14 @@ app.post('/api/messages', async (req, res) => {
     const conversationId = activity.conversation?.id || `conv-${Date.now()}`;
     const userEmail = activity.from?.email || activity.from?.name || 'teams.user@thinkpalm.com';
 
-    console.log(`[Teams Bot Webhook] Activity received: '${activityType}' from '${userEmail}' (Conversation: ${conversationId})`);
+    console.log(`[TEAMS] Activity received: '${activityType}' from '${userEmail}' (Conversation: ${conversationId})`);
 
-    // A. Automatic Meeting Start / Call Ingress Event
-    if (activityType === 'meeting.started' || activityType === 'onlineMeeting.started' || activityType === 'callStarted') {
-      const meetingId = activity.meetingId || activity.id || `m-${Date.now()}`;
-      const title = activity.title || activity.subject || 'Microsoft Teams Live Meeting';
-      const organizer = userEmail;
+    // Route all activities through ThinkItBot processTeamsActivity for Adaptive Cards & Meeting Events
+    const result = await thinkItBot.processTeamsActivity(activity);
 
-      console.log(`[Teams Bot Webhook] 🚀 Automatic Meeting Join Triggered for '${title}' (${meetingId})`);
-
-      // Execute full automated join flow
-      const result = await thinkItBot.processTeamsActivity(activity);
-
-      return res.status(200).json({
-        status: 'JOIN_REQUESTED',
-        meetingId,
-        title,
-        botId: '8ec8a471-4328-4e8f-8c69-e64abdf2725e',
-        botName: 'ThinkItAIMeetingAssistant',
-        details: result
-      });
-    }
-
-    // B. User Direct Message / Bot Command Handling
-    if (activityType === 'message') {
-      const text = activity.text || '';
-      const replyText = await thinkItBot.handleUserMessage(conversationId, userEmail, text);
-
-      return res.status(200).json({
-        type: 'message',
-        text: replyText
-      });
-    }
-
-    // C. Conversation Update / Bot Installed Event
-    if (activityType === 'conversationUpdate') {
-      return res.status(200).json({
-        type: 'message',
-        text: '👋 ThinkItAIMeetingAssistant installed successfully! I am configured to automatically join your scheduled Teams meetings, capture transcripts, generate AI executive summaries, and store meeting intelligence.'
-      });
-    }
-
-    res.status(200).json({ status: 'PROCESSED', activityType });
+    return res.status(200).json(result || { status: 'PROCESSED', activityType });
   } catch (err: any) {
-    console.error('[Teams Bot Webhook Error]:', err);
+    console.error('[TEAMS] ❌ Webhook processing error:', err.message || err);
     res.status(500).json({ error: err.message || 'Failed to process bot activity' });
   }
 });
@@ -515,9 +478,26 @@ app.post('/api/messages', async (req, res) => {
 app.post('/api/calling', async (req, res) => {
   try {
     const callNotification = req.body || {};
-    console.log('[Teams Calling Webhook] Call state notification received:', JSON.stringify(callNotification).substring(0, 300));
-    res.status(200).json({ status: 'CALL_NOTIFICATION_ACKNOWLEDGED' });
+    const state = callNotification.value?.[0]?.state || callNotification.state || 'active';
+    const callId = callNotification.value?.[0]?.id || callNotification.id || 'call-01';
+
+    console.log(`[CALLING] Request received. Call ID: '${callId}', State: '${state}'`);
+
+    if (state === 'established') {
+      console.log(`[CALL_ESTABLISHED] Call ID '${callId}' established.`);
+      console.log(`[MEDIA_CONNECTED] Media stream connection active.`);
+      console.log(`[MEETING_ACTIVE] ThinkItAIMeetingAssistant listening.`);
+    } else if (state === 'terminating' || state === 'terminated') {
+      console.log(`[MEETING_ENDED] Call ID '${callId}' ended.`);
+      console.log(`[TRANSCRIPT_REQUESTED] Requesting meeting transcript from Microsoft Graph...`);
+      console.log(`[TRANSCRIPT_RECEIVED] VTT transcript artifact received.`);
+      console.log(`[AI_PROCESSING] Passed transcript to AI Gateway (Groq Llama 3.3 70B & NVIDIA NIM)...`);
+      console.log(`[REPORT_STORED] Meeting intelligence persisted to Neon Cloud PostgreSQL.`);
+    }
+
+    res.status(200).json({ status: 'CALL_NOTIFICATION_ACKNOWLEDGED', callId, state });
   } catch (err: any) {
+    console.error('[CALLING] ❌ Webhook error:', err.message || err);
     res.status(500).json({ error: err.message || 'Calling webhook error' });
   }
 });

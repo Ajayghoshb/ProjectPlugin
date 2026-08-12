@@ -6,37 +6,50 @@ export function buildJoinRequestCard(meetingId: string, title: string, organizer
     "body": [
       {
         "type": "TextBlock",
-        "text": "🤖 Think It AI Meeting Agent Join Request",
+        "text": "🤖 Think It wants to join this meeting",
         "weight": "Bolder",
-        "size": "Medium",
+        "size": "Large",
         "color": "Accent"
       },
       {
         "type": "TextBlock",
-        "text": `Think It would like to join **${title}** to record, synthesize executive MOMs, and track action items.`,
+        "text": `Think It can capture the meeting conversation for **${title}** and generate:`,
         "wrap": true
+      },
+      {
+        "type": "TextBlock",
+        "text": "• Transcript\n• Executive Summary\n• Minutes of Meeting (MOM)\n• Key Decisions\n• Action Items\n• Important Points & Risks",
+        "wrap": true,
+        "spacing": "Medium"
       },
       {
         "type": "FactSet",
         "facts": [
           { "title": "Organizer:", "value": organizerEmail },
-          { "title": "Meeting ID:", "value": meetingId },
-          { "title": "AI Engine:", "value": "Meta Llama 3.3 70B & NVIDIA Riva" }
+          { "title": "Meeting ID:", "value": meetingId }
         ]
       }
     ],
     "actions": [
       {
         "type": "Action.Submit",
-        "title": "✅ ALLOW",
+        "title": "Allow Think It to Join",
         "style": "positive",
-        "data": { "action": "ALLOW", "meetingId": meetingId, "organizerEmail": organizerEmail }
+        "data": {
+          "action": "ALLOW_JOIN",
+          "meetingId": meetingId,
+          "organizerEmail": organizerEmail
+        }
       },
       {
         "type": "Action.Submit",
-        "title": "❌ DECLINE",
+        "title": "Decline",
         "style": "destructive",
-        "data": { "action": "DECLINE", "meetingId": meetingId, "organizerEmail": organizerEmail }
+        "data": {
+          "action": "DECLINE_JOIN",
+          "meetingId": meetingId,
+          "organizerEmail": organizerEmail
+        }
       }
     ]
   };
@@ -61,7 +74,7 @@ export function buildNotificationCard(title: string, summary: string, actionItem
       },
       {
         "type": "TextBlock",
-        "text": `📌 **${actionItemsCount} Action Items** generated and synced to Jira.`,
+        "text": `📌 **${actionItemsCount} Action Items** generated and saved.`,
         "size": "Small",
         "color": "Good"
       }
