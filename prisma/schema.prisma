@@ -150,3 +150,30 @@ model MeetingTranscript {
   @@index([meetingId])
   @@index([speakerId])
 }
+
+model TeamsMeetingRecord {
+  id               String    @id @default(uuid())
+  tenantId         String
+  organizerId      String?
+  organizerEmail   String
+  calendarEventId  String
+  onlineMeetingId  String?
+  joinWebUrl       String?
+  subject          String
+  scheduledStart   DateTime?
+  scheduledEnd     DateTime?
+  actualStart      DateTime?
+  actualEnd        DateTime?
+  lifecycleStatus  String    @default("DISCOVERED")
+  consentStatus    String    @default("PENDING")
+  transcriptStatus String    @default("PENDING")
+  aiStatus         String    @default("QUEUED")
+  transcriptId     String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([tenantId, calendarEventId])
+  @@index([tenantId])
+  @@index([lifecycleStatus])
+}
+

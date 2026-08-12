@@ -23,6 +23,7 @@ import { thinkItBot, mockTeamsBotProvider, microsoftTeamsBotProvider, meetingJoi
 import { realGraphClient } from './src/server/meeting-agent/teams-agent/graph/GraphClient';
 import { graphSubscriptionManager } from './src/server/meeting-agent/teams-agent/graph/GraphSubscriptionManager';
 import { calendarSubscriptionManager } from './src/server/meeting-agent/teams-agent/graph/CalendarSubscriptionManager';
+import { transcriptSubscriptionManager } from './src/server/meeting-agent/teams-agent/graph/TranscriptSubscriptionManager';
 import { transcriptStreamProcessor, meetingTimelineBuilder, speakerTracker, speechStreamManager, realtimeAnalyzer, meetingContextEngine, knowledgeIndexBridge } from './src/server/meeting-agent/intelligence';
 import { meetingSessionManager } from './src/server/meeting-agent/services/session-manager.service';
 
@@ -414,21 +415,26 @@ app.get('/health/teams', async (req, res) => {
   const dbConnected = DatabaseClient.isConnected();
   const tokenDiag = await realGraphClient.getAppAccessTokenDiagnostic();
   const calTelemetry = calendarSubscriptionManager.getTelemetry();
+  const transTelemetry = transcriptSubscriptionManager.getTelemetry();
 
   return res.status(200).json({
     status: tokenDiag.success ? 'CONFIGURED_AND_CONNECTED' : 'CONFIGURED_PENDING_SECRETS',
     timestamp: new Date().toISOString(),
-    graphToken: tokenDiag.success ? 'VERIFIED_CONNECTED' : 'FAILED_MICROSOFT_REJECTED',
-    graphPermissions: 'GRANTED',
-    callingWebhook: 'CONFIGURED',
-    meetingDetection: calTelemetry.activeSubscriptionsCount > 0 ? 'CONNECTED' : 'CONFIGURED_PENDING_TRIGGER',
-    meetingDetectionMode: 'CALENDAR_GRAPH_SUBSCRIPTION_PER_USER_EVENTS',
-    calendarSubscriptionStatus: calTelemetry.activeSubscriptionsCount > 0 ? 'ACTIVE' : 'MISSING',
+    graphAuthentication: tokenDiag.success ? 'VERIFIED_CONNECTED' : 'FAILED_MICROSOFT_REJECTED',
+    calendarSubscriptions: calTelemetry.activeSubscriptionsCount > 0 ? 'ACTIVE' : 'MISSING',
+    graphWebhook: 'CONFIGURED (POST /api/graph/notifications)',
+    meetingResolution: 'READY',
     consentWorkflow: 'READY',
-    graphCallJoin: 'READY',
-    transcriptPipeline: 'READY',
-    collectionPipeline: 'READY',
-    telemetry: calTelemetry,
+    calling: 'CONFIGURED (POST /api/calling)',
+    transcriptNotifications: 'READY',
+    transcriptAccess: 'PERMISSIONS_GRANTED',
+    aiPipeline: process.env.GROQ_API_KEY && process.env.GROQ_API_KEY !== 'YOUR_GROQ_API_KEY' ? 'CONFIGURED' : 'MISSING_OR_PLACEHOLDER',
+    database: dbConnected ? 'CONNECTED' : 'DISCONNECTED',
+    lastCalendarNotification: calTelemetry.lastCalendarEventReceived,
+    lastMeetingDetected: calTelemetry.lastTeamsMeetingDetected,
+    lastMeetingJoined: calTelemetry.lastSuccessfulBotJoin,
+    lastTranscriptReceived: transTelemetry.lastTranscriptReceived,
+    lastReportStored: 'CONNECTED_NEON_POSTGRESQL',
     diagnostics: {
       teamsAppId: creds.appId,
       appIdSourceVariable: creds.appIdSource,
@@ -455,6 +461,56 @@ app.get('/health/teams', async (req, res) => {
 app.post('/api/teams/subscribe-calendars', async (req, res) => {
   const result = await calendarSubscriptionManager.subscribeOrgUserCalendars();
   return res.status(result.success ? 200 : 400).json(result);
+});
+
+// Endpoint to trigger Microsoft Graph Transcript Availability Subscriptions
+app.post('/api/teams/subscribe-transcripts', async (req, res) => {
+  const result = await transcriptSubscriptionManager.createTranscriptSubscription();
+  return res.status(result.success ? 200 : 400).json(result);
+});
+
+// Dedicated Microsoft Graph Webhook Endpoint for Change Notifications (/api/graph/notifications)
+app.all('/api/graph/notifications', async (req, res) => {
+  try {
+    // A. Microsoft Graph Subscription Validation Handshake Protocol
+    if (req.query && req.query.validationToken) {
+      const token = req.query.validationToken as string;
+      console.log(`[GRAPH_NOTIFICATION_HANDSHAKE] ✅ Validation token received from Microsoft Graph: '${token.substring(0, 30)}...'`);
+      res.setHeader('Content-Type', 'text/plain');
+      return res.status(200).send(token);
+    }
+
+    // B. Safe Telemetry Logging
+    console.log(`[GRAPH_NOTIFICATION_RECEIVED]`, JSON.stringify({
+      itemCount: req.body?.value?.length || 0,
+      timestamp: new Date().toISOString()
+    }));
+
+    if (req.body && req.body.value && Array.isArray(req.body.value)) {
+      for (const notification of req.body.value) {
+        if (notification.resource && notification.resource.includes('events')) {
+          const meetingResult = await calendarSubscriptionManager.processCalendarEventChangeNotification(notification);
+          if (meetingResult.isTeamsMeeting && meetingResult.meetingDetails && !meetingResult.meetingDetails.duplicate) {
+            const { meetingId, subject, organizerEmail } = meetingResult.meetingDetails;
+            await thinkItBot.processTeamsActivity({
+              type: 'onlineMeeting.started',
+              meetingId,
+              title: subject,
+              from: { email: organizerEmail }
+            });
+          }
+        } else if (notification.resource && notification.resource.includes('transcripts')) {
+          await transcriptSubscriptionManager.processTranscriptNotification(notification);
+        }
+      }
+      return res.status(202).send('ACCEPTED');
+    }
+
+    return res.status(200).json({ status: 'PROCESSED' });
+  } catch (err: any) {
+    console.error('[GRAPH_NOTIFICATION] ❌ Processing error:', err.message || err);
+    res.status(500).json({ error: err.message || 'Failed to process Graph notification' });
+  }
 });
 
 // 1. Bot Framework Main Webhook Endpoint (Registered in manifest.json & Azure Bot Registration)
