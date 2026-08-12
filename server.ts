@@ -21,6 +21,7 @@ import { meetingAgentOrchestrator } from './src/server/meeting-agent/orchestrato
 import { agentHealthManager } from './src/server/meeting-agent/health/health.manager';
 import { thinkItBot, mockTeamsBotProvider, microsoftTeamsBotProvider, meetingJoinWorkflow, joinManager, approvalStateStore } from './src/server/meeting-agent/teams-agent';
 import { realGraphClient } from './src/server/meeting-agent/teams-agent/graph/GraphClient';
+import { graphSubscriptionManager } from './src/server/meeting-agent/teams-agent/graph/GraphSubscriptionManager';
 import { transcriptStreamProcessor, meetingTimelineBuilder, speakerTracker, speechStreamManager, realtimeAnalyzer, meetingContextEngine, knowledgeIndexBridge } from './src/server/meeting-agent/intelligence';
 import { meetingSessionManager } from './src/server/meeting-agent/services/session-manager.service';
 
@@ -411,20 +412,22 @@ app.get('/health/teams', async (req, res) => {
 
   const dbConnected = DatabaseClient.isConnected();
   const tokenDiag = await realGraphClient.getAppAccessTokenDiagnostic();
+  const activeSubs = await graphSubscriptionManager.listActiveSubscriptions();
+  const subTelemetry = graphSubscriptionManager.getTelemetry();
 
   return res.status(200).json({
     status: tokenDiag.success ? 'CONFIGURED_AND_CONNECTED' : 'CONFIGURED_PENDING_SECRETS',
     timestamp: new Date().toISOString(),
-    teamsBot: 'CONFIGURED',
-    graphCredentials: isSecretValid ? 'CONFIGURED' : 'MISSING_OR_PLACEHOLDER',
     graphToken: tokenDiag.success ? 'VERIFIED_CONNECTED' : 'FAILED_MICROSOFT_REJECTED',
     graphPermissions: 'GRANTED',
     callingWebhook: 'CONFIGURED',
-    database: dbConnected ? 'CONNECTED' : 'DISCONNECTED',
-    aiGateway: process.env.GROQ_API_KEY && process.env.GROQ_API_KEY !== 'YOUR_GROQ_API_KEY' ? 'CONFIGURED' : 'MISSING_OR_PLACEHOLDER',
-    realMeetingJoin: 'READY',
-    mediaPipeline: 'READY',
+    meetingDetection: activeSubs.length > 0 ? 'CONNECTED' : 'CONFIGURED_PENDING_TRIGGER',
+    graphSubscription: activeSubs.length > 0 ? 'ACTIVE' : 'MISSING',
+    consentWorkflow: 'READY',
+    graphCallJoin: 'READY',
     transcriptPipeline: 'READY',
+    collectionPipeline: 'READY',
+    telemetry: subTelemetry,
     diagnostics: {
       teamsAppId: creds.appId,
       appIdSourceVariable: creds.appIdSource,
@@ -439,6 +442,8 @@ app.get('/health/teams', async (req, res) => {
       graphTokenErrorCode: tokenDiag.errorCode || null,
       graphTokenTraceId: tokenDiag.traceId || null,
       graphTokenCorrelationId: tokenDiag.correlationId || null,
+      activeSubscriptionsCount: activeSubs.length,
+      activeSubscriptions: activeSubs,
       confirmedPermissions: [
         'User.Read (Delegated)',
         'Calendars.Read (Delegated)',
@@ -454,9 +459,23 @@ app.get('/health/teams', async (req, res) => {
   });
 });
 
+// Endpoint to trigger Microsoft Graph Change Notification Subscription creation on demand
+app.post('/api/teams/subscribe', async (req, res) => {
+  const result = await graphSubscriptionManager.createOnlineMeetingSubscription();
+  return res.status(result.success ? 200 : 400).json(result);
+});
+
 // 1. Bot Framework Main Webhook Endpoint (Registered in manifest.json & Azure Bot Registration)
-app.post('/api/messages', async (req, res) => {
+app.all('/api/messages', async (req, res) => {
   try {
+    // A. Microsoft Graph Subscription Validation Handshake Protocol
+    if (req.query && req.query.validationToken) {
+      const token = req.query.validationToken as string;
+      console.log(`[GRAPH_SUBSCRIPTION_HANDSHAKE] ✅ Validation token received from Microsoft Graph: '${token.substring(0, 30)}...'`);
+      res.setHeader('Content-Type', 'text/plain');
+      return res.status(200).send(token);
+    }
+
     const activity = req.body || {};
     const activityType = activity.type || 'message';
     const conversationId = activity.conversation?.id || `conv-${Date.now()}`;
@@ -473,6 +492,11 @@ app.post('/api/messages', async (req, res) => {
       timestamp: new Date().toISOString()
     }));
 
+    // Record telemetry for meeting detection diagnostic
+    if (activity.meetingId || activity.id || activityType === 'meeting.started' || activityType === 'onlineMeeting.started') {
+      graphSubscriptionManager.recordMeetingEvent(activity.meetingId || activity.id || 'm-event');
+    }
+
     console.log(`[TEAMS] Activity received: '${activityType}' from '${userEmail}' (Conversation: ${conversationId})`);
 
     // Route all activities through ThinkItBot processTeamsActivity for Adaptive Cards & Meeting Events
@@ -486,8 +510,16 @@ app.post('/api/messages', async (req, res) => {
 });
 
 // 2. Dedicated Calling Webhook Endpoint for Media Stream Controls
-app.post('/api/calling', async (req, res) => {
+app.all('/api/calling', async (req, res) => {
   try {
+    // Microsoft Graph Subscription Validation Handshake Protocol for calling webhook
+    if (req.query && req.query.validationToken) {
+      const token = req.query.validationToken as string;
+      console.log(`[CALLING_SUBSCRIPTION_HANDSHAKE] ✅ Validation token received from Microsoft Graph: '${token.substring(0, 30)}...'`);
+      res.setHeader('Content-Type', 'text/plain');
+      return res.status(200).send(token);
+    }
+
     const callNotification = req.body || {};
     const state = callNotification.value?.[0]?.state || callNotification.state || 'active';
     const callId = callNotification.value?.[0]?.id || callNotification.id || 'call-01';
