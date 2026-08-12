@@ -67,8 +67,7 @@
       "supportsFiles": false,
       "isNotificationOnly": false,
       "supportsCalling": true,
-      "supportsVideo": false,
-      "callingWebhook": "https://projectplugin-api.onrender.com/api/calling"
+      "supportsVideo": false
     }
   ],
   "authorization": {

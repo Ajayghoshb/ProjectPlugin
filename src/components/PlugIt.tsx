@@ -268,8 +268,7 @@ export default function PlugIt() {
           "supportsFiles": false,
           "isNotificationOnly": false,
           "supportsCalling": true,
-          "supportsVideo": false,
-          "callingWebhook": callingEndpoint
+          "supportsVideo": false
         }
       ],
       "permissions": [
