@@ -8,33 +8,81 @@ export interface GraphCallJoinRequest {
   organizerId?: string;
 }
 
+export interface GraphTokenDiagnosticResult {
+  success: boolean;
+  token?: string;
+  httpStatus?: number;
+  error?: string;
+  errorDescription?: string;
+  errorCode?: string;
+  traceId?: string;
+  correlationId?: string;
+}
+
 export class RealMicrosoftGraphClient {
-  private appId: string;
-  private appSecret: string;
-  private tenantId: string;
   private graphEndpoint: string = 'https://graph.microsoft.com/v1.0';
 
-  constructor() {
-    this.appId = process.env.MICROSOFT_APP_ID || process.env.AZURE_CLIENT_ID || '8ec8a471-4328-4e8f-8c69-e64abdf2725e';
-    this.appSecret = process.env.MICROSOFT_APP_PASSWORD || process.env.AZURE_CLIENT_SECRET || '';
-    this.tenantId = process.env.MICROSOFT_APP_TENANT_ID || process.env.AZURE_TENANT_ID || 'eec115d2-8418-4d66-8e18-b4283ffca2b1';
+  /**
+   * Dynamically resolve Graph App Credentials with deterministic fallback & placeholder filtering
+   */
+  public getCredentials(): { appId: string; tenantId: string; appSecret: string } {
+    const appId = (
+      process.env.MICROSOFT_GRAPH_CLIENT_ID ||
+      process.env.MICROSOFT_APP_ID ||
+      process.env.AZURE_CLIENT_ID ||
+      '8ec8a471-4328-4e8f-8c69-e64abdf2725e'
+    ).trim();
+
+    const tenantId = (
+      process.env.MICROSOFT_APP_TENANT_ID ||
+      process.env.MICROSOFT_GRAPH_TENANT_ID ||
+      process.env.AZURE_TENANT_ID ||
+      'eec115d2-8418-4d66-8e18-b4283ffca2b1'
+    ).trim();
+
+    const secretCandidates = [
+      process.env.MICROSOFT_GRAPH_CLIENT_SECRET,
+      process.env.MICROSOFT_APP_PASSWORD,
+      process.env.AZURE_CLIENT_SECRET
+    ];
+
+    let appSecret = '';
+    for (const candidate of secretCandidates) {
+      if (
+        candidate &&
+        candidate.trim() !== '' &&
+        candidate.trim() !== 'YOUR_TEAMS_BOT_PASSWORD' &&
+        candidate.trim() !== 'YOUR_AZURE_CLIENT_SECRET' &&
+        candidate.trim() !== 'YOUR_MICROSOFT_GRAPH_CLIENT_SECRET'
+      ) {
+        appSecret = candidate.trim();
+        break;
+      }
+    }
+
+    return { appId, tenantId, appSecret };
   }
 
   /**
-   * Acquire Service-to-Service Confidential Client Access Token from Microsoft Entra ID
+   * Acquire Service-to-Service Access Token with Safe Diagnostic Details
    */
-  async getAppAccessToken(): Promise<string | null> {
-    if (!this.appSecret || this.appSecret === 'YOUR_TEAMS_BOT_PASSWORD' || this.appSecret === 'YOUR_AZURE_CLIENT_SECRET') {
-      console.warn('[GRAPH] ⚠️ MICROSOFT_APP_PASSWORD / AZURE_CLIENT_SECRET is not set to a valid secret string in .env.');
-      return null;
+  async getAppAccessTokenDiagnostic(): Promise<GraphTokenDiagnosticResult> {
+    const { appId, tenantId, appSecret } = this.getCredentials();
+
+    if (!appSecret) {
+      return {
+        success: false,
+        error: 'MISSING_OR_PLACEHOLDER_SECRET',
+        errorDescription: 'No valid secret found in MICROSOFT_GRAPH_CLIENT_SECRET, MICROSOFT_APP_PASSWORD, or AZURE_CLIENT_SECRET.'
+      };
     }
 
     try {
-      console.log(`[GRAPH] Requesting OAuth2 app access token from Entra tenant '${this.tenantId}'...`);
-      const tokenUrl = `https://login.microsoftonline.com/${this.tenantId}/oauth2/v2.0/token`;
+      console.log(`[GRAPH] Token acquisition started for App ID '${appId}' on Entra tenant '${tenantId}'...`);
+      const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
       const body = new URLSearchParams({
-        client_id: this.appId,
-        client_secret: this.appSecret,
+        client_id: appId,
+        client_secret: appSecret,
         grant_type: 'client_credentials',
         scope: 'https://graph.microsoft.com/.default'
       });
@@ -46,32 +94,67 @@ export class RealMicrosoftGraphClient {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`[GRAPH] ❌ OAuth2 token acquisition failed (${response.status}):`, errorText);
-        return null;
+        const errJson = await response.json().catch(() => ({}));
+        const httpStatus = response.status;
+        const error = errJson.error || 'unauthorized_client';
+        const errorDescription = errJson.error_description || response.statusText;
+        const errorCode = errJson.error_codes ? errJson.error_codes.join(',') : undefined;
+        const traceId = errJson.trace_id;
+        const correlationId = errJson.correlation_id;
+
+        console.error(`[GRAPH] ❌ Token acquisition FAILED (HTTP ${httpStatus} [${error}]): ${errorDescription}`);
+
+        return {
+          success: false,
+          httpStatus,
+          error,
+          errorDescription,
+          errorCode,
+          traceId,
+          correlationId
+        };
       }
 
       const data = await response.json();
-      console.log('[GRAPH] ✅ Successfully acquired Microsoft Graph OAuth2 app token.');
-      return data.access_token;
+      console.log('[GRAPH] ✅ Token acquisition SUCCESS. Microsoft Graph OAuth2 app token acquired.');
+      return {
+        success: true,
+        token: data.access_token,
+        httpStatus: 200
+      };
     } catch (err: any) {
-      console.error('[GRAPH] ❌ Token request network exception:', err.message || err);
-      return null;
+      console.error('[GRAPH] ❌ Token acquisition network exception:', err.message || err);
+      return {
+        success: false,
+        error: 'NETWORK_EXCEPTION',
+        errorDescription: err.message || 'Network exception calling Entra ID OAuth2 endpoint'
+      };
     }
+  }
+
+  /**
+   * Acquire Access Token String (Convenience Helper)
+   */
+  async getAppAccessToken(): Promise<string | null> {
+    const diag = await this.getAppAccessTokenDiagnostic();
+    return diag.success && diag.token ? diag.token : null;
   }
 
   /**
    * Issue Real Microsoft Graph Cloud Communications Call Join Request
    * Endpoint: POST /v1.0/communications/calls
    */
-  async joinCall(request: GraphCallJoinRequest): Promise<{ success: boolean; callId?: string; error?: string }> {
-    const token = await this.getAppAccessToken();
-    if (!token) {
-      return { success: false, error: 'AUTHENTICATION_FAILED: Missing Graph access token (Check MICROSOFT_APP_PASSWORD in .env)' };
+  async joinCall(request: GraphCallJoinRequest): Promise<{ success: boolean; callId?: string; error?: string; httpStatus?: number }> {
+    const diag = await this.getAppAccessTokenDiagnostic();
+    if (!diag.success || !diag.token) {
+      return {
+        success: false,
+        error: `AUTHENTICATION_FAILED [${diag.error || 'MISSING_TOKEN'}]: ${diag.errorDescription || 'Unable to acquire Graph access token'}`
+      };
     }
 
     const callbackUri = process.env.BOT_ENDPOINT ? process.env.BOT_ENDPOINT.replace('/api/messages', '/api/calling') : 'https://projectplugin-api.onrender.com/api/calling';
-    console.log(`[GRAPH] Issuing POST /communications/calls for joinWebUrl '${request.joinWebUrl.substring(0, 50)}...' (Callback: ${callbackUri})`);
+    console.log(`[GRAPH] Call join request started for joinWebUrl '${request.joinWebUrl.substring(0, 50)}...' (Callback: ${callbackUri})`);
 
     const callPayload = {
       '@odata.type': '#microsoft.graph.call',
@@ -106,7 +189,7 @@ export class RealMicrosoftGraphClient {
       const response = await fetch(`${this.graphEndpoint}/communications/calls`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${diag.token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(callPayload)
@@ -116,15 +199,15 @@ export class RealMicrosoftGraphClient {
         const errJson = await response.json().catch(() => ({}));
         const errCode = errJson.error?.code || response.statusText;
         const errMsg = errJson.error?.message || 'Graph API join call rejected';
-        console.error(`[GRAPH] ❌ Call join failed HTTP ${response.status} [${errCode}]: ${errMsg}`);
-        return { success: false, error: `GRAPH_API_ERROR [${response.status} ${errCode}]: ${errMsg}` };
+        console.error(`[GRAPH] ❌ Call join FAILED HTTP ${response.status} [${errCode}]: ${errMsg}`);
+        return { success: false, httpStatus: response.status, error: `GRAPH_API_ERROR [${response.status} ${errCode}]: ${errMsg}` };
       }
 
       const data = await response.json();
-      console.log(`[GRAPH] ✅ Call join request accepted by Microsoft Graph. Call ID: '${data.id}', State: '${data.state}'`);
-      return { success: true, callId: data.id };
+      console.log(`[GRAPH] ✅ Call join SUCCESS. Accepted by Microsoft Graph. Call ID: '${data.id}', State: '${data.state}'`);
+      return { success: true, callId: data.id, httpStatus: response.status };
     } catch (err: any) {
-      console.error('[GRAPH] ❌ Join call network exception:', err.message || err);
+      console.error('[GRAPH] ❌ Call join network exception:', err.message || err);
       return { success: false, error: err.message || 'Network exception joining call' };
     }
   }
@@ -138,19 +221,19 @@ export class RealMicrosoftGraphClient {
     if (!token) return null;
 
     try {
-      console.log(`[TRANSCRIPT] Fetching real transcript content for meeting '${meetingId}', transcript '${transcriptId}'...`);
+      console.log(`[TRANSCRIPT] Transcript requested for meeting '${meetingId}', transcript '${transcriptId}'...`);
       const url = `${this.graphEndpoint}/users/${userId}/onlineMeetings/${meetingId}/transcripts/${transcriptId}/content?$format=text/vtt`;
       const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
       if (!response.ok) {
-        console.warn(`[TRANSCRIPT] ⚠️ Transcript content request returned HTTP ${response.status}`);
+        console.warn(`[TRANSCRIPT] ⚠️ Transcript request returned HTTP ${response.status}`);
         return null;
       }
 
       const vttContent = await response.text();
-      console.log(`[TRANSCRIPT] ✅ Successfully retrieved real transcript content (${vttContent.length} bytes).`);
+      console.log(`[TRANSCRIPT] Transcript received (${vttContent.length} bytes).`);
       return vttContent;
     } catch (err: any) {
       console.error('[TRANSCRIPT] ❌ Error fetching transcript content:', err);

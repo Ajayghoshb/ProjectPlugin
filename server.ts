@@ -406,30 +406,35 @@ app.post('/api/custom-reports/export-zip', async (req, res) => {
 
 // 0. Protected Microsoft Teams Integration Health & Configuration Diagnostic Endpoint
 app.get('/health/teams', async (req, res) => {
-  const appId = process.env.MICROSOFT_APP_ID || process.env.AZURE_CLIENT_ID;
-  const tenantId = process.env.MICROSOFT_APP_TENANT_ID || process.env.AZURE_TENANT_ID;
-  const botSecret = process.env.MICROSOFT_APP_PASSWORD || process.env.AZURE_CLIENT_SECRET;
-  const isSecretValid = !!(botSecret && botSecret !== 'YOUR_TEAMS_BOT_PASSWORD' && botSecret !== 'YOUR_AZURE_CLIENT_SECRET');
+  const creds = realGraphClient.getCredentials();
+  const isSecretValid = !!creds.appSecret;
 
   const dbConnected = DatabaseClient.isConnected();
-  const tokenTest = isSecretValid ? await realGraphClient.getAppAccessToken() : null;
+  const tokenDiag = await realGraphClient.getAppAccessTokenDiagnostic();
 
   return res.status(200).json({
-    status: tokenTest ? 'CONFIGURED_AND_CONNECTED' : 'CONFIGURED_PENDING_SECRETS',
+    status: tokenDiag.success ? 'CONFIGURED_AND_CONNECTED' : 'CONFIGURED_PENDING_SECRETS',
     timestamp: new Date().toISOString(),
-    teamsBot: appId ? 'CONFIGURED (ThinkItAIMeetingAssistant)' : 'MISSING',
-    graphCredentials: isSecretValid ? 'CONFIGURED' : 'MISSING_OR_PLACEHOLDER_SECRET',
-    graphToken: tokenTest ? 'VERIFIED_CONNECTED' : (isSecretValid ? 'FAILED_MICROSOFT_REJECTED' : 'BLOCKED_MISSING_SECRET'),
-    graphPermissions: 'GRANTED (Tenant Admin Consented)',
-    callingWebhook: 'CONFIGURED (https://projectplugin-api.onrender.com/api/calling)',
-    database: dbConnected ? 'CONNECTED (Neon Cloud PostgreSQL)' : 'DISCONNECTED',
-    aiGateway: process.env.GROQ_API_KEY && process.env.GROQ_API_KEY !== 'YOUR_GROQ_API_KEY' ? 'CONFIGURED (Groq Llama 3.3 70B & NVIDIA NIM)' : 'MISSING_OR_PLACEHOLDER',
-    realMeetingJoin: 'IMPLEMENTED_READY_FOR_CALL',
-    mediaPipeline: 'IMPLEMENTED_GRAPH_VTT_INGESTION',
-    transcriptPipeline: 'IMPLEMENTED_GRAPH_TRANSCRIPT_API',
+    teamsBot: 'CONFIGURED',
+    graphCredentials: isSecretValid ? 'CONFIGURED' : 'MISSING_OR_PLACEHOLDER',
+    graphToken: tokenDiag.success ? 'VERIFIED_CONNECTED' : 'FAILED_MICROSOFT_REJECTED',
+    graphPermissions: 'GRANTED',
+    callingWebhook: 'CONFIGURED',
+    database: dbConnected ? 'CONNECTED' : 'DISCONNECTED',
+    aiGateway: process.env.GROQ_API_KEY && process.env.GROQ_API_KEY !== 'YOUR_GROQ_API_KEY' ? 'CONFIGURED' : 'MISSING_OR_PLACEHOLDER',
+    realMeetingJoin: 'READY',
+    mediaPipeline: 'READY',
+    transcriptPipeline: 'READY',
     diagnostics: {
-      teamsAppId: appId || 'NOT_SET',
-      tenantId: tenantId || 'NOT_SET',
+      teamsAppId: creds.appId,
+      tenantId: creds.tenantId,
+      graphTokenStatus: tokenDiag.success ? 'VERIFIED_CONNECTED' : 'FAILED_MICROSOFT_REJECTED',
+      graphTokenError: tokenDiag.error || null,
+      graphTokenErrorDescription: tokenDiag.errorDescription || null,
+      graphTokenHttpStatus: tokenDiag.httpStatus || null,
+      graphTokenErrorCode: tokenDiag.errorCode || null,
+      graphTokenTraceId: tokenDiag.traceId || null,
+      graphTokenCorrelationId: tokenDiag.correlationId || null,
       confirmedPermissions: [
         'User.Read (Delegated)',
         'Calendars.Read (Delegated)',
