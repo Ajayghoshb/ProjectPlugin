@@ -65,15 +65,38 @@
         "groupchat"
       ],
       "supportsFiles": false,
-      "isNotificationOnly": false
+      "isNotificationOnly": false,
+      "supportsCalling": true,
+      "supportsVideo": false,
+      "callingWebhook": "https://projectplugin-api.onrender.com/api/calling"
     }
   ],
   "authorization": {
     "permissions": {
       "resourceSpecific": [
         {
+          "name": "OnlineMeetingTranscript.Read.Chat",
+          "type": "Delegated"
+        },
+        {
+          "name": "OnlineMeetingRecording.Read.Chat",
+          "type": "Delegated"
+        },
+        {
           "name": "OnlineMeetingTranscript.Read.Group",
           "type": "Delegated"
+        },
+        {
+          "name": "OnlineMeetingRecording.Read.Group",
+          "type": "Delegated"
+        },
+        {
+          "name": "CallTranscript.Read.Group",
+          "type": "Application"
+        },
+        {
+          "name": "CallRecording.Read.Group",
+          "type": "Application"
         }
       ]
     }
