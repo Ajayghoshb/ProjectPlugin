@@ -417,24 +417,35 @@ app.get('/health/teams', async (req, res) => {
   return res.status(200).json({
     status: tokenTest ? 'CONFIGURED_AND_CONNECTED' : 'CONFIGURED_PENDING_SECRETS',
     timestamp: new Date().toISOString(),
-    diagnostics: {
-      teamsAppIdConfigured: appId ? 'CONFIGURED' : 'MISSING',
-      teamsAppId: appId || 'NOT_SET',
-      tenantIdConfigured: tenantId ? 'CONFIGURED' : 'MISSING',
-      tenantId: tenantId || 'NOT_SET',
-      botPasswordConfigured: isSecretValid ? 'CONFIGURED' : 'MISSING_OR_PLACEHOLDER',
-      graphOAuthTokenAcquisition: tokenTest ? 'VERIFIED_CONNECTED' : 'FAILED_OR_MISSING_SECRET',
-      callingCapabilityEnabled: 'CONFIGURED (supportsCalling: true)',
-      requiredGraphPermissionsExpected: [
-        'Calls.JoinGroupCall.All (Application - Pending Admin Consent)',
-        'Calls.AccessMedia.All (Application - Pending Admin Consent)',
-        'OnlineMeetings.Read.All (Application - Pending Admin Consent)',
-        'OnlineMeetingTranscript.Read.All (Application - Pending Admin Consent)'
+    teams: {
+      appId: appId ? 'CONFIGURED' : 'MISSING',
+      appIdValue: appId || 'NOT_SET',
+      tenantId: tenantId ? 'CONFIGURED' : 'MISSING',
+      tenantIdValue: tenantId || 'NOT_SET',
+      botSecret: isSecretValid ? 'CONFIGURED' : 'MISSING_OR_PLACEHOLDER'
+    },
+    graph: {
+      tokenAcquisition: tokenTest ? 'VERIFIED_CONNECTED' : (isSecretValid ? 'FAILED_MICROSOFT_REJECTED' : 'BLOCKED_MISSING_SECRET'),
+      permissions: 'UNKNOWN_REQUIRES_AZURE_TENANT_ADMIN_CHECK',
+      expectedPermissions: [
+        'Calls.JoinGroupCall.All (Application)',
+        'Calls.AccessMedia.All (Application)',
+        'OnlineMeetings.Read.All (Application)',
+        'OnlineMeetingTranscript.Read.All (Application)'
       ],
-      databaseConnected: dbConnected ? 'CONNECTED (Neon Cloud PostgreSQL)' : 'DISCONNECTED',
-      aiProviderConfigured: process.env.GROQ_API_KEY && process.env.GROQ_API_KEY !== 'YOUR_GROQ_API_KEY' ? 'CONFIGURED (Groq Llama 3.3 70B & NVIDIA NIM)' : 'MISSING_OR_PLACEHOLDER',
-      teamsAuthMode: process.env.TEAMS_AUTH_ENABLED === 'true' ? 'ENFORCED (Phase 2)' : 'TESTING_MODE (TEAMS_AUTH_ENABLED=false)'
-    }
+      communicationsApi: 'IMPLEMENTED_NOT_LIVE_VERIFIED'
+    },
+    calling: {
+      webhook: 'CONFIGURED (https://projectplugin-api.onrender.com/api/calling)',
+      liveEventReceived: false
+    },
+    database: {
+      status: dbConnected ? 'CONNECTED (Neon Cloud PostgreSQL)' : 'DISCONNECTED'
+    },
+    ai: {
+      provider: process.env.GROQ_API_KEY && process.env.GROQ_API_KEY !== 'YOUR_GROQ_API_KEY' ? 'CONFIGURED (Groq Llama 3.3 70B & NVIDIA NIM)' : 'MISSING_OR_PLACEHOLDER'
+    },
+    authMode: process.env.TEAMS_AUTH_ENABLED === 'true' ? 'ENFORCED (Phase 2)' : 'TESTING_MODE (TEAMS_AUTH_ENABLED=false)'
   });
 });
 
