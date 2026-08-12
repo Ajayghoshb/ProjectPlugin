@@ -391,27 +391,8 @@ export default function App() {
               <p className="text-slate-500 font-display font-medium text-sm">Initializing Teams Meeting Intelligence Engine...</p>
             </div>
           ) : isInTeams ? (
-            /* Strict Microsoft Teams Dedicated Application Shell */
-            <>
-              {activeTab === 'settings' ? (
-                <ConnectionsManager
-                  jiraConnections={db.jiraConnections}
-                  teamsConnections={db.teamsConnections}
-                  googleConnections={db.googleConnections}
-                  jiraEmailMappings={db.jiraEmailMappings || []}
-                  projects={db.projects}
-                  members={db.members}
-                  meetings={db.meetings}
-                  onConnectJira={handleConnectJira}
-                  onConnectTeams={handleConnectTeams}
-                  onConnectGoogle={handleConnectGoogle}
-                  onSaveJiraProjects={handleSaveJiraProjects}
-                  onRefreshData={fetchData}
-                />
-              ) : (
-                <PlugIt />
-              )}
-            </>
+            /* Strict Microsoft Teams Dedicated Application Shell: Collection Only */
+            <PlugIt />
           ) : (
             <>
               {activeTab === 'dashboard' && (
