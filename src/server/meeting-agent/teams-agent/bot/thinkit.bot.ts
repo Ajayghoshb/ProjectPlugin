@@ -14,11 +14,11 @@
  *    - 'DECLINE_JOIN': Logs [CONSENT_DECLINED], does NOT join or record call.
  * 
  * 2. Meeting Ingress Events ('meeting.started' / 'onlineMeeting.started'):
- *    - Resolves meeting details, subject, and organizer email.
- *    - Renders and delivers the "Think It wants to join this meeting" Adaptive Card to the organizer.
+ *    - Resolves meeting details, subject, organizer email, and real Teams join URL.
+ *    - Delivers the "Think It wants to join this meeting" Adaptive Card to the organizer proactively.
  */
 
-import { IBotAdapter, MockBotAdapter } from './bot.adapter';
+import { IBotAdapter, realTeamsBotAdapter } from './bot.adapter';
 import { teamsEventPublisher } from '../events/teams.events';
 import { meetingAgentOrchestrator } from '../../orchestrator/agent.orchestrator';
 import { buildJoinRequestCard } from '../cards/join.request.card';
@@ -28,7 +28,7 @@ export class ThinkItBot {
   private adapter: IBotAdapter;
 
   constructor(adapter?: IBotAdapter) {
-    this.adapter = adapter || new MockBotAdapter();
+    this.adapter = adapter || realTeamsBotAdapter;
   }
 
   async handleUserMessage(conversationId: string, userEmail: string, messageText: string): Promise<string> {
@@ -51,6 +51,11 @@ export class ThinkItBot {
    * Main entry point for processing incoming Bot Framework activities and Adaptive Card submits.
    */
   async processTeamsActivity(activity: any): Promise<any> {
+    // 0. Persist ConversationReference if incoming activity contains Teams conversation details
+    if (activity.from || activity.conversation) {
+      await this.adapter.saveConversationReference(activity);
+    }
+
     // Safe Ingress Diagnostic Event Telemetry — Excludes tokens and personal content
     console.log(`[REAL_TEAMS_EVENT_RECEIVED]`, JSON.stringify({
       eventType: activity.eventType || activity.type || 'unknown',
@@ -68,14 +73,15 @@ export class ThinkItBot {
     if (cardData && (cardData.action === 'ALLOW_JOIN' || cardData.action === 'ALLOW' || cardData.action === 'DECLINE_JOIN' || cardData.action === 'DECLINE')) {
       const meetingId = cardData.meetingId || 'm-default';
       const organizer = cardData.organizerEmail || activity.from?.email || 'organizer@company.com';
+      const joinWebUrl = cardData.joinUrl || activity.joinUrl || meetingId;
 
       if (cardData.action === 'ALLOW_JOIN' || cardData.action === 'ALLOW') {
         console.log(`[CONSENT_GRANTED] Organizer '${organizer}' allowed Think It to join meeting '${meetingId}'.`);
-        console.log(`[GRAPH_JOIN_REQUESTED] Issuing Microsoft Graph Cloud Communications call join request for '${meetingId}'...`);
+        console.log(`[GRAPH_JOIN_REQUESTED] Issuing Microsoft Graph Cloud Communications call join request for '${meetingId}' (JoinURL: '${joinWebUrl.substring(0, 45)}...')...`);
 
         // Execute real Graph Communications Call Join API (POST /v1.0/communications/calls)
         const joinResult = await realGraphClient.joinCall({
-          joinWebUrl: meetingId,
+          joinWebUrl: joinWebUrl,
           organizerId: organizer
         });
 
@@ -112,22 +118,25 @@ export class ThinkItBot {
       const meetingId = activity.meetingId || activity.id || `m-${Date.now()}`;
       const title = activity.title || activity.subject || 'Microsoft Teams Live Meeting';
       const organizer = activity.from?.email || activity.from?.name || 'organizer@company.com';
+      const joinUrl = activity.joinUrl || activity.joinWebUrl || meetingId;
 
       console.log(`[REAL_MEETING_RESOLVED] Meeting ID: '${meetingId}', Title: '${title}', StartTime: '${new Date().toISOString()}'`);
       console.log(`[REAL_ORGANIZER_RESOLVED] Organizer Email: '${organizer}'`);
       console.log(`[MEETING_DETECTED] Real Microsoft Teams meeting detected: '${title}' (${meetingId})`);
-      console.log(`[CONSENT_REQUESTED] Sending Organizer Consent Adaptive Card for '${title}'...`);
 
-      // Send the Adaptive Consent Card to the organizer
-      const card = buildJoinRequestCard(meetingId, title, organizer);
-      await this.adapter.sendCard(activity.conversation?.id || 'conv-meeting', card);
+      // Build Adaptive Consent Card with real joinUrl
+      const card = buildJoinRequestCard(meetingId, title, organizer, joinUrl);
+      
+      // Proactively send card to organizer via Real Bot Adapter
+      const proactiveResult = await this.adapter.sendCardProactive(organizer, card);
 
       return {
-        status: 'CONSENT_REQUESTED',
+        status: proactiveResult.success ? 'CONSENT_REQUESTED' : 'CONSENT_SKIPPED',
         meetingId,
         title,
         organizer,
-        adaptiveCardSent: true
+        adaptiveCardSent: proactiveResult.success,
+        reason: proactiveResult.reason || proactiveResult.error
       };
     }
 

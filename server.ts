@@ -491,12 +491,13 @@ app.all('/api/graph/notifications', async (req, res) => {
         if (notification.resource && notification.resource.includes('events')) {
           const meetingResult = await calendarSubscriptionManager.processCalendarEventChangeNotification(notification);
           if (meetingResult.isTeamsMeeting && meetingResult.meetingDetails && !meetingResult.meetingDetails.duplicate) {
-            const { meetingId, subject, organizerEmail } = meetingResult.meetingDetails;
+            const { meetingId, subject, organizerEmail, joinUrl } = meetingResult.meetingDetails;
             await thinkItBot.processTeamsActivity({
               type: 'onlineMeeting.started',
               meetingId,
               title: subject,
-              from: { email: organizerEmail }
+              from: { email: organizerEmail },
+              joinUrl
             });
           }
         } else if (notification.resource && notification.resource.includes('transcripts')) {
@@ -531,12 +532,13 @@ app.all('/api/messages', async (req, res) => {
         if (notification.resource && notification.resource.includes('events')) {
           const meetingResult = await calendarSubscriptionManager.processCalendarEventChangeNotification(notification);
           if (meetingResult.isTeamsMeeting && meetingResult.meetingDetails && !meetingResult.meetingDetails.duplicate) {
-            const { meetingId, subject, organizerEmail } = meetingResult.meetingDetails;
+            const { meetingId, subject, organizerEmail, joinUrl } = meetingResult.meetingDetails;
             await thinkItBot.processTeamsActivity({
               type: 'onlineMeeting.started',
               meetingId,
               title: subject,
-              from: { email: organizerEmail }
+              from: { email: organizerEmail },
+              joinUrl
             });
           }
         }

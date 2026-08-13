@@ -191,4 +191,21 @@ model TeamsMeetingRecord {
   @@index([lifecycleStatus])
 }
 
+model TeamsConversationReference {
+  id             String   @id @default(uuid())
+  userEmail      String   @unique
+  userObjectId   String?
+  tenantId       String
+  serviceUrl     String
+  conversationId String
+  botId          String
+  rawReference   Json
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userEmail])
+}
+
+
+
 

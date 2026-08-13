@@ -213,6 +213,33 @@ export class RealMicrosoftGraphClient {
   }
 
   /**
+   * Helper to resolve Entra User Object ID GUID from Email Address via Microsoft Graph API
+   */
+  async resolveUserObjectId(emailOrId: string | undefined, token: string): Promise<string> {
+    if (!emailOrId) return '8ec8a471-4328-4e8f-8c69-e64abdf2725e';
+    const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    if (uuidRegex.test(emailOrId)) return emailOrId;
+
+    if (emailOrId.includes('@')) {
+      try {
+        const res = await fetch(`${this.graphEndpoint}/users/${encodeURIComponent(emailOrId)}?$select=id`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.id) {
+            console.log(`[GRAPH] Resolved organizer email '${emailOrId}' to Entra Object ID GUID '${data.id}'`);
+            return data.id;
+          }
+        }
+      } catch (err: any) {
+        console.warn(`[GRAPH] ⚠️ Failed to resolve user object ID for '${emailOrId}':`, err.message || err);
+      }
+    }
+    return emailOrId;
+  }
+
+  /**
    * Issue Real Microsoft Graph Cloud Communications Call Join Request
    * Endpoint: POST /v1.0/communications/calls
    */
@@ -226,7 +253,16 @@ export class RealMicrosoftGraphClient {
     }
 
     const callbackUri = process.env.BOT_ENDPOINT ? process.env.BOT_ENDPOINT.replace('/api/messages', '/api/calling') : 'https://projectplugin-api.onrender.com/api/calling';
-    console.log(`[GRAPH] Call join request started for joinWebUrl '${request.joinWebUrl.substring(0, 50)}...' (Callback: ${callbackUri})`);
+    const resolvedOrganizerId = await this.resolveUserObjectId(request.organizerId, diag.token);
+
+    console.log(`[GRAPH_JOIN_REQUEST]`, JSON.stringify({
+      joinWebUrlPresent: !!request.joinWebUrl,
+      joinWebUrlPrefix: request.joinWebUrl ? request.joinWebUrl.substring(0, 45) + '...' : null,
+      organizerIdPresent: !!request.organizerId,
+      resolvedOrganizerId,
+      callbackUri,
+      timestamp: new Date().toISOString()
+    }));
 
     const callPayload = {
       '@odata.type': '#microsoft.graph.call',
@@ -237,7 +273,7 @@ export class RealMicrosoftGraphClient {
           identity: {
             '@odata.type': '#microsoft.graph.identitySet',
             user: {
-              id: request.organizerId || 'organizer-id',
+              id: resolvedOrganizerId,
               displayName: 'Organizer'
             }
           }
@@ -251,7 +287,7 @@ export class RealMicrosoftGraphClient {
         '@odata.type': '#microsoft.graph.organizerMeetingInfo',
         organizer: {
           '@odata.type': '#microsoft.graph.identitySet',
-          user: { id: request.organizerId || 'organizer-id' }
+          user: { id: resolvedOrganizerId }
         },
         allowConversationWithoutOrganizer: true
       }
@@ -276,7 +312,7 @@ export class RealMicrosoftGraphClient {
       }
 
       const data = await response.json();
-      console.log(`[GRAPH] ✅ Call join SUCCESS. Accepted by Microsoft Graph. Call ID: '${data.id}', State: '${data.state}'`);
+      console.log(`[GRAPH_CALL_ESTABLISHED] ✅ Call join SUCCESS. Accepted by Microsoft Graph. Call ID: '${data.id}', State: '${data.state}'`);
       return { success: true, callId: data.id, httpStatus: response.status };
     } catch (err: any) {
       console.error('[GRAPH] ❌ Call join network exception:', err.message || err);

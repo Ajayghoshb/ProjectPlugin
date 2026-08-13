@@ -1,4 +1,4 @@
-export function buildJoinRequestCard(meetingId: string, title: string, organizerEmail: string): any {
+export function buildJoinRequestCard(meetingId: string, title: string, organizerEmail: string, joinUrl?: string): any {
   return {
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
     "type": "AdaptiveCard",
@@ -38,7 +38,8 @@ export function buildJoinRequestCard(meetingId: string, title: string, organizer
         "data": {
           "action": "ALLOW_JOIN",
           "meetingId": meetingId,
-          "organizerEmail": organizerEmail
+          "organizerEmail": organizerEmail,
+          "joinUrl": joinUrl || meetingId
         }
       },
       {
