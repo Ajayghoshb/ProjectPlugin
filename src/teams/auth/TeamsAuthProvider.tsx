@@ -30,14 +30,20 @@ export function TeamsAuthProvider({ children }: TeamsAuthProviderProps) {
       const tokenRes = await TeamsAuthService.exchangeTokenOBO(idToken);
       const userProfile = await TeamsAuthService.resolveUserProfile(tokenRes?.accessToken || idToken);
 
+      const activeToken = tokenRes?.accessToken || idToken;
       setAuthState({
         isAuthenticated: true,
         isAuthenticating: false,
         user: userProfile,
-        token: tokenRes?.accessToken || idToken,
+        token: activeToken,
         error: null
       });
-      TeamsLogger.info('Entra ID SSO Login successfully completed for UPN:', userProfile.userPrincipalName);
+      TeamsLogger.info('[TEAMS_SSO_SUCCESS] Entra ID SSO Login successfully completed for UPN:', userProfile.userPrincipalName);
+
+      // Trigger user-centric calendar subscription for authenticated user A
+      TeamsAuthService.triggerCalendarSubscription(activeToken).catch(subErr => {
+        TeamsLogger.warn('Background calendar subscription trigger warning:', subErr);
+      });
     } catch (err: any) {
       TeamsLogger.error('Teams SSO Login Exception:', err);
       setAuthState({

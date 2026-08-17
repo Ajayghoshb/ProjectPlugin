@@ -244,11 +244,20 @@ export class RealMicrosoftGraphClient {
    * Endpoint: POST /v1.0/communications/calls
    */
   async joinCall(request: GraphCallJoinRequest): Promise<{ success: boolean; callId?: string; error?: string; httpStatus?: number }> {
+    const rawJoinUrl = request.joinWebUrl;
+    if (!rawJoinUrl || typeof rawJoinUrl !== 'string' || !rawJoinUrl.startsWith('http') || rawJoinUrl.includes('m-default') || rawJoinUrl.trim().length < 15) {
+      console.warn(`[MEETING_JOIN_URL_UNAVAILABLE] Invalid or missing joinWebUrl for organizer '${request.organizerId || 'UNKNOWN'}'. Provided: '${rawJoinUrl}'`);
+      return {
+        success: false,
+        error: 'MEETING_JOIN_URL_UNAVAILABLE'
+      };
+    }
+
     const diag = await this.getAppAccessTokenDiagnostic();
     if (!diag.success || !diag.token) {
       return {
         success: false,
-        error: `AUTHENTICATION_FAILED [${diag.error || 'MISSING_TOKEN'}]: ${diag.errorDescription || 'Unable to acquire Graph access token'}`
+        error: `GRAPH_AUTHENTICATION_FAILED [${diag.error || 'MISSING_TOKEN'}]: ${diag.errorDescription || 'Unable to acquire Graph access token'}`
       };
     }
 
@@ -256,8 +265,8 @@ export class RealMicrosoftGraphClient {
     const resolvedOrganizerId = await this.resolveUserObjectId(request.organizerId, diag.token);
 
     console.log(`[GRAPH_JOIN_REQUEST]`, JSON.stringify({
-      joinWebUrlPresent: !!request.joinWebUrl,
-      joinWebUrlPrefix: request.joinWebUrl ? request.joinWebUrl.substring(0, 45) + '...' : null,
+      joinWebUrlPresent: true,
+      joinWebUrlPrefix: rawJoinUrl.substring(0, 45) + '...',
       organizerIdPresent: !!request.organizerId,
       resolvedOrganizerId,
       callbackUri,
@@ -307,15 +316,15 @@ export class RealMicrosoftGraphClient {
         const errJson = await response.json().catch(() => ({}));
         const errCode = errJson.error?.code || response.statusText;
         const errMsg = errJson.error?.message || 'Graph API join call rejected';
-        console.error(`[GRAPH] ❌ Call join FAILED HTTP ${response.status} [${errCode}]: ${errMsg}`);
-        return { success: false, httpStatus: response.status, error: `GRAPH_API_ERROR [${response.status} ${errCode}]: ${errMsg}` };
+        console.error(`[GRAPH_JOIN_FAILED] HTTP ${response.status} [${errCode}]: ${errMsg} (Organizer: ${resolvedOrganizerId})`);
+        return { success: false, httpStatus: response.status, error: `GRAPH_JOIN_FAILED [${response.status} ${errCode}]: ${errMsg}` };
       }
 
       const data = await response.json();
-      console.log(`[GRAPH_CALL_ESTABLISHED] ✅ Call join SUCCESS. Accepted by Microsoft Graph. Call ID: '${data.id}', State: '${data.state}'`);
+      console.log(`[GRAPH_JOIN_ACCEPTED] ✅ Microsoft Graph accepted call join! Call ID: '${data.id}', State: '${data.state}'`);
       return { success: true, callId: data.id, httpStatus: response.status };
     } catch (err: any) {
-      console.error('[GRAPH] ❌ Call join network exception:', err.message || err);
+      console.error('[GRAPH_JOIN_FAILED] ❌ Call join network exception:', err.message || err);
       return { success: false, error: err.message || 'Network exception joining call' };
     }
   }

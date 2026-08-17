@@ -1,4 +1,12 @@
-export function buildJoinRequestCard(meetingId: string, title: string, organizerEmail: string, joinUrl?: string): any {
+export function buildJoinRequestCard(
+  meetingId: string,
+  title: string,
+  organizerEmail: string,
+  joinUrl?: string,
+  ownerUserId?: string,
+  ownerUserEmail?: string,
+  correlationId?: string
+): any {
   return {
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
     "type": "AdaptiveCard",
@@ -39,7 +47,10 @@ export function buildJoinRequestCard(meetingId: string, title: string, organizer
           "action": "ALLOW_JOIN",
           "meetingId": meetingId,
           "organizerEmail": organizerEmail,
-          "joinUrl": joinUrl || meetingId
+          "joinUrl": joinUrl || meetingId,
+          "ownerUserId": ownerUserId,
+          "ownerUserEmail": ownerUserEmail,
+          "correlationId": correlationId
         }
       },
       {
@@ -49,7 +60,10 @@ export function buildJoinRequestCard(meetingId: string, title: string, organizer
         "data": {
           "action": "DECLINE_JOIN",
           "meetingId": meetingId,
-          "organizerEmail": organizerEmail
+          "organizerEmail": organizerEmail,
+          "ownerUserId": ownerUserId,
+          "ownerUserEmail": ownerUserEmail,
+          "correlationId": correlationId
         }
       }
     ]

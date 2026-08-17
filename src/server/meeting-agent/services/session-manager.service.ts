@@ -4,8 +4,8 @@ import { agentEventBus } from '../events/event-bus';
 import { MeetingState, SpeakerSegment, IntelligenceItem } from '../models/agent.models';
 
 export class MeetingSessionManager {
-  startSession(meetingId: string, title: string, organizerEmail: string): MeetingSession {
-    const session = meetingSessionStore.createSession(meetingId, title, organizerEmail);
+  startSession(meetingId: string, title: string, organizerEmail: string, ownerUserId?: string, ownerUserEmail?: string): MeetingSession {
+    const session = meetingSessionStore.createSession(meetingId, title, organizerEmail, ownerUserId, ownerUserEmail);
     meetingLifecycleManager.transitionState(meetingId, MeetingState.STARTING, "Meeting session initialized");
     
     agentEventBus.publish('MEETING_STATE_CHANGED', {

@@ -5,9 +5,9 @@ import { policyEngine } from '../policy/policy.engine';
 import { SpeakerSegment } from '../models/agent.models';
 
 export class MeetingAgentOrchestrator {
-  async startMeetingAgent(meetingId: string, title: string, organizerEmail: string): Promise<boolean> {
-    console.log(`[Meeting Agent Orchestrator] Initializing Agent Pipeline for meeting '${title}' (${meetingId})`);
-    return await meetingWorkflowEngine.executeMeetingStartWorkflow(meetingId, title, organizerEmail);
+  async startMeetingAgent(meetingId: string, title: string, organizerEmail: string, ownerUserId?: string, ownerUserEmail?: string): Promise<boolean> {
+    console.log(`[Meeting Agent Orchestrator] Initializing Agent Pipeline for meeting '${title}' (${meetingId}) [Owner: ${ownerUserEmail || 'DEFAULT'}]`);
+    return await meetingWorkflowEngine.executeMeetingStartWorkflow(meetingId, title, organizerEmail, ownerUserId, ownerUserEmail);
   }
 
   async processLiveAudioSegment(meetingId: string, segment: SpeakerSegment): Promise<void> {

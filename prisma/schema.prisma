@@ -106,6 +106,8 @@ model NotificationPreference {
 
 model CustomMeetingReport {
   id               String   @id @default(uuid())
+  ownerUserId      String?
+  ownerUserEmail   String?
   meetingName      String
   uploadDate       DateTime @default(now())
   processingDate   DateTime @default(now())
@@ -126,10 +128,13 @@ model CustomMeetingReport {
 
   @@index([status])
   @@index([createdAt])
+  @@index([ownerUserId])
 }
 
 model MeetingTranscript {
   id                 String   @id @default(uuid())
+  ownerUserId        String?
+  ownerUserEmail     String?
   meetingId          String
   speakerId          String
   speakerName        String
@@ -149,6 +154,7 @@ model MeetingTranscript {
 
   @@index([meetingId])
   @@index([speakerId])
+  @@index([ownerUserId])
 }
 
 // =========================================================================================
@@ -167,28 +173,31 @@ model MeetingTranscript {
 // @@unique([tenantId, calendarEventId]) prevents duplicate meeting creation from redundant Graph webhooks.
 model TeamsMeetingRecord {
   id               String    @id @default(uuid())
-  tenantId         String    // Microsoft Entra Tenant ID
-  organizerId      String?   // Microsoft Graph User ID of Meeting Organizer
-  organizerEmail   String    // Email Address of Meeting Organizer
-  calendarEventId  String    // Microsoft Graph Outlook Calendar Event Identifier
-  onlineMeetingId  String?   // Microsoft Graph Teams Online Meeting Identifier
-  joinWebUrl       String?   // Microsoft Teams Meeting Join Web URL
-  subject          String    // Scheduled Meeting Subject / Title
+  ownerUserId      String? // Think It Owner User ID
+  ownerUserEmail   String? // Think It Owner User Email
+  tenantId         String // Microsoft Entra Tenant ID
+  organizerId      String? // Microsoft Graph User ID of Meeting Organizer
+  organizerEmail   String // Email Address of Meeting Organizer
+  calendarEventId  String // Microsoft Graph Outlook Calendar Event Identifier
+  onlineMeetingId  String? // Microsoft Graph Teams Online Meeting Identifier
+  joinWebUrl       String? // Microsoft Teams Meeting Join Web URL
+  subject          String // Scheduled Meeting Subject / Title
   scheduledStart   DateTime? // Scheduled Start Timestamp
   scheduledEnd     DateTime? // Scheduled End Timestamp
   actualStart      DateTime? // Actual Call Established Timestamp
   actualEnd        DateTime? // Actual Call Concluded Timestamp
   lifecycleStatus  String    @default("DISCOVERED") // State Machine Status
-  consentStatus    String    @default("PENDING")    // PENDING | APPROVED | DECLINED
-  transcriptStatus String    @default("PENDING")    // PENDING | RETRIEVED | FAILED
-  aiStatus         String    @default("QUEUED")     // QUEUED | PROCESSING | COMPLETED | FAILED
-  transcriptId     String?   // Microsoft Graph Transcript Identifier
+  consentStatus    String    @default("PENDING") // PENDING | APPROVED | DECLINED
+  transcriptStatus String    @default("PENDING") // PENDING | RETRIEVED | FAILED
+  aiStatus         String    @default("QUEUED") // QUEUED | PROCESSING | COMPLETED | FAILED
+  transcriptId     String? // Microsoft Graph Transcript Identifier
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
   @@unique([tenantId, calendarEventId])
   @@index([tenantId])
   @@index([lifecycleStatus])
+  @@index([ownerUserId])
 }
 
 model TeamsConversationReference {
@@ -205,7 +214,3 @@ model TeamsConversationReference {
 
   @@index([userEmail])
 }
-
-
-
-

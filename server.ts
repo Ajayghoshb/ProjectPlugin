@@ -105,9 +105,10 @@ app.get('/health/deep', async (req, res) => {
 // ===================================================================
 
 // 1. Process Uploaded Assets & Generate Real AI Report
-app.post('/api/custom-reports/process', async (req, res) => {
+app.post('/api/custom-reports/process', validateEntraBearerToken, async (req: express.Request, res: express.Response) => {
   const startMs = Date.now();
   try {
+    const userCtx = (req as AuthenticatedRequest).userContext;
     const { meetingName, fileNames = [], fileTypes = [], transcriptText } = req.body;
     if (!meetingName && (!fileNames || fileNames.length === 0)) {
       return res.status(400).json({ error: 'Missing meetingName or fileNames in request body' });
@@ -201,6 +202,8 @@ Status: Approved & Verified
     const reportId = 'rpt-' + Date.now();
     const reportData = {
       id: reportId,
+      ownerUserId: userCtx?.userId,
+      ownerUserEmail: userCtx?.userEmail,
       meetingName: title,
       uploadDate: new Date().toISOString(),
       processingDate: new Date().toISOString(),
@@ -229,6 +232,8 @@ Status: Approved & Verified
         await prisma.customMeetingReport.create({
           data: {
             id: reportData.id,
+            ownerUserId: userCtx?.userId,
+            ownerUserEmail: userCtx?.userEmail,
             meetingName: reportData.meetingName,
             uploadDate: new Date(),
             processingDate: new Date(),
@@ -268,6 +273,8 @@ export interface EntraTokenClaims {
   sub?: string;
   preferred_username?: string;
   upn?: string;
+  email?: string;
+  name?: string;
   aud?: string;
   iss?: string;
   exp?: number;
@@ -278,6 +285,8 @@ export interface AuthenticatedRequest extends express.Request {
     tenantId: string;
     userId: string;
     userEmail: string;
+    userPrincipalName?: string;
+    displayName?: string;
   };
 }
 
@@ -285,18 +294,15 @@ export interface AuthenticatedRequest extends express.Request {
  * Microsoft Entra ID JWT Bearer Token Authenticator Middleware
  * Controlled by TEAMS_AUTH_ENABLED feature flag for testing phase bypass.
  * When TEAMS_AUTH_ENABLED === 'true': Cryptographically verifies JWT claims (tid, oid, aud, exp).
- * When TEAMS_AUTH_ENABLED === 'false' (Testing Mode): Temporarily bypasses blocking to allow UI testing.
+ * When TEAMS_AUTH_ENABLED === 'false' (Testing Mode): Bypasses blocking for unauthenticated requests,
+ * but parses and binds authentic identity claims whenever a Bearer token is provided.
  */
 export function validateEntraBearerToken(req: express.Request, res: express.Response, next: express.NextFunction) {
   const isAuthEnabled = process.env.TEAMS_AUTH_ENABLED === 'true';
+  const authHeader = req.headers.authorization;
 
-  // 1. If Authentication Enforcement is Enabled (Phase 2 Production Mode)
-  if (isAuthEnabled) {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Unauthorized: Missing Microsoft Entra ID Bearer token' });
-    }
-
+  // 1. If Bearer Token Header is Present: Decode and bind authentic claims
+  if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7).trim();
     try {
       const parts = token.split('.');
@@ -306,24 +312,41 @@ export function validateEntraBearerToken(req: express.Request, res: express.Resp
         const claims: EntraTokenClaims = JSON.parse(payloadJson);
 
         const nowSec = Math.floor(Date.now() / 1000);
-        if (claims.exp && claims.exp < nowSec) {
+        if (claims.exp && claims.exp < nowSec && isAuthEnabled) {
           return res.status(401).json({ error: 'Unauthorized: Microsoft Entra ID Bearer token expired' });
         }
 
         const tenantId = claims.tid || process.env.MICROSOFT_APP_TENANT_ID || 'eec115d2-8418-4d66-8e18-b4283ffca2b1';
         const userId = claims.oid || claims.sub || 'usr-default';
-        const userEmail = claims.preferred_username || claims.upn || 'user@thinkpalm.com';
+        const rawEmail = claims.preferred_username || claims.upn || claims.email || 'user@thinkpalm.com';
+        const userEmail = rawEmail.toLowerCase().trim();
+        const userPrincipalName = claims.upn || claims.preferred_username;
+        const displayName = claims.name;
 
-        (req as AuthenticatedRequest).userContext = { tenantId, userId, userEmail };
+        (req as AuthenticatedRequest).userContext = {
+          tenantId,
+          userId,
+          userEmail,
+          userPrincipalName,
+          displayName
+        };
+        console.log(`[TEAMS_USER_CONTEXT] tenant=${tenantId} user=${userId} email=${userEmail}`);
         return next();
       }
     } catch (tokenErr) {
-      console.warn('[Entra Token Decode Error]: Invalid JWT format', tokenErr);
-      return res.status(401).json({ error: 'Unauthorized: Invalid Microsoft Entra ID Bearer token format' });
+      if (isAuthEnabled) {
+        console.warn('[Entra Token Decode Error]: Invalid JWT format', tokenErr);
+        return res.status(401).json({ error: 'Unauthorized: Invalid Microsoft Entra ID Bearer token format' });
+      }
     }
   }
 
-  // 2. Testing Phase Mode (TEAMS_AUTH_ENABLED=false): Pass-through with default test context
+  // 2. If Auth Enforcement is Enabled and no valid token header was provided
+  if (isAuthEnabled) {
+    return res.status(401).json({ error: 'Unauthorized: Missing Microsoft Entra ID Bearer token' });
+  }
+
+  // 3. Testing Phase Mode (TEAMS_AUTH_ENABLED=false): Pass-through with default test context
   (req as AuthenticatedRequest).userContext = {
     tenantId: (req.headers['x-tenant-id'] as string) || process.env.MICROSOFT_APP_TENANT_ID || 'test-tenant-id',
     userId: (req.headers['x-user-id'] as string) || 'test-user-id',
@@ -339,12 +362,17 @@ app.get('/api/custom-reports/history', validateEntraBearerToken, async (req: exp
     const userCtx = (req as AuthenticatedRequest).userContext;
     const tenantId = userCtx?.tenantId;
     const userId = userCtx?.userId;
+    const userEmail = userCtx?.userEmail;
 
     if (DatabaseClient.isConnected()) {
       const prisma = DatabaseClient.getPrisma();
       const whereClause: any = {};
-      if (tenantId) whereClause.tenantId = tenantId;
-      if (userId && userId !== 'default-user-id') whereClause.userId = userId;
+      if (userId && userId !== 'test-user-id') {
+        whereClause.OR = [
+          { ownerUserId: userId },
+          { ownerUserEmail: userEmail }
+        ];
+      }
 
       const dbReports = await prisma.customMeetingReport.findMany({
         where: whereClause,
@@ -374,11 +402,21 @@ app.get('/api/custom-reports/history', validateEntraBearerToken, async (req: exp
 });
 
 // 3. Export ZIP Package Containing All 8 Report Files
-app.post('/api/custom-reports/export-zip', async (req, res) => {
+app.post('/api/custom-reports/export-zip', validateEntraBearerToken, async (req: express.Request, res: express.Response) => {
   try {
+    const userCtx = (req as AuthenticatedRequest).userContext;
     const { report } = req.body;
     if (!report) {
       return res.status(400).json({ error: 'Missing report DTO object' });
+    }
+
+    if (userCtx && userCtx.userId !== 'test-user-id') {
+      const ownerUserId = report.ownerUserId;
+      const ownerUserEmail = report.ownerUserEmail;
+      if (ownerUserId && ownerUserId !== userCtx.userId && ownerUserEmail && ownerUserEmail.toLowerCase() !== userCtx.userEmail.toLowerCase()) {
+        console.warn(`[OWNER_AUTHORIZATION_DENIED] User '${userCtx.userEmail}' denied export for report owned by '${ownerUserEmail || ownerUserId}'.`);
+        return res.status(403).json({ error: 'Forbidden: Access denied to private meeting report' });
+      }
     }
 
     const zip = new JSZip();
@@ -457,10 +495,30 @@ app.get('/health/teams', async (req, res) => {
   });
 });
 
-// Endpoint to trigger Microsoft Graph Organization User Calendar Subscriptions (/users/{userId}/events)
-app.post('/api/teams/subscribe-calendars', async (req, res) => {
-  const result = await calendarSubscriptionManager.subscribeOrgUserCalendars();
-  return res.status(result.success ? 200 : 400).json(result);
+// Endpoint to trigger Microsoft Graph User-Centric Calendar Subscriptions (/users/{userId}/events)
+app.post('/api/teams/subscribe-calendars', validateEntraBearerToken, async (req: express.Request, res: express.Response) => {
+  try {
+    const userCtx = (req as AuthenticatedRequest).userContext;
+    if (!userCtx || !userCtx.userEmail) {
+      return res.status(401).json({ error: 'Unauthorized: Missing authenticated user context' });
+    }
+
+    const requestedEmail = (req.body?.userEmail || req.body?.email || req.query?.email) as string | undefined;
+    if (requestedEmail && requestedEmail.toLowerCase().trim() !== userCtx.userEmail.toLowerCase().trim()) {
+      console.warn(`[CALENDAR_USER_SUBSCRIPTION_REJECTED] User '${userCtx.userEmail}' attempted unauthorized subscription for '${requestedEmail}'.`);
+      return res.status(403).json({ error: 'Forbidden: You can only subscribe your own calendar' });
+    }
+
+    const result = await calendarSubscriptionManager.subscribeUserCalendar({
+      userEmail: userCtx.userEmail,
+      userObjectId: userCtx.userId !== 'test-user-id' ? userCtx.userId : undefined,
+      tenantId: userCtx.tenantId
+    });
+
+    return res.status(result.success ? 200 : 400).json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to subscribe calendar' });
+  }
 });
 
 // Endpoint to trigger Microsoft Graph Transcript Availability Subscriptions
@@ -491,12 +549,14 @@ app.all('/api/graph/notifications', async (req, res) => {
         if (notification.resource && notification.resource.includes('events')) {
           const meetingResult = await calendarSubscriptionManager.processCalendarEventChangeNotification(notification);
           if (meetingResult.isTeamsMeeting && meetingResult.meetingDetails && !meetingResult.meetingDetails.duplicate) {
-            const { meetingId, subject, organizerEmail, joinUrl } = meetingResult.meetingDetails;
+            const { meetingId, subject, organizerEmail, joinUrl, ownerUserId, ownerUserEmail } = meetingResult.meetingDetails;
             await thinkItBot.processTeamsActivity({
               type: 'onlineMeeting.started',
               meetingId,
               title: subject,
               from: { email: organizerEmail },
+              ownerUserId,
+              ownerUserEmail,
               joinUrl
             });
           }
@@ -594,26 +654,16 @@ app.all('/api/calling', async (req, res) => {
     const state = callNotification.value?.[0]?.state || callNotification.state || 'active';
     const callId = callNotification.value?.[0]?.id || callNotification.id || 'call-01';
 
-    // Safe Diagnostic Telemetry — No tokens or sensitive payload logged
-    console.log(`[CALLING_EVENT_RECEIVED]`, JSON.stringify({
-      changeType: callNotification.changeType || null,
-      resourceState: state,
-      resourceIdPresent: !!callId,
-      timestamp: new Date().toISOString()
-    }));
+    console.log(`[CALLING_CALLBACK] state=${state} callId=${callId}`);
 
-    console.log(`[CALLING] Request received. Call ID: '${callId}', State: '${state}'`);
-
-    if (state === 'established') {
-      console.log(`[CALL_ESTABLISHED] Call ID '${callId}' established.`);
-      console.log(`[MEDIA_CONNECTED] Media stream connection active.`);
-      console.log(`[MEETING_ACTIVE] ThinkItAIMeetingAssistant listening.`);
+    if (state === 'establishing') {
+      console.log(`[CALL_ESTABLISHING] Call ID '${callId}' establishing media connection...`);
+    } else if (state === 'established') {
+      console.log(`[CALL_ESTABLISHED] Call ID '${callId}' established. ThinkItAIMeetingAssistant active in meeting roster.`);
     } else if (state === 'terminating' || state === 'terminated') {
-      console.log(`[MEETING_ENDED] Call ID '${callId}' ended.`);
-      console.log(`[TRANSCRIPT_REQUESTED] Requesting meeting transcript from Microsoft Graph...`);
-      console.log(`[TRANSCRIPT_RECEIVED] VTT transcript artifact received.`);
-      console.log(`[AI_PROCESSING] Passed transcript to AI Gateway (Groq Llama 3.3 70B & NVIDIA NIM)...`);
-      console.log(`[REPORT_STORED] Meeting intelligence persisted to Neon Cloud PostgreSQL.`);
+      console.log(`[CALL_TERMINATED] Call ID '${callId}' terminated.`);
+    } else if (state === 'failed') {
+      console.log(`[CALL_FAILED] Call ID '${callId}' failed.`);
     }
 
     res.status(200).json({ status: 'CALL_NOTIFICATION_ACKNOWLEDGED', callId, state });
@@ -2186,16 +2236,33 @@ app.post('/api/teams/auth/token', async (req, res) => {
       return res.status(400).json({ error: 'Missing idToken in request payload' });
     }
 
-    // Server-side OBO exchange implementation for Azure AD Entra ID
-    const tenantId = process.env.MICROSOFT_GRAPH_TENANT_ID || 'common';
-    const clientId = process.env.MICROSOFT_GRAPH_CLIENT_ID || 'YOUR_MICROSOFT_GRAPH_CLIENT_ID';
-    const clientSecret = process.env.MICROSOFT_GRAPH_CLIENT_SECRET || '';
+    // Decode user claims from incoming Teams SSO token safely
+    let claims: EntraTokenClaims = {};
+    try {
+      if (typeof idToken === 'string' && idToken.includes('.')) {
+        const parts = idToken.split('.');
+        if (parts.length === 3) {
+          const payloadBase64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+          claims = JSON.parse(Buffer.from(payloadBase64, 'base64').toString('utf-8'));
+        }
+      }
+    } catch (e) {
+      // Non-JWT token
+    }
 
-    // Log OBO request securely
-    console.log(`[Teams OBO Auth Proxy] Processing token exchange for Tenant: ${tenantId}, Client: ${clientId}`);
+    const tenantId = claims.tid || process.env.MICROSOFT_APP_TENANT_ID || process.env.MICROSOFT_GRAPH_TENANT_ID || 'common';
+    const clientId = process.env.MICROSOFT_GRAPH_CLIENT_ID || process.env.MICROSOFT_APP_ID || '';
+    const clientSecret = process.env.MICROSOFT_GRAPH_CLIENT_SECRET || process.env.MICROSOFT_APP_PASSWORD || '';
 
-    // If client secret configured, execute real Azure AD token endpoint fetch
-    if (clientSecret && clientSecret !== 'YOUR_AZURE_CLIENT_SECRET') {
+    const userId = claims.oid || claims.sub || 'usr-default';
+    const rawEmail = claims.preferred_username || claims.upn || claims.email || 'user@thinkpalm.com';
+    const userEmail = rawEmail.toLowerCase().trim();
+    const userPrincipalName = claims.upn || claims.preferred_username;
+    const displayName = claims.name;
+
+    console.log(`[TEAMS_SSO_INITIATED] tenant=${tenantId} user=${userId} email=${userEmail}`);
+
+    if (clientSecret && clientSecret !== 'YOUR_AZURE_CLIENT_SECRET' && clientSecret !== 'YOUR_MICROSOFT_GRAPH_CLIENT_SECRET') {
       const params = new URLSearchParams();
       params.append('grant_type', 'urn:ietf:params:oauth:grant-type:jwt-bearer');
       params.append('client_id', clientId);
@@ -2212,38 +2279,57 @@ app.post('/api/teams/auth/token', async (req, res) => {
 
       if (tokenRes.ok) {
         const tokenData = await tokenRes.json();
+        console.log(`[TEAMS_SSO_SUCCESS] tenant=${tenantId} user=${userId} email=${userEmail}`);
         return res.json({
           accessToken: tokenData.access_token,
           expiresIn: tokenData.expires_in,
-          tokenType: tokenData.token_type,
-          scopes: ['User.Read', 'OnlineMeetings.ReadWrite', 'Calendars.Read']
+          tokenType: tokenData.token_type || 'Bearer',
+          scopes: ['User.Read', 'Calendars.Read'],
+          user: {
+            tenantId,
+            userId,
+            userEmail,
+            userPrincipalName,
+            displayName
+          }
         });
+      } else {
+        const errBody = await tokenRes.text().catch(() => '');
+        console.warn(`[TEAMS_SSO_OBO_WARNING] Azure OBO HTTP ${tokenRes.status}: ${errBody.substring(0, 100)}`);
       }
     }
 
-    // Developer / fallback OBO response token
+    // Developer / simulation fallback OBO response token
+    console.log(`[TEAMS_SSO_SUCCESS] (DEV_FALLBACK) tenant=${tenantId} user=${userId} email=${userEmail}`);
     res.json({
-      accessToken: `obo_access_token_${Date.now()}_${idToken.substring(0, 15)}`,
+      accessToken: idToken,
       expiresIn: 3600,
       tokenType: 'Bearer',
-      scopes: ['User.Read', 'OnlineMeetings.ReadWrite', 'Calendars.Read']
+      scopes: ['User.Read', 'Calendars.Read'],
+      user: {
+        tenantId,
+        userId,
+        userEmail,
+        userPrincipalName,
+        displayName
+      }
     });
   } catch (err: any) {
-    console.error('[Teams OBO Auth Error]:', err);
+    console.error('[Teams OBO Auth Error]:', err?.message || err);
     res.status(500).json({ error: 'Failed to execute OBO token exchange', details: err?.message });
   }
 });
 
 // Express Backend Proxy Controllers for Microsoft Graph REST API
-app.get('/api/graph/me', async (req, res) => {
+app.get('/api/graph/me', validateEntraBearerToken, async (req: express.Request, res: express.Response) => {
+  const userCtx = (req as AuthenticatedRequest).userContext;
   res.json({
-    id: 'u-teams-enterprise-admin',
-    displayName: 'Ajayaghosh B',
-    mail: 'ajayaghosh.b@thinkpalm.com',
-    userPrincipalName: 'ajayaghosh.b@thinkpalm.com',
-    jobTitle: 'Principal Enterprise Solutions Architect',
-    officeLocation: 'Kochi Tech Hub',
-    preferredLanguage: 'en-US'
+    id: userCtx?.userId || 'u-teams-enterprise-admin',
+    displayName: userCtx?.displayName || 'ThinkIt User',
+    mail: userCtx?.userEmail || 'user@thinkpalm.com',
+    userPrincipalName: userCtx?.userPrincipalName || userCtx?.userEmail || 'user@thinkpalm.com',
+    jobTitle: 'Enterprise User',
+    tenantId: userCtx?.tenantId
   });
 });
 
@@ -2305,8 +2391,8 @@ app.get('/api/graph/channels', async (req, res) => {
 });
 
 app.get('/api/graph/users', async (req, res) => {
-  const db = readDb();
-  res.json(db.members || []);
+  console.warn(`[GRAPH_USER_DISCOVERY_DISABLED] Organization-wide user discovery (/api/graph/users) is disabled.`);
+  res.status(403).json({ error: 'Organization-wide user discovery is disabled.' });
 });
 
 app.get('/api/graph/groups', async (req, res) => {
@@ -3628,14 +3714,8 @@ app.post("/api/projects/:key/sync-availability", async (req, res) => {
         ];
         syncMsgPrefix = "[Simulated M365 Corporate Directory] ";
       } else {
-        const response = await fetch("https://graph.microsoft.com/v1.0/users", {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-        if (response.ok) {
-          const resData: any = await response.json();
-          graphUsers = resData.value || [];
-          syncMsgPrefix = "[Active Azure Tenant Directory] ";
-        }
+        console.warn("[GRAPH_USER_DISCOVERY_DISABLED] Organization-wide user discovery (GET /v1.0/users) is disabled in the user-centric architecture.");
+        graphUsers = db.members || [];
       }
     } catch (e) {
       console.error("Microsoft Graph user lookup failed:", e);
@@ -5895,11 +5975,8 @@ async function startServer() {
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Resource Scheduling & Collaboration platform server running at http://0.0.0.0:${PORT}`);
     
-    // Automatically initialize/reconcile Microsoft Graph Calendar Subscriptions on Server Boot
-    console.log('[STARTUP] Initializing Microsoft Graph Organization Calendar Subscriptions...');
-    calendarSubscriptionManager.subscribeOrgUserCalendars().catch(err => {
-      console.warn('[CALENDAR_SUBSCRIPTION_STARTUP] ⚠️ Auto-reconciliation background warning:', err.message || err);
-    });
+    // User-Centric Calendar Subscription Architecture (No organization-wide user discovery)
+    console.log('[STARTUP] [CALENDAR_ORG_DISCOVERY_DISABLED] User-centric calendar mode active. Calendar subscriptions will be created on authenticated user session access.');
   });
 }
 

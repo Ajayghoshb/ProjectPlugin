@@ -5,6 +5,8 @@ export interface MeetingSession {
   meetingId: string;
   title: string;
   organizerEmail: string;
+  ownerUserId?: string;
+  ownerUserEmail?: string;
   state: MeetingState;
   startTimeISO: string;
   endTimeISO?: string;
@@ -16,13 +18,15 @@ export interface MeetingSession {
 export class MeetingSessionStore {
   private sessions = new Map<string, MeetingSession>();
 
-  createSession(meetingId: string, title: string, organizerEmail: string): MeetingSession {
+  createSession(meetingId: string, title: string, organizerEmail: string, ownerUserId?: string, ownerUserEmail?: string): MeetingSession {
     const sessionId = `session-${meetingId}-${Date.now()}`;
     const session: MeetingSession = {
       sessionId,
       meetingId,
       title,
       organizerEmail,
+      ownerUserId,
+      ownerUserEmail,
       state: MeetingState.SCHEDULED,
       startTimeISO: new Date().toISOString(),
       speakers: [],

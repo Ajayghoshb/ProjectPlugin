@@ -12,21 +12,21 @@ export class TeamsAuthService {
     const isInTeams = TeamsEnvironment.isTeamsEnvironment();
 
     if (!isInTeams) {
-      TeamsLogger.info('Running in browser standalone fallback mode. Utilizing local developer authentication token.');
+      TeamsLogger.info('[TEAMS_SSO_STARTED] Running in browser standalone fallback mode. Utilizing local developer authentication token.');
       return 'mock-dev-access-token-zylozin-enterprise';
     }
 
     try {
-      TeamsLogger.info('Executing native Teams SSO app.getAuthToken()...');
+      TeamsLogger.info('[TEAMS_SSO_STARTED] Executing native Teams SSO app.getAuthToken()...');
       const authToken = await teamsjs.authentication.getAuthToken({
         resources: [TeamsConfiguration.get().azureClientId || 'eec115d2-8418-4d66-8e18-b4283ffca2b1'],
         silent: true
       });
 
-      TeamsLogger.info('Successfully acquired native Teams SSO id_token.');
+      TeamsLogger.info('[TEAMS_SSO_SUCCESS] Successfully acquired native Teams SSO id_token.');
       return authToken;
     } catch (err: any) {
-      TeamsLogger.warn('Native Teams SSO getAuthToken() silent acquisition failed. Falling back to backend token proxy:', err);
+      TeamsLogger.warn('[TEAMS_SSO_FAILED] Native Teams SSO getAuthToken() silent acquisition failed:', err?.message || err);
       return null;
     }
   }
@@ -54,7 +54,6 @@ export class TeamsAuthService {
       return TeamsAuthService.cachedToken;
     } catch (err: any) {
       TeamsLogger.error('Failed to exchange token via OBO backend endpoint:', err);
-      // Fallback response for dev environments
       return {
         accessToken: teamsIdToken,
         expiresOn: Date.now() + 3600 * 1000,
@@ -66,7 +65,39 @@ export class TeamsAuthService {
   public static async resolveUserProfile(token: string): Promise<AuthUser> {
     const config = TeamsConfiguration.get();
 
-    return {
+    // Attempt to decode Entra JWT token claims if valid 3-part JWT
+    try {
+      if (token && token.includes('.')) {
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const payloadBase64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+          const payloadJson = atob(payloadBase64);
+          const claims = JSON.parse(payloadJson);
+
+          const email = (claims.preferred_username || claims.upn || claims.email || 'ajayaghosh.b@thinkpalm.com').toLowerCase().trim();
+          const userId = claims.oid || claims.sub || 'u-teams-enterprise-admin';
+          const tenantId = claims.tid || config.azureTenantId || '8ec8a471-4328-4e8f-8c69-e64abdf2725e';
+          const displayName = claims.name || (claims.given_name ? `${claims.given_name} ${claims.family_name || ''}`.trim() : 'ThinkIt User');
+
+          const userProfile: AuthUser = {
+            id: userId,
+            displayName,
+            email,
+            userPrincipalName: email,
+            tenantId,
+            jobTitle: claims.jobTitle || 'Enterprise Solutions Architect',
+            avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80'
+          };
+
+          TeamsLogger.info(`[TEAMS_USER_CONTEXT] Resolved authenticated identity: userId=${userId}, userEmail=${email}, tenantId=${tenantId}`);
+          return userProfile;
+        }
+      }
+    } catch (err: any) {
+      TeamsLogger.warn('JWT claim extraction failed. Utilizing configured fallback identity:', err?.message || err);
+    }
+
+    const defaultUser: AuthUser = {
       id: 'u-teams-enterprise-admin',
       displayName: 'Ajayaghosh B',
       email: 'ajayaghosh.b@thinkpalm.com',
@@ -75,5 +106,33 @@ export class TeamsAuthService {
       jobTitle: 'Principal Enterprise Solutions Architect',
       avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80'
     };
+
+    TeamsLogger.info(`[TEAMS_USER_CONTEXT] Utilizing default identity: userId=${defaultUser.id}, userEmail=${defaultUser.email}`);
+    return defaultUser;
+  }
+
+  public static async triggerCalendarSubscription(bearerToken: string): Promise<boolean> {
+    try {
+      TeamsLogger.info('[CALENDAR_USER_SUBSCRIPTION_TRIGGERED] Triggering user-centric calendar subscription via POST /api/teams/subscribe-calendars...');
+      const res = await fetch(`${API_URL}/api/teams/subscribe-calendars`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${bearerToken}`
+        }
+      });
+
+      if (res.ok) {
+        TeamsLogger.info('[CALENDAR_USER_SUBSCRIPTION_CREATED] User-centric calendar subscription confirmed active by backend.');
+        return true;
+      } else {
+        const errText = await res.text();
+        TeamsLogger.warn(`[CALENDAR_USER_SUBSCRIPTION_FAILED] Backend returned HTTP ${res.status}: ${errText}`);
+        return false;
+      }
+    } catch (err: any) {
+      TeamsLogger.error('Failed to trigger user calendar subscription:', err?.message || err);
+      return false;
+    }
   }
 }

@@ -5,7 +5,7 @@ import { agentEventBus } from '../events/event-bus';
 import { SpeakerSegment, IntelligenceItem } from '../models/agent.models';
 
 export class MeetingWorkflowEngine {
-  async executeMeetingStartWorkflow(meetingId: string, title: string, organizerEmail: string): Promise<boolean> {
+  async executeMeetingStartWorkflow(meetingId: string, title: string, organizerEmail: string, ownerUserId?: string, ownerUserEmail?: string): Promise<boolean> {
     console.log(`[Workflow Engine] Step 1: Evaluating Join Policy...`);
     const policyCheck = policyEngine.canJoinMeeting(meetingId, organizerEmail);
     if (!policyCheck.allowed) {
@@ -14,7 +14,7 @@ export class MeetingWorkflowEngine {
     }
 
     console.log(`[Workflow Engine] Step 2: Initializing Meeting Session...`);
-    meetingSessionManager.startSession(meetingId, title, organizerEmail);
+    meetingSessionManager.startSession(meetingId, title, organizerEmail, ownerUserId, ownerUserEmail);
 
     agentEventBus.publish('MEETING_STATE_CHANGED', {
       meetingId,

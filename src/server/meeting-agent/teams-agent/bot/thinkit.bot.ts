@@ -68,16 +68,28 @@ export class ThinkItBot {
       timestamp: new Date().toISOString()
     }));
 
-    // A. Handle Adaptive Card Action Submits (Organizer Allow / Decline Consent)
+    // A. Handle Adaptive Card Action Submits (User Consent Allow / Decline)
     const cardData = activity.value || (activity.text ? tryParseJson(activity.text) : null);
     if (cardData && (cardData.action === 'ALLOW_JOIN' || cardData.action === 'ALLOW' || cardData.action === 'DECLINE_JOIN' || cardData.action === 'DECLINE')) {
       const meetingId = cardData.meetingId || 'm-default';
       const organizer = cardData.organizerEmail || activity.from?.email || 'organizer@company.com';
+      const ownerUserId = cardData.ownerUserId || activity.ownerUserId;
+      const ownerUserEmail = cardData.ownerUserEmail || activity.ownerUserEmail;
       const joinWebUrl = cardData.joinUrl || activity.joinUrl || meetingId;
+      const correlationId = cardData.correlationId || activity.correlationId || `TI-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
       if (cardData.action === 'ALLOW_JOIN' || cardData.action === 'ALLOW') {
-        console.log(`[CONSENT_GRANTED] Organizer '${organizer}' allowed Think It to join meeting '${meetingId}'.`);
-        console.log(`[GRAPH_JOIN_REQUESTED] Issuing Microsoft Graph Cloud Communications call join request for '${meetingId}' (JoinURL: '${joinWebUrl.substring(0, 45)}...')...`);
+        console.log(`[ALLOW_JOIN] correlationId=${correlationId} ownerUserEmail=${ownerUserEmail || organizer} meetingId=${meetingId}`);
+
+        if (!joinWebUrl || typeof joinWebUrl !== 'string' || !joinWebUrl.startsWith('http') || joinWebUrl.includes('m-default')) {
+          console.warn(`[MEETING_JOIN_URL_UNAVAILABLE] correlationId=${correlationId} ownerUserEmail=${ownerUserEmail || organizer} meetingId=${meetingId} reason=MISSING_OR_INVALID_URL`);
+          return {
+            type: 'message',
+            text: '⚠️ **Think It Join Failed**: MEETING_JOIN_URL_UNAVAILABLE - A valid Microsoft Teams meeting join URL is required.'
+          };
+        }
+
+        console.log(`[GRAPH_JOIN_REQUEST] correlationId=${correlationId} meetingId=${meetingId} organizer=${organizer}`);
 
         // Execute real Graph Communications Call Join API (POST /v1.0/communications/calls)
         const joinResult = await realGraphClient.joinCall({
@@ -86,26 +98,22 @@ export class ThinkItBot {
         });
 
         if (joinResult.success) {
-          console.log(`[GRAPH_JOIN_ACCEPTED] Microsoft Graph accepted call join. Call ID: '${joinResult.callId}'. HTTP Status: ${joinResult.httpStatus || 201}`);
-          console.log(`[CALL_ESTABLISHED] Call state established.`);
-          console.log(`[MEDIA_CONNECTED] Calling callback endpoint active.`);
-          console.log(`[MEETING_ACTIVE] ThinkItAIMeetingAssistant active in meeting roster.`);
-
-          await meetingAgentOrchestrator.startMeetingAgent(meetingId, 'Teams Meeting', organizer);
+          console.log(`[GRAPH_JOIN_ACCEPTED] correlationId=${correlationId} callId=${joinResult.callId} httpStatus=${joinResult.httpStatus || 201}`);
+          await meetingAgentOrchestrator.startMeetingAgent(meetingId, 'Teams Meeting', organizer, ownerUserId, ownerUserEmail);
 
           return {
             type: 'message',
             text: '✅ **Think It Approved**: Joining Teams meeting call and starting AI meeting intelligence capture.'
           };
         } else {
-          console.error(`[GRAPH_JOIN_FAILED] Microsoft Graph call join failed (HTTP ${joinResult.httpStatus || 400}): ${joinResult.error}`);
+          console.error(`[GRAPH_JOIN_FAILED] correlationId=${correlationId} httpStatus=${joinResult.httpStatus || 400} error=${joinResult.error}`);
           return {
             type: 'message',
             text: `⚠️ **Think It Join Failed**: ${joinResult.error}`
           };
         }
       } else {
-        console.log(`[CONSENT_DECLINED] Organizer '${organizer}' declined Think It join request for meeting '${meetingId}'.`);
+        console.log(`[CONSENT_DECLINED] correlationId=${correlationId} ownerUserEmail=${ownerUserEmail || organizer} meetingId=${meetingId}`);
         return {
           type: 'message',
           text: '❌ **Think It Declined**: Think It will not join or record this meeting.'
@@ -118,23 +126,32 @@ export class ThinkItBot {
       const meetingId = activity.meetingId || activity.id || `m-${Date.now()}`;
       const title = activity.title || activity.subject || 'Microsoft Teams Live Meeting';
       const organizer = activity.from?.email || activity.from?.name || 'organizer@company.com';
+      const ownerUserId = activity.ownerUserId;
+      const ownerUserEmail = activity.ownerUserEmail || organizer;
       const joinUrl = activity.joinUrl || activity.joinWebUrl || meetingId;
+      const correlationId = activity.correlationId || `TI-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
-      console.log(`[REAL_MEETING_RESOLVED] Meeting ID: '${meetingId}', Title: '${title}', StartTime: '${new Date().toISOString()}'`);
-      console.log(`[REAL_ORGANIZER_RESOLVED] Organizer Email: '${organizer}'`);
-      console.log(`[MEETING_DETECTED] Real Microsoft Teams meeting detected: '${title}' (${meetingId})`);
+      console.log(`[MEETING_DETECTED] correlationId=${correlationId} meetingId=${meetingId} title="${title}" organizer=${organizer} ownerUserEmail=${ownerUserEmail}`);
 
-      // Build Adaptive Consent Card with real joinUrl
-      const card = buildJoinRequestCard(meetingId, title, organizer, joinUrl);
+      // Build Adaptive Consent Card with real joinUrl and owner identity
+      const card = buildJoinRequestCard(meetingId, title, organizer, joinUrl, ownerUserId, ownerUserEmail, correlationId);
       
-      // Proactively send card to organizer via Real Bot Adapter
-      const proactiveResult = await this.adapter.sendCardProactive(organizer, card);
+      // Proactively send card to Think It owner (User A) via Real Bot Adapter
+      const proactiveResult = await this.adapter.sendCardProactive(ownerUserEmail, card);
+
+      if (proactiveResult.success) {
+        console.log(`[CONSENT_SENT] correlationId=${correlationId} ownerUserEmail=${ownerUserEmail} meetingId=${meetingId}`);
+      } else {
+        console.warn(`[THINKIT_PROACTIVE_MESSAGE_SKIPPED] correlationId=${correlationId} reason=${proactiveResult.reason || proactiveResult.error} ownerUserEmail=${ownerUserEmail}`);
+      }
 
       return {
         status: proactiveResult.success ? 'CONSENT_REQUESTED' : 'CONSENT_SKIPPED',
         meetingId,
         title,
         organizer,
+        ownerUserEmail,
+        correlationId,
         adaptiveCardSent: proactiveResult.success,
         reason: proactiveResult.reason || proactiveResult.error
       };
